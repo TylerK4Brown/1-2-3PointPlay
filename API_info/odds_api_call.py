@@ -24,7 +24,7 @@ def make_api_call():
         st.session_state.api_data = data
         # Debug statements to check if the API call was successful
         # print("API CALL MADE - INFORMATION STORED IN SESSION STATE")
-        # print(json.dumps(data, indent=2))
+        print(json.dumps(data, indent=2))
         display_data_mlb(data)
 
     # Otherwise, use the data stored in session state and display it
@@ -67,7 +67,7 @@ def display_data_mlb (data):
                 label_visibility="collapsed",
                 disabled=st.session_state.disabled,
                 on_change=handle_OU_change,
-                args=(f"{data_obj['home_team']}_OU",)
+                args=(f"{data_obj['home_team']}_OU", data,)
             )
 
             st.segmented_control (
@@ -78,7 +78,7 @@ def display_data_mlb (data):
                 label_visibility="collapsed",
                 disabled=st.session_state.disabled,
                 on_change=handle_point_change,
-                args=(f"{data_obj['home_team']}_points",)
+                args=(f"{data_obj['home_team']}_points", data,)
             )
 
             st.divider(width=700)
@@ -87,11 +87,18 @@ def display_data_mlb (data):
 # TODO: the user will select a point value for a game, and the callback will check if that point value has already been selected
 # --- if it has been selected, it will remove that point value from the other game that has that point value selected, and then update the session state with the new point value for the game that was just changed
 # --- otherwise, it will just update the session state with the new point value for the specific game selected
-def handle_point_change(changed_key):
+def handle_point_change(changed_key, data):
     duplicate_exists = False
     point_value = st.session_state[changed_key]
     home_team_name = changed_key.split("_")[0]
+    game_id = ""
     print(home_team_name)
+
+    # get the game id for future API calls that will need to reference this game's information
+    for data_obj in data:
+        if data_obj['home_team'] == home_team_name:
+            game_id = data_obj['id']
+            break
 
     if st.session_state.point_picks:
         print("picks do exist in list")
@@ -125,7 +132,8 @@ def handle_point_change(changed_key):
             st.session_state.point_picks.append({
                 "home_team": home_team_name,
                 "point_value": point_value,
-                "over_under": None
+                "over_under": None,
+                "game_id": game_id
             })
         
     # otherwise, if there are no picks in the session state, append a new entry to the session state
@@ -134,13 +142,13 @@ def handle_point_change(changed_key):
         st.session_state.point_picks.append({
             "home_team": home_team_name,
             "point_value": point_value,
-            "over_under": None
+            "over_under": None,
+            "game_id": game_id
         })
 
-    
     print(json.dumps(st.session_state.point_picks, indent=2))
 
-def handle_OU_change(changed_key):
+def handle_OU_change(changed_key, data):
     pass
 
 

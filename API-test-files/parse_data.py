@@ -4,7 +4,8 @@
 
 import json
 
-def display_data (data, spread, team_name):
+# This would be helpful for the NFL since it returns the spreads, helpful for our app
+def display_data_wnba (data):
     print("---- LISTING OF UPCOMING GAMES AND THEIR POINT SPREADS ----")
 
     for data_obj in data:
@@ -18,3 +19,14 @@ def display_data (data, spread, team_name):
                 break
             
         print(f"Spread favors {team_name}, {spread}. Information from {book} \n")
+
+def display_data_mlb (data):
+    print("---- LISTING OF UPCOMING GAMES AND THEIR POINT SPREADS ----")
+
+    for data_obj in data:
+        print(f"Home Team: {data_obj['home_team']}")
+        print(f"Away Team: {data_obj['away_team']}")
+        over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+        book = data_obj["bookmakers"][0]["key"]
+         
+        print(f"OVER-UNDER: {over_under}. Information from {book} \n")

@@ -9,7 +9,7 @@ def make_api_call():
     if "api_data" not in st.session_state:
         # Initialize session state to none at first
         st.session_state.api_data = None
-        api_key = "your_api_key_here"
+        api_key = "your api key here"
         sport_key = "baseball_mlb"
         bookmakers = "espnbet"
         markets = "totals"
@@ -45,10 +45,38 @@ def display_data_mlb (data):
         # book = data_obj["bookmakers"][0]["key"]
 
         st.markdown(f"**OVER-UNDER**: {over_under}", text_alignment='center')
-        
-        col1, col2, col3 = st.columns([1, 1, 1])
+        # Create columns with an intentionally narrow middle column
+        col1, col2, col3 = st.columns([3, 1, 3])
+
+        # center the segmented controls in the middle column
+        # segmented control allows the user to make selections, and the key is stored in session state for tracking
         with col2:
+            st.segmented_control (
+                label="over_under", 
+                options=["OVER", "UNDER"], 
+                key=f"{data_obj['home_team']}_OU", 
+                width="stretch", 
+                label_visibility="collapsed",
+            )
+
+            point_val= st.segmented_control (
+                label="points", 
+                options=["1", "2", "3"], 
+                key=f"{data_obj['home_team']}_points", 
+                width="stretch", 
+                label_visibility="collapsed",
+            )
+
+        
             st.divider(width=700)
+
+# Will eventually handle the logic for when the user changes a point value
+# TODO: the user will select a point value for a game, and the callback will check if that point value has already been selected
+# --- if it has been selected, it will remove that point value from the other game that has that point value selected, and then update the session state with the new point value for the game that was just changed
+# --- otherwise, it will just update the session state with the new point value for the specific game selected
+def handle_point_change(point_val):
+   pass
+
 
 # For later when we're gonna go week by week for the NFL
 def calculate_date_time():

@@ -57,14 +57,16 @@ def display_data_mlb (data):
                 key=f"{data_obj['home_team']}_OU", 
                 width="stretch", 
                 label_visibility="collapsed",
+                disabled=st.session_state.disabled
             )
 
-            point_val= st.segmented_control (
+            point_val = st.segmented_control (
                 label="points", 
                 options=["1", "2", "3"], 
                 key=f"{data_obj['home_team']}_points", 
                 width="stretch", 
                 label_visibility="collapsed",
+                disabled=st.session_state.disabled
             )
 
         

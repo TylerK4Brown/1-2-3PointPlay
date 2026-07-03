@@ -7,6 +7,8 @@ import streamlit as st
 def make_api_call():
     # If API data is not in the session state, make an API call
     if "api_data" not in st.session_state:
+        # Initialize session state to none at first
+        st.session_state.api_data = None
         api_key = "your_api_key_here"
         sport_key = "baseball_mlb"
         bookmakers = "espnbet"
@@ -20,11 +22,15 @@ def make_api_call():
         data = response.json()
 
         st.session_state.api_data = data
-        print(json.dumps(st.session_state.api_data, indent=4))
+        # Debug statements to check if the API call was successful
+        # print("API CALL MADE - INFORMATION STORED IN SESSION STATE")
+        # print(json.dumps(data, indent=2))
         display_data_mlb(data)
 
     # Otherwise, use the data stored in session state and display it
     else:
+        # Debug statement to show it pulls data from the session state
+        # print("API DATA ALREADY IN SESSION STATE - USING STORED DATA")
         display_data_mlb(st.session_state.api_data)
 
 # Display the upcoming MLB games and O/U numbers

@@ -99,7 +99,7 @@ def handle_point_change(changed_key):
         for pick in st.session_state.point_picks:
             print(f"for {pick} in the full list")
             current_home_team_name = pick['home_team'].split("_")[0]
-            # if it exists, update the point value and the flag that tracks the duplicate
+            # if it exists, update the point value and the flag that tracks duplicates
             print (f"{current_home_team_name} ------ {home_team_name}")
             if current_home_team_name == home_team_name:
                 duplicate_exists = True
@@ -107,7 +107,7 @@ def handle_point_change(changed_key):
                 pick['point_value'] = point_value
             
             # If the point selection conflicts with another point selection, pop the old selection from the list
-            if point_value == pick['point_value']:
+            if point_value == pick['point_value'] and not duplicate_exists:
                 print("different games with the same point value assignment - pop the old pick from the list")
                 # only append picks to the new session state list if that pick's point value is not equal to the selected point value
                 st.session_state.point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] != point_value]
@@ -119,7 +119,7 @@ def handle_point_change(changed_key):
                 st.session_state[recrafted_key] = None
                 print(f"VALUE FOR {recrafted_key} IS {st.session_state[recrafted_key]}")
 
-        # if there is no duplicate, append it to the running list of picks
+        # if there is no duplicate, append it to the running list of picksiujlyhbuy
         if not duplicate_exists:
             print("no duplicate exists - adding new value")
             st.session_state.point_picks.append({

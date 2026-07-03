@@ -35,13 +35,14 @@ def make_api_call():
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
+    over_under = None
     if "point_picks" not in st.session_state:
         st.session_state.point_picks = []
 
     st.markdown("### ---- LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS ----", text_alignment="center")
 
-    for data_obj in data[:6]:
-        if len(data_obj["bookmakers"]) > 0:
+    for data_obj in data[1:6]:
+        if len(data_obj["bookmakers"]) != 0:
             st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
             st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
             

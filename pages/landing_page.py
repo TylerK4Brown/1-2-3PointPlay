@@ -10,6 +10,7 @@ st.markdown("## Please select your name to continue to the picks page.", text_al
 if "name" not in st.session_state:
     st.session_state.name = ""
 
+# Use columns to center the selector buttons
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col2:

@@ -3,14 +3,14 @@
 
 import streamlit as st
 import requests
+from API_info.odds_api_call import make_api_call
 
 if "name" not in st.session_state:
     st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME")
 
 else:
     st.title(f"Welcome {st.session_state.name}!", text_alignment="center")
-    st.markdown("## Please make your picks for the upcoming WNBA games below.", text_alignment="center")
-
+    make_api_call()
     
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:

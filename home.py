@@ -1,3 +1,6 @@
+# Page configuration file for the app
+# Starts with two pages, one for the landing page and one for making picks
+
 import streamlit as st
 
 st.set_page_config(

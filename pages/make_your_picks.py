@@ -2,8 +2,7 @@
 # Will eventually make an API call to The Odds API to gather MLB data and display it for the user to make their picks
 
 import streamlit as st
-import requests
-from API_info.odds_api_call import make_api_call, display_data_mlb
+from API_info.odds_api_call import make_api_call
 
 if "name" not in st.session_state:
     st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME")

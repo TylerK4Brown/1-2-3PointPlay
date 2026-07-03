@@ -9,7 +9,7 @@ def make_api_call():
     if "api_data" not in st.session_state:
         # Initialize session state to none at first
         st.session_state.api_data = None
-        api_key = "your api key here"
+        api_key = "fbd28c927419891b76b59b6528531cd2"
         sport_key = "baseball_mlb"
         bookmakers = "espnbet"
         markets = "totals"
@@ -35,14 +35,20 @@ def make_api_call():
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
+    if "point_picks" not in st.session_state:
+        st.session_state.point_picks = []
+
     st.markdown("### ---- LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS ----", text_alignment="center")
 
     for data_obj in data:
-        st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
-        st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
-        
-        over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-        # book = data_obj["bookmakers"][0]["key"]
+        if data_obj["bookmakers"]:
+            st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
+            st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
+            
+            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+            # book = data_obj["bookmakers"][0]["key"]
+        else:
+            return
 
         st.markdown(f"**OVER-UNDER**: {over_under}", text_alignment='center')
         # Create columns with an intentionally narrow middle column
@@ -60,24 +66,55 @@ def display_data_mlb (data):
                 disabled=st.session_state.disabled
             )
 
-            point_val = st.segmented_control (
+            selection = st.segmented_control (
                 label="points", 
                 options=["1", "2", "3"], 
                 key=f"{data_obj['home_team']}_points", 
                 width="stretch", 
                 label_visibility="collapsed",
-                disabled=st.session_state.disabled
+                disabled=st.session_state.disabled,
+                on_change=handle_point_change(data_obj['home_team'])
             )
 
-        
             st.divider(width=700)
+    
 
 # Will eventually handle the logic for when the user changes a point value
 # TODO: the user will select a point value for a game, and the callback will check if that point value has already been selected
 # --- if it has been selected, it will remove that point value from the other game that has that point value selected, and then update the session state with the new point value for the game that was just changed
 # --- otherwise, it will just update the session state with the new point value for the specific game selected
-def handle_point_change(point_val):
-   pass
+def handle_point_change(home_team):
+    duplicate_exists = False
+    if f"{home_team}_points" in st.session_state and st.session_state[f"{home_team}_points"] is not None:
+
+        # if there are picks in the session state
+        if st.session_state.point_picks:
+            # for each pick in the session state
+            for pick in st.session_state.point_picks:
+                # if a duplicate home team exists, flag it
+                if pick['home_team'] == home_team:
+                    duplicate_exists = True
+            
+            # return if a duplicate exists
+            if duplicate_exists:
+                return
+            # if it doesn't, append it to the list
+            else:
+                st.session_state.point_picks.append({
+                        "home_team": home_team,
+                        "point_value": int(st.session_state[f"{home_team}_points"])
+                    }
+                )
+        
+        # otherwise, if there are no picks in the session state, append a new entry to the session state
+        else:
+             st.session_state.point_picks.append({
+                        "home_team": home_team,
+                        "point_value": int(st.session_state[f"{home_team}_points"])
+                    }
+                )
+    
+    print(json.dumps(st.session_state.point_picks, indent=2))
 
 
 # For later when we're gonna go week by week for the NFL

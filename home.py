@@ -1,3 +1,6 @@
+# Page configuration file for the app
+# Starts with two pages, one for the landing page and one for making picks
+
 import streamlit as st
 
 st.set_page_config(
@@ -7,12 +10,12 @@ st.set_page_config(
 
 pages = {
     "Welcome to 1-2-3 Point Play!": [
-        st.Page("pages/landing_page.py"),
+        st.Page("pages/landing_page.py", title="Landing Page"),
     ],
     "Make Your Picks!": [
-        st.Page("pages/make_your_picks.py"),
+        st.Page("pages/make_your_picks.py", title="Make Your Picks"),
     ]
 }
 
-pg = st.navigation(pages, position="hidden")
+pg = st.navigation(pages, position="top")
 pg.run()

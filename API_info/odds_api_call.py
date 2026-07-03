@@ -40,19 +40,17 @@ def display_data_mlb (data):
 
     st.markdown("### ---- LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS ----", text_alignment="center")
 
-    for data_obj in data:
-        if data_obj["bookmakers"]:
+    for data_obj in data[:6]:
+        if data_obj["bookmakers"] > 0:
             st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
             st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
             
             over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
             # book = data_obj["bookmakers"][0]["key"]
-        else:
-            return
 
         st.markdown(f"**OVER-UNDER**: {over_under}", text_alignment='center')
         # Create columns with an intentionally narrow middle column
-        col1, col2, col3 = st.columns([3, 1, 3])
+        col1, col2, col3 = st.columns([2, 1, 2])
 
         # center the segmented controls in the middle column
         # segmented control allows the user to make selections, and the key is stored in session state for tracking
@@ -65,7 +63,6 @@ def display_data_mlb (data):
                 key=f"{data_obj['home_team']}_OU", 
                 width="stretch", 
                 label_visibility="collapsed",
-                disabled=st.session_state.disabled,
                 on_change=handle_OU_change,
                 args=(f"{data_obj['home_team']}_OU", data,)
             )
@@ -76,17 +73,13 @@ def display_data_mlb (data):
                 key=f"{data_obj['home_team']}_points", 
                 width="stretch", 
                 label_visibility="collapsed",
-                disabled=st.session_state.disabled,
                 on_change=handle_point_change,
                 args=(f"{data_obj['home_team']}_points", data,)
             )
 
             st.divider(width=700)
     
-# Will eventually handle the logic for when the user changes a point value
-# TODO: the user will select a point value for a game, and the callback will check if that point value has already been selected
-# --- if it has been selected, it will remove that point value from the other game that has that point value selected, and then update the session state with the new point value for the game that was just changed
-# --- otherwise, it will just update the session state with the new point value for the specific game selected
+# Callback function that handles changes to point values and updates states accordingly
 def handle_point_change(changed_key, data):
     duplicate_exists = False
     point_value = st.session_state[changed_key]
@@ -106,18 +99,27 @@ def handle_point_change(changed_key, data):
         for pick in st.session_state.point_picks:
             print(f"for {pick} in the full list")
             current_home_team_name = pick['home_team'].split("_")[0]
+            same_name = False
             # if it exists, update the point value and the flag that tracks duplicates
             print (f"{current_home_team_name} ------ {home_team_name}")
             if current_home_team_name == home_team_name:
                 duplicate_exists = True
+                same_name = True
                 print("updating point value!")
                 pick['point_value'] = point_value
             
             # If the point selection conflicts with another point selection, pop the old selection from the list
-            if point_value == pick['point_value'] and not duplicate_exists:
+            # Does not check for a conflict if the name is the same
+            if point_value == pick['point_value'] and not same_name:
                 print("different games with the same point value assignment - pop the old pick from the list")
-                # only append picks to the new session state list if that pick's point value is not equal to the selected point value
-                st.session_state.point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] != point_value]
+
+                # If the user has already selected an over/under value for that game, reset the point value to None and keep the over/under value
+                # prevents broken state logic downstream
+                if pick['over_under'] is not None:
+                    pick['point_value'] = None
+                else:
+                    # only append picks to the new session state list if that pick's point value is not equal to the selected point value
+                    st.session_state.point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] != point_value]
             
                 # Recraft the original key so that it can be updated in the original session state that the buttons control
                 # i.e. "Arizona Diamondbacks" now goes to "Arizona Diamondbacks_points"
@@ -126,7 +128,7 @@ def handle_point_change(changed_key, data):
                 st.session_state[recrafted_key] = None
                 print(f"VALUE FOR {recrafted_key} IS {st.session_state[recrafted_key]}")
 
-        # if there is no duplicate, append it to the running list of picksiujlyhbuy
+        # if there is no duplicate, append it to the running list of picks
         if not duplicate_exists:
             print("no duplicate exists - adding new value")
             st.session_state.point_picks.append({
@@ -146,10 +148,53 @@ def handle_point_change(changed_key, data):
             "game_id": game_id
         })
 
+    # print for debugging
     print(json.dumps(st.session_state.point_picks, indent=2))
 
+# TODO: refacctor this function since it essentially repeatsd the same logic as handle_point_change, but for over/under values instead of point values
+# idea: create a single function that takes in the changed key, the data, and a flag for whether it's a point value or an over/under value, and then handles the logic accordingly
 def handle_OU_change(changed_key, data):
-    pass
+    duplicate_exists = False
+    over_under_value = st.session_state[changed_key]
+    home_team_name = changed_key.split("_")[0]
+    game_id = ""
+    print(home_team_name)
+
+    # get the game id for future API calls that will need to reference this game's information
+    for data_obj in data:
+        if data_obj['home_team'] == home_team_name:
+            game_id = data_obj['id']
+            break
+    
+    if st.session_state.point_picks:
+
+        for pick in st.session_state.point_picks:
+            current_home_team_name = pick['home_team'].split("_")[0]
+            if current_home_team_name == home_team_name:
+                duplicate_exists = True
+                print("updating OU value!")
+                pick['over_under'] = over_under_value
+    
+        if not duplicate_exists:
+            print("no duplicate exists - adding new value")
+            st.session_state.point_picks.append({
+                "home_team": home_team_name,
+                "point_value": None,
+                "over_under": over_under_value,
+                "game_id": game_id
+            })
+    
+    # otherwise, if there are no picks in the session state, append a new entry to the session state
+    else:
+        print("picks do not exist yet - add a new entry!")
+        st.session_state.point_picks.append({
+            "home_team": home_team_name,
+            "point_value": None,
+            "over_under": over_under_value,
+            "game_id": game_id
+        })
+    
+    print(json.dumps(st.session_state.point_picks, indent=2))
 
 
 # For later when we're gonna go week by week for the NFL

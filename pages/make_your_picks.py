@@ -4,8 +4,8 @@
 import streamlit as st
 from API_info.odds_api_call import make_api_call
 
-if "name" not in st.session_state:
-    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME")
+if "name" not in st.session_state or "point_picks" not in st.session_state:
+    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
 
 else:
     st.title(f"Welcome {st.session_state.name}!", text_alignment="center")

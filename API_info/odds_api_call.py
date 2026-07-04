@@ -3,8 +3,10 @@
 import requests
 import json
 import streamlit as st
+from css.streamlit_css import load_css
 
 def make_api_call():
+    
     # If API data is not in the session state, make an API call
     if "api_data" not in st.session_state:
         # Initialize session state to none at first
@@ -24,7 +26,7 @@ def make_api_call():
         st.session_state.api_data = data
         # Debug statements to check if the API call was successful
         # print("API CALL MADE - INFORMATION STORED IN SESSION STATE")
-        print(json.dumps(data, indent=2))
+        # print(json.dumps(data, indent=2))
         display_data_mlb(data)
 
     # Otherwise, use the data stored in session state and display it
@@ -34,32 +36,14 @@ def make_api_call():
         display_data_mlb(st.session_state.api_data)
 
 # Display the upcoming MLB games and O/U numbers
+# TODO: Make it so the states of the buttons persist when the user navigates to another page
 def display_data_mlb (data):
     over_under = None
-    if "point_picks" not in st.session_state:
-        st.session_state.point_picks = []
 
-    st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS", text_alignment="center")
+    st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")\
+
     # hacky CSS to center expander text and make the font just a little bit larger
-    st.markdown('''
-    <style>
-        [data-testid="stExpander"] div {
-            display: flex;
-            justify-content: center;
-            font-size: 18px;
-        }
-                
-        [data-testid="stExpander"] details {
-            padding-bottom: 20px;
-        }
-        
-        [data-testid="stCaptionContainer"] p {
-            font-size: 25px;
-        }
-                
-    </style>
-
-    ''', unsafe_allow_html=True)
+    load_css()
 
     for data_obj in data[0:8]:
         # skip an iteration if no bookmaker is listed for the game
@@ -70,22 +54,26 @@ def display_data_mlb (data):
             # home and away team names displayed, plus the over/under number for the game
             home_team = data_obj["home_team"]
             away_team = data_obj["away_team"]
+            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
             col1, col2, col3 = st.columns([1, 5, 1])
             with col2:
-                with st.expander(f'''{away_team} @ {home_team}, O/U: {data_obj['bookmakers'][0]['markets'][0]['outcomes'][0]['point']}''', expanded=False):
+                with st.expander(f'''{away_team} @ {home_team}, O/U: {over_under}''', expanded=False):
+                    # create columns within the expander to display team logs
                     col1, col2, col3 = st.columns([1, 1, 1])
                     with col1:
                         st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
                         
                     with col2:
-                        st.markdown("# VERSUS")    
+                        # make the @ symbol larger and centered between the team logos
+                        st.markdown('''<div 
+                                        style='text-align: center; 
+                                        font-size: 6rem;'>
+                                        @</div>''', unsafe_allow_html=True)    
                         
                     with col3:
                         st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
-
-                    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-                    # book = data_obj["bookmakers"][0]["key"]
-
+                    
+                    # display the over/under line for the game
                     st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
                     # Create columns with an intentionally narrow middle column
                     # center the segmented controls in the middle column

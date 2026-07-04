@@ -13,6 +13,7 @@ if "name" not in st.session_state:
 # Use columns to center the selector buttons
 col1, col2, col3 = st.columns([1, 2, 1])
 
+# card selector component from streamlit-extras
 with col2:
     selected = card_selector(
         [
@@ -35,14 +36,23 @@ with col2:
 st.divider()
 
 # switch to a page when a button is clicked
+# also initializes the state that stores all user picks
 # each button is tied to a list index
 match selected:
     case 0:
         st.session_state.name = "Tyler"
+        if "point_picks" not in st.session_state:
+            st.session_state.point_picks = []
         st.switch_page("pages/make_your_picks.py")
+
     case 1:
         st.session_state.name = "Dad"
+        if "point_picks" not in st.session_state:
+            st.session_state.point_picks = []
         st.switch_page("pages/make_your_picks.py")
+
     case 2:
         st.session_state.name = "TJ"
+        if "point_picks" not in st.session_state:
+            st.session_state.point_picks = []
         st.switch_page("pages/make_your_picks.py")

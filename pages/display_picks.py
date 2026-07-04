@@ -5,7 +5,7 @@ import streamlit as st
 # if these are not in the session state, redirect the user back to the landing page
 # selecting a name in the landing page will initialize these session states
 if "name" not in st.session_state or "point_picks" not in st.session_state:
-    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME")
+    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
 
 # ohterwise, iterate through the custom dictionary and display the user's picks
 else:

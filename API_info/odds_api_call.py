@@ -40,47 +40,74 @@ def display_data_mlb (data):
         st.session_state.point_picks = []
 
     st.markdown("### ---- LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS ----", text_alignment="center")
+    # hacky CSS to center expander text and make the font just a little bit larger
+    st.markdown('''
+    <style>
+        [data-testid="stExpander"] div {
+            display: flex;
+            justify-content: center;
+            font-size: 18px;
+        }
+                
+        [data-testid="stExpander"] details {
+            padding-bottom: 20px;
+        }
+                
+    </style>
 
-    for data_obj in data[0:6]:
+    ''', unsafe_allow_html=True)
+
+    for data_obj in data[0:8]:
         if len(data_obj["bookmakers"]) == 0:
             continue
         else:
-            st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
-            st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
-            
-            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-            # book = data_obj["bookmakers"][0]["key"]
+            home_team = data_obj["home_team"]
+            away_team = data_obj["away_team"]
+            col1, col2, col3 = st.columns([1, 5, 1])
+            with col2:
+                with st.expander(f'''{away_team} @ {home_team}, OVER/UNDER: {data_obj['bookmakers'][0]['markets'][0]['outcomes'][0]['point']}''', expanded=False):
+                    col1, col2, col3 = st.columns([1, 1, 1])
+                    with col2:
+                        st.markdown("# VERSUS")
 
-        st.markdown(f"**OVER-UNDER**: {over_under}", text_alignment='center')
-        # Create columns with an intentionally narrow middle column
-        col1, col2, col3 = st.columns([2, 1, 2])
+                    with col1:
+                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                    with col3:
+                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
 
-        # center the segmented controls in the middle column
-        # segmented control allows the user to make selections, and the key is stored in session state for tracking
-        # on_change contains a reference to a callback function, args passes in the changed key upon change
-        # allows us to edit states manually when the user clicks on buttons on the frontend
-        with col2:
-            st.segmented_control (
-                label="over_under", 
-                options=["OVER", "UNDER"], 
-                key=f"{data_obj['home_team']}_OU", 
-                width="stretch", 
-                label_visibility="collapsed",
-                on_change=handle_change,
-                args=(f"{data_obj['home_team']}_OU", data,)
-            )
+                    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+                    # book = data_obj["bookmakers"][0]["key"]
 
-            st.segmented_control (
-                label="points", 
-                options=["1", "2", "3"], 
-                key=f"{data_obj['home_team']}_points", 
-                width="stretch", 
-                label_visibility="collapsed",
-                on_change=handle_change,
-                args=(f"{data_obj['home_team']}_points", data,)
-            )
+                    st.markdown(f"## **OVER-UNDER**: {over_under}", text_alignment='center')
+                    # Create columns with an intentionally narrow middle column
 
-            st.divider(width=700)
+                    # center the segmented controls in the middle column
+                    # segmented control allows the user to make selections, and the key is stored in session state for tracking
+                    # on_change contains a reference to a callback function, args passes in the changed key upon change
+                    # allows us to edit states manually when the user clicks on buttons on the frontend
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        st.segmented_control (
+                            label="over_under", 
+                            options=["OVER", "UNDER"], 
+                            key=f"{data_obj['home_team']}_OU", 
+                            width="stretch", 
+                            label_visibility="collapsed",
+                            on_change=handle_change,
+                            args=(f"{data_obj['home_team']}_OU", data,)
+                        )
+
+                        st.segmented_control (
+                            label="points", 
+                            options=["1", "2", "3"], 
+                            key=f"{data_obj['home_team']}_points", 
+                            width="stretch", 
+                            label_visibility="collapsed",
+                            on_change=handle_change,
+                            args=(f"{data_obj['home_team']}_points", data,)
+                        )
+
+                        st.divider(width='stretch')
     
 # Callback function that handles changes to point values and updates states accordingly
 def handle_change(changed_key, data):

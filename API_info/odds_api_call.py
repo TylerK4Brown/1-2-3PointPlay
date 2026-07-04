@@ -88,32 +88,44 @@ def display_data_mlb (data):
                     st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
                     # Create columns with an intentionally narrow middle column
 
-        # center the segmented controls in the middle column
-        # segmented control allows the user to make selections, and the key is stored in session state for tracking
-        # on_change contains a reference to a callback function, args passes in the changed key upon change
-        # allows us to edit states manually when the user clicks on buttons on the frontend
-        with col2:
-            st.segmented_control (
-                label="over_under", 
-                options=["OVER", "UNDER"], 
-                key=f"{data_obj['home_team']}_OU", 
-                width="stretch", 
-                label_visibility="collapsed",
-                on_change=handle_change,
-                args=(f"{data_obj['home_team']}_OU", data,)
-            )
+                    with col1:
+                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                    with col3:
+                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
 
-            st.segmented_control (
-                label="points", 
-                options=["1", "2", "3"], 
-                key=f"{data_obj['home_team']}_points", 
-                width="stretch", 
-                label_visibility="collapsed",
-                on_change=handle_change,
-                args=(f"{data_obj['home_team']}_points", data,)
-            )
+                    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+                    # book = data_obj["bookmakers"][0]["key"]
 
-            st.divider(width=700)
+                    st.markdown(f"## **OVER-UNDER**: {over_under}", text_alignment='center')
+                    # Create columns with an intentionally narrow middle column
+
+                    # center the segmented controls in the middle column
+                    # segmented control allows the user to make selections, and the key is stored in session state for tracking
+                    # on_change contains a reference to a callback function, args passes in the changed key upon change
+                    # allows us to edit states manually when the user clicks on buttons on the frontend
+                    col1, col2, col3 = st.columns([1, 2, 1])
+                    with col2:
+                        st.segmented_control (
+                            label="over_under", 
+                            options=["OVER", "UNDER"], 
+                            key=f"{data_obj['home_team']}_OU", 
+                            width="stretch", 
+                            label_visibility="collapsed",
+                            on_change=handle_change,
+                            args=(f"{data_obj['home_team']}_OU", data,)
+                        )
+
+                        st.segmented_control (
+                            label="points", 
+                            options=["1", "2", "3"], 
+                            key=f"{data_obj['home_team']}_points", 
+                            width="stretch", 
+                            label_visibility="collapsed",
+                            on_change=handle_change,
+                            args=(f"{data_obj['home_team']}_points", data,)
+                        )
+
+                        st.divider(width='stretch')
     
 # Callback function that handles changes to point values and updates states accordingly
 def handle_change(changed_key, data):

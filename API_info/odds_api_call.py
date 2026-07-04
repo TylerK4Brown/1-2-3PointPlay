@@ -39,19 +39,54 @@ def display_data_mlb (data):
     if "point_picks" not in st.session_state:
         st.session_state.point_picks = []
 
-    st.markdown("### ---- LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS ----", text_alignment="center")
+    st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR POINT SPREADS", text_alignment="center")
+    # hacky CSS to center expander text and make the font just a little bit larger
+    st.markdown('''
+    <style>
+        [data-testid="stExpander"] div {
+            display: flex;
+            justify-content: center;
+            font-size: 18px;
+        }
+                
+        [data-testid="stExpander"] details {
+            padding-bottom: 20px;
+        }
+        
+        [data-testid="stCaptionContainer"] p {
+            font-size: 25px;
+        }
+                
+    </style>
 
-    for data_obj in data[1:6]:
-        if len(data_obj["bookmakers"]) != 0:
-            st.markdown(f"**Away Team**: {data_obj['away_team']}", text_alignment="center")
-            st.markdown(f"**Home Team**: {data_obj['home_team']}", text_alignment="center")
-            
-            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-            # book = data_obj["bookmakers"][0]["key"]
+    ''', unsafe_allow_html=True)
 
-        st.markdown(f"**OVER-UNDER**: {over_under}", text_alignment='center')
-        # Create columns with an intentionally narrow middle column
-        col1, col2, col3 = st.columns([2, 1, 2])
+    for data_obj in data[0:8]:
+        # skip an iteration if no bookmaker is listed for the game
+        if len(data_obj["bookmakers"]) == 0:
+            continue
+        else:
+            # create multiple expanders for each game
+            # home and away team names displayed, plus the over/under number for the game
+            home_team = data_obj["home_team"]
+            away_team = data_obj["away_team"]
+            col1, col2, col3 = st.columns([1, 5, 1])
+            with col2:
+                with st.expander(f'''{away_team} @ {home_team}, O/U: {data_obj['bookmakers'][0]['markets'][0]['outcomes'][0]['point']}''', expanded=False):
+                    col1, col2, col3 = st.columns([1, 1, 1])
+                    with col2:
+                        st.markdown("# VERSUS")
+
+                    with col1:
+                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                    with col3:
+                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
+
+                    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+                    # book = data_obj["bookmakers"][0]["key"]
+
+                    st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
+                    # Create columns with an intentionally narrow middle column
 
         # center the segmented controls in the middle column
         # segmented control allows the user to make selections, and the key is stored in session state for tracking

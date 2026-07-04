@@ -11,21 +11,21 @@ if "name" not in st.session_state:
     st.session_state.name = ""
 
 # Use columns to center the selector buttons
-col1, col2, col3 = st.columns([1, 1, 1])
+col1, col2, col3 = st.columns([1, 2, 1])
 
 with col2:
     selected = card_selector(
         [
             dict(
-                icon="🏠",
+                icon="💡",
                 title="Tyler",
             ),
             dict(
-                icon="🏠",
+                icon="👨",
                 title="Dad",
             ),
             dict(
-                icon="🏠",
+                icon="👦",
                 title="TJ",
             ),
         ],

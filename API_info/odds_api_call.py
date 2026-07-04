@@ -74,11 +74,12 @@ def display_data_mlb (data):
             with col2:
                 with st.expander(f'''{away_team} @ {home_team}, O/U: {data_obj['bookmakers'][0]['markets'][0]['outcomes'][0]['point']}''', expanded=False):
                     col1, col2, col3 = st.columns([1, 1, 1])
-                    with col2:
-                        st.markdown("# VERSUS")
-
                     with col1:
                         st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                        
+                    with col2:
+                        st.markdown("# VERSUS")    
+                        
                     with col3:
                         st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
 
@@ -87,18 +88,6 @@ def display_data_mlb (data):
 
                     st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
                     # Create columns with an intentionally narrow middle column
-
-                    with col1:
-                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
-                    with col3:
-                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
-
-                    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-                    # book = data_obj["bookmakers"][0]["key"]
-
-                    st.markdown(f"## **OVER-UNDER**: {over_under}", text_alignment='center')
-                    # Create columns with an intentionally narrow middle column
-
                     # center the segmented controls in the middle column
                     # segmented control allows the user to make selections, and the key is stored in session state for tracking
                     # on_change contains a reference to a callback function, args passes in the changed key upon change
@@ -133,12 +122,16 @@ def handle_change(changed_key, data):
     # Split the changed key to get key type ("points" or "OU") and the home team name
     key_type = changed_key.split("_")[1]
     home_team_name = changed_key.split("_")[0]
+    away_team_name = ""
     game_id = ""
+    over_under_score = None
 
     # get the game id for future API calls that will need to reference this game's information
     for data_obj in data:
         if data_obj['home_team'] == home_team_name:
+            away_team_name = data_obj['away_team']
             game_id = data_obj['id']
+            over_under_score = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
             break
     
     # If there are picks currently listed in the session state
@@ -186,8 +179,10 @@ def handle_change(changed_key, data):
             print("no duplicate exists - adding new value")
             add_new_pick_to_session_state(
                 home_team_name, 
+                away_team_name,
                 st.session_state[changed_key] if key_type == "points" else None, 
                 st.session_state[changed_key] if key_type == "OU" else None, 
+                over_under_score,
                 game_id
             )
     
@@ -197,19 +192,23 @@ def handle_change(changed_key, data):
         print("picks do not exist yet - add a new entry!")
         add_new_pick_to_session_state(
             home_team_name, 
+            away_team_name,
             st.session_state[changed_key] if key_type == "points" else None, 
-            st.session_state[changed_key] if key_type == "OU" else None, 
+            st.session_state[changed_key] if key_type == "OU" else None,
+            over_under_score,
             game_id
         )
         
     # print for debugging
     print(json.dumps(st.session_state.point_picks, indent=2))
 
-def add_new_pick_to_session_state(home_team_name, point_value, over_under, game_id):
+def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, over_under, over_under_score, game_id):
     st.session_state.point_picks.append({
         "home_team": home_team_name,
+        "away_team": away_team_name,
         "point_value": point_value,
         "over_under": over_under,
+        "over_under_score": over_under_score,
         "game_id": game_id
     })
 

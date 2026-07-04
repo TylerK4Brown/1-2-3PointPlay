@@ -14,6 +14,9 @@ pages = {
     ],
     "Make Your Picks!": [
         st.Page("pages/make_your_picks.py", title="Make Your Picks"),
+    ],
+    "Display Your Picks": [
+        st.Page("pages/display_picks.py", title="Display Your Picks"),
     ]
 }
 

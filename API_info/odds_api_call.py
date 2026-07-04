@@ -4,6 +4,7 @@ import requests
 import json
 import streamlit as st
 from css.streamlit_css import load_css
+import API_info.display_data as display_data
 
 def make_api_call():
     
@@ -27,179 +28,10 @@ def make_api_call():
         # Debug statements to check if the API call was successful
         # print("API CALL MADE - INFORMATION STORED IN SESSION STATE")
         # print(json.dumps(data, indent=2))
-        display_data_mlb(data)
+        display_data.display_data_mlb(data)
 
     # Otherwise, use the data stored in session state and display it
     else:
         # Debug statement to show it pulls data from the session state
         # print("API DATA ALREADY IN SESSION STATE - USING STORED DATA")
-        display_data_mlb(st.session_state.api_data)
-
-# Display the upcoming MLB games and O/U numbers
-# TODO: Make it so the states of the buttons persist when the user navigates to another page
-def display_data_mlb (data):
-    over_under = None
-
-    st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")\
-
-    # hacky CSS to center expander text and make the font just a little bit larger
-    load_css()
-
-    for data_obj in data[0:8]:
-        # skip an iteration if no bookmaker is listed for the game
-        if len(data_obj["bookmakers"]) == 0:
-            continue
-        else:
-            # create multiple expanders for each game
-            # home and away team names displayed, plus the over/under number for the game
-            home_team = data_obj["home_team"]
-            away_team = data_obj["away_team"]
-            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-            col1, col2, col3 = st.columns([1, 5, 1])
-            with col2:
-                with st.expander(f'''{away_team} @ {home_team}, O/U: {over_under}''', expanded=False):
-                    # create columns within the expander to display team logs
-                    col1, col2, col3 = st.columns([1, 1, 1])
-                    with col1:
-                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
-                        
-                    with col2:
-                        # make the @ symbol larger and centered between the team logos
-                        st.markdown('''<div 
-                                        style='text-align: center; 
-                                        font-size: 6rem;'>
-                                        @</div>''', unsafe_allow_html=True)    
-                        
-                    with col3:
-                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
-                    
-                    # display the over/under line for the game
-                    st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
-                    # Create columns with an intentionally narrow middle column
-                    # center the segmented controls in the middle column
-                    # segmented control allows the user to make selections, and the key is stored in session state for tracking
-                    # on_change contains a reference to a callback function, args passes in the changed key upon change
-                    # allows us to edit states manually when the user clicks on buttons on the frontend
-                    col1, col2, col3 = st.columns([1, 2, 1])
-                    with col2:
-                        st.segmented_control (
-                            label="over_under", 
-                            options=["OVER", "UNDER"], 
-                            key=f"{data_obj['home_team']}_OU", 
-                            width="stretch", 
-                            label_visibility="collapsed",
-                            on_change=handle_change,
-                            args=(f"{data_obj['home_team']}_OU", data,)
-                        )
-
-                        st.segmented_control (
-                            label="points", 
-                            options=["1", "2", "3"], 
-                            key=f"{data_obj['home_team']}_points", 
-                            width="stretch", 
-                            label_visibility="collapsed",
-                            on_change=handle_change,
-                            args=(f"{data_obj['home_team']}_points", data,)
-                        )
-
-                        st.divider(width='stretch')
-    
-# Callback function that handles changes to point values and updates states accordingly
-def handle_change(changed_key, data):
-    duplicate_exists = False
-    # Split the changed key to get key type ("points" or "OU") and the home team name
-    key_type = changed_key.split("_")[1]
-    home_team_name = changed_key.split("_")[0]
-    away_team_name = ""
-    game_id = ""
-    over_under_score = None
-
-    # get the game id for future API calls that will need to reference this game's information
-    for data_obj in data:
-        if data_obj['home_team'] == home_team_name:
-            away_team_name = data_obj['away_team']
-            game_id = data_obj['id']
-            over_under_score = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-            break
-    
-    # If there are picks currently listed in the session state
-    if st.session_state.point_picks:
-        print("picks do exist in list")
-        # check if the home team already exists in the point_picks list
-        for pick in st.session_state.point_picks:
-            print(f"for {pick} in the full list")
-            # get the home team name for the current pick selected in the loop
-            current_home_team_name = pick['home_team'].split("_")[0]
-            same_name = False
-            # if the name already exists in our list, update the point value and the flag that tracks duplicates
-            print (f"{current_home_team_name} ------ {home_team_name}")
-            if current_home_team_name == home_team_name:
-                same_name = True
-                duplicate_exists = True
-                
-                # check if the key type is points or OU and update the appropriate value in the session state
-                if key_type == "points":
-                    print("updating point value!")
-                    pick['point_value'] = st.session_state[changed_key]
-                elif key_type == "OU":
-                    print("updating OU value!")
-                    pick['over_under'] = st.session_state[changed_key]
-            
-            # If the point selection conflicts with another point selection, pop the old selection from the list
-            # Does not check for a conflict if the name is the same
-            if key_type == "points":
-                if st.session_state[changed_key] == pick['point_value'] and not same_name:
-                    print("different games with the same point value assignment - pop the old pick from the list")
-
-                    # pop the entire pick from the list if there was no over/under value selected
-                    # only append picks to the new session state list if that pick's point value is not equal to the selected point value
-                    st.session_state.point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] != st.session_state[changed_key]]
-                    # Recraft the original key so that it can be updated in the original session state that the buttons control
-                    # i.e. "Arizona Diamondbacks" now goes to "Arizona Diamondbacks_points"
-                    # Reset session state to None - deselects the button on the page
-                    recrafted_key = pick['home_team'] + "_points"
-                    recrafted_key2 = pick['home_team'] + "_OU"
-                    st.session_state[recrafted_key2] = None
-                    st.session_state[recrafted_key] = None
-
-        # if there is no duplicate, append it to the running list of picks
-        if not duplicate_exists:
-            print("no duplicate exists - adding new value")
-            add_new_pick_to_session_state(
-                home_team_name, 
-                away_team_name,
-                st.session_state[changed_key] if key_type == "points" else None, 
-                st.session_state[changed_key] if key_type == "OU" else None, 
-                over_under_score,
-                game_id
-            )
-    
-        
-    # otherwise, if there are no picks in the session state, append a new entry to the session state
-    else:
-        print("picks do not exist yet - add a new entry!")
-        add_new_pick_to_session_state(
-            home_team_name, 
-            away_team_name,
-            st.session_state[changed_key] if key_type == "points" else None, 
-            st.session_state[changed_key] if key_type == "OU" else None,
-            over_under_score,
-            game_id
-        )
-        
-    # print for debugging
-    print(json.dumps(st.session_state.point_picks, indent=2))
-
-def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, over_under, over_under_score, game_id):
-    st.session_state.point_picks.append({
-        "home_team": home_team_name,
-        "away_team": away_team_name,
-        "point_value": point_value,
-        "over_under": over_under,
-        "over_under_score": over_under_score,
-        "game_id": game_id
-    })
-
-# For later when we're gonna go week by week for the NFL
-def calculate_date_time():
-    pass
+        display_data.display_data_mlb(st.session_state.api_data)

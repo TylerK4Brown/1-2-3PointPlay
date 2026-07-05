@@ -4,8 +4,12 @@ import json
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
+
+    # load hacky CSS that messes with the expander element display
     load_css_gamedisplay()
+    # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
+
     over_under = None
     button_id = 1
     if "game_information" not in st.session_state:

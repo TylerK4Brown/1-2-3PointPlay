@@ -3,6 +3,7 @@
 
 import streamlit as st
 from streamlit_extras.card_selector import *
+from css.streamlit_css import load_css_buttons_homepage
 
 st.title("Welcome to 1-2-3 Point Play!", text_alignment="center")
 st.markdown("## Please select your name to continue to the picks page.", text_alignment="center")

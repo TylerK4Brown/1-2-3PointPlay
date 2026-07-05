@@ -3,7 +3,6 @@
 import requests
 import json
 import streamlit as st
-from css.streamlit_css import load_css
 import API_info.display_data as display_data
 
 def make_api_call():

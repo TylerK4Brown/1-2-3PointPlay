@@ -1,10 +1,10 @@
 import streamlit as st
-from css.streamlit_css import load_css
+from css.streamlit_css import load_css_gamedisplay
 import json
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
-    load_css()
+    load_css_gamedisplay()
     over_under = None
     button_id = 1
     if "game_information" not in st.session_state:

@@ -1,4 +1,6 @@
 # Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 import json
@@ -14,6 +16,8 @@ if "name" not in st.session_state or "point_picks" not in st.session_state:
 # otherwise, iterate through the custom dictionary and display the user's picks
 else:
     st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
+    st.markdown("#### Please carefully review your picks below.", text_alignment="center")
+    st.markdown("#### If you are satisfied with your selections, click the 'FINALIZE PICKS' button at the bottom of the page to submit your picks.", text_alignment="center")
     st.divider(width='stretch')
 
     # Only display completed picks (point_value AND over_under values must not be null)
@@ -54,8 +58,11 @@ if "disabled" in st.session_state:
         if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
             # instantiate connection to database
             # store the user's picks in the database
+            time_of_submission = datetime.now((ZoneInfo("America/New_York"))).strftime("%A, %B %d, %Y at %I:%M %p")
+
             data = {
                 "name": st.session_state.name,
+                "time_of_submission": time_of_submission,
                 "current_picks": {
                     "picks": sorted_point_picks
                 }

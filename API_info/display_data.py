@@ -119,37 +119,37 @@ def handle_change(changed_key, game_info):
     
     # If there are picks currently listed in the session state
     if st.session_state.point_picks:
-        print("picks do exist in list")
+        # print("picks do exist in list")
         # check if the game ID already exists in the point_picks list
         for pick in st.session_state.point_picks:
-            print(f"for {pick} in the full list")
+            # print(f"for {pick} in the full list")
             # get the game ID for the current pick selected in the loop
             current_game_id = pick['game_id']
-            same_ID = False
+            same_id = False
             # if the game ID already exists in our list, update the point value and the flag that tracks duplicates
-            print (f"{current_game_id} ------ {game_id}")
+            # print (f"{current_game_id} ------ {game_id}")
             if current_game_id == game_id:
-                same_ID = True
+                same_id = True
                 duplicate_exists = True
                 
                 # check if the key type is points or OU and update the appropriate value in the session state
                 if key_type == "points":
-                    print("updating point value!")
+                    # print("updating point value!")
                     pick['point_value'] = st.session_state[changed_key]
                 elif key_type == "OU":
-                    print("updating OU value!")
+                    # print("updating OU value!")
                     pick['over_under'] = st.session_state[changed_key]
     
             # If the point selection conflicts with another point selection, pop the old selection from the list
             # Does not check for a conflict if the game ID is the same (i.e. the user is changing their pick for the same game)
             if key_type == "points":
-                if st.session_state[changed_key] == pick['point_value'] and not same_ID:
-                    print("different games with the same point value assignment - pop the old pick from the list")
-                    st.toast(f"Resetting previous pick, please do not make any edits until this disappears!", icon="⏳", duration=2)
+                if st.session_state[changed_key] == pick['point_value'] and not same_id:
+                    # print("different games with the same point value assignment - pop the old pick from the list")
+                    st.toast(f"Resetting previous {pick['point_value']} point pick, please do not make any new selections until this disappears!", icon="⏳", duration=2)
 
                     # pop the entire pick from the list if there was no over/under value selected
                     # only append picks to the new session state list if that pick's point value is not equal to the selected point value
-                    st.session_state.point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] != st.session_state[changed_key]]
+                    st.session_state.point_picks = [existing_pick for existing_pick in st.session_state.point_picks if existing_pick["point_value"] != st.session_state[changed_key]]
                     # Recraft the original key so that it can be updated in the original session state that the buttons control
                     # i.e. "Arizona Diamondbacks" now goes to "Arizona Diamondbacks_points"
                     # Reset session state to None - deselects the button on the page
@@ -160,7 +160,7 @@ def handle_change(changed_key, game_info):
                 
         # if there is no duplicate, append it to the running list of picks
         if not duplicate_exists:
-            print("no duplicate exists - adding new value")
+            # print("no duplicate exists - adding new value")
             add_new_pick_to_session_state(
                 home_team_name, 
                 away_team_name,
@@ -173,7 +173,7 @@ def handle_change(changed_key, game_info):
     
     # otherwise, if there are no picks in the session state, append a new entry to the session state
     else:
-        print("picks do not exist yet - add a new entry!")
+        # print("picks do not exist yet - add a new entry!")
         add_new_pick_to_session_state(
             home_team_name, 
             away_team_name,
@@ -185,7 +185,7 @@ def handle_change(changed_key, game_info):
         )
         
     # print for debugging
-    print(json.dumps(st.session_state.point_picks, indent=2))
+    # print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
 def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, over_under, over_under_score, game_id, button_id):

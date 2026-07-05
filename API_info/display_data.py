@@ -1,5 +1,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
+from API_info.abbreviation_mapping import map_abbreviations
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -20,6 +21,8 @@ def display_data_nfl (data):
     load_css_gamedisplay()
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
+    # store the abbreviation mapping in a variable for later use when displaying the data
+    abbreviation_mapping = map_abbreviations()
 
     # sort the data by the commence_time key in ascending order so that the earliest games are displayed first
     data = sorted(data, key=lambda game: datetime.strptime(game['commence_time'], '%Y-%m-%dT%H:%M:%SZ'))
@@ -36,10 +39,11 @@ def display_data_nfl (data):
 # Generate expander elements for each game made available from the API call
 def generate_expander(data_obj, button_id):
     # extract home team, away team, point spreads for the favored and underdog teams, and the game ID from the API call data
+    abbreviation_mapping = map_abbreviations()
     home_team = data_obj["home_team"]
     away_team = data_obj["away_team"]
     point_spread = data_obj["bookmakers"][0]["markets"][0]["outcomes"]
-    team_favored, point_spread_favored, team_underdog, point_spread_underdog = None, None, None, None
+    team_favored, team_favored_abbreviation, point_spread_favored, team_underdog, team_underdog_abbreviation, point_spread_underdog = None, None, None, None, None, None
     is_spread_even = False
 
     # iterate through the point_spread list to find the favored and underdog teams and their respective point spreads
@@ -49,9 +53,11 @@ def generate_expander(data_obj, button_id):
             break
         if spread["point"] < 0:
             team_favored = spread["name"]
+            team_favored_abbreviation = abbreviation_mapping[team_favored]
             point_spread_favored = spread["point"]
         if spread["point"] > 0:
             team_underdog = spread["name"]
+            team_underdog_abbreviation = abbreviation_mapping[team_underdog]
             point_spread_underdog = spread["point"]
 
     # If the spread is 0, that means the spread is even
@@ -75,7 +81,7 @@ def generate_expander(data_obj, button_id):
 
     col1, col2, col3 = st.columns([1, 5, 1])
     with col2:
-        with st.expander(f'''{away_team} @ {home_team}, Spread: {team_favored} {point_spread_favored}''', expanded=False):
+        with st.expander(f'''{away_team} @ {home_team}, Spread: {team_favored_abbreviation} {point_spread_favored}''', expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
@@ -95,7 +101,7 @@ def generate_expander(data_obj, button_id):
             
             # display the date and time of the game in a readable format
             # display the over/under line for the game
-            st.markdown(f"## **SPREAD**: {team_favored} {point_spread_favored}", text_alignment='center')
+            st.markdown(f"## **SPREAD**: {team_favored_abbreviation} {point_spread_favored}", text_alignment='center')
             
             # Create columns with an intentionally narrow middle column
             # center the segmented controls in the middle column
@@ -106,7 +112,7 @@ def generate_expander(data_obj, button_id):
             with col2:
                 st.segmented_control (
                     label="spread", 
-                    options=[f"{team_favored} {point_spread_favored}", f"{team_underdog} {point_spread_underdog}"], 
+                    options=[f"{team_favored_abbreviation} {point_spread_favored}", f"{team_underdog_abbreviation} +{point_spread_underdog}"], 
                     key=f"{button_id}_spread", 
                     width="stretch", 
                     label_visibility="collapsed",

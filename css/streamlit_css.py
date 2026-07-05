@@ -30,11 +30,11 @@ def load_css_buttons_homepage():
     return st.markdown('''
     <style>
         [data-testid="stButton"] p {
-            font-size: 40px;
+            font-size: 30px;
         }
                        
         [data-testid="stButton"] button {
-            height: 100px;
+            height: 150px;
             background-color: #2d60cf;
         }
                        

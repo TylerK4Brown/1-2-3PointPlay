@@ -1,0 +1,63 @@
+# Display user's picks on a new page when they click submit
+import streamlit as st
+import json
+
+# if these are not in the session state, redirect the user back to the landing page
+# selecting a name in the landing page will initialize these session states
+if "name" not in st.session_state or "point_picks" not in st.session_state:
+    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
+
+# otherwise, iterate through the custom dictionary and display the user's picks
+else:
+    st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
+    st.divider(width='stretch')
+    
+    if len(st.session_state.point_picks) == 0:
+        st.markdown("### You have not made any picks yet. Please return to the picks page to make your selections.", text_alignment="center")
+
+    # Only display completed picks (point_value AND over_under values must not be null)
+    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
+
+    # If all picks are not complete (this list will be less than 3), disable the finalize button and display a warning message
+    # Otherwise, enable the finalize button
+    if len(point_picks) < 3:
+        st.warning("You have not completed all of your picks yet. The 'FINALIZE' button will be enabled once all picks are completed.")
+        st.session_state.disabled = True
+    else:
+        st.session_state.disabled = False
+    
+    print("UPDATED PICKS LISTING: ", json.dumps(point_picks, indent=2))
+
+    # Loop over all picks and print them to the page
+    for pick in point_picks:
+        # put 20 in the middle to push the images on the right all the way to the right
+        col1, col2, col3 = st.columns([1, 20, 1])
+        with col1:
+            st.image(f"images/{pick['away_team'].lower()}.png", width="stretch")
+        with col2:
+            st.markdown(f"### {pick['away_team']} @ {pick['home_team']}", text_alignment="center")
+            st.markdown(f"#### Your pick: {pick['over_under']} (O/U: {pick['over_under_score']})", text_alignment="center")
+            st.markdown(f"#### Points: {pick['point_value']}", text_alignment="center")
+        with col3:
+            st.image(f"images/{pick['home_team'].lower()}.png", width="stretch")
+        
+        st.divider(width='stretch')
+
+# buttons to finalize picks, continue making picks, or return to the landing page
+col1, col2, col3 = st.columns([1, 1, 1])
+# TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
+if "disabled" in st.session_state:
+    with col2:
+        if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
+            st.success("Your picks have been finalized! Thank you for playing!")
+
+with col2:
+    st.markdown("")
+    st.markdown("")
+    if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
+        st.switch_page("pages/make_your_picks.py")
+
+    st.markdown("")
+    st.markdown("")
+    if st.button("Return to Landing Page", width=700, key="return_landing_page"):
+        st.switch_page("pages/landing_page.py")

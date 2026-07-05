@@ -10,10 +10,13 @@ st.set_page_config(
 
 pages = {
     "Welcome to 1-2-3 Point Play!": [
-        st.Page("pages/landing_page.py", title="Landing Page"),
+        st.Page("pages/landing_page.py", title="Landing Page", default=True),
     ],
     "Make Your Picks!": [
         st.Page("pages/make_your_picks.py", title="Make Your Picks"),
+    ],
+    "Display Your Picks": [
+        st.Page("pages/display_picks.py", title="Display Your Picks"),
     ]
 }
 

@@ -85,14 +85,12 @@ def handle_change(changed_key, game_info):
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
 
-    # Find the home team name, away team name, over/under score, and game ID for the changed key
-    for game in game_info:
-        if game["button_id"] == int(changed_key.split("_")[0]):
-            home_team_name = game["home_team"]
-            away_team_name = game["away_team"]
-            over_under_score = game["over_under_score"]
-            game_id = game["game_id"]
-            break
+    # get the game information for the button that was clicked
+    game = game_info[button_id - 1]
+    home_team_name = game["home_team"]
+    away_team_name = game["away_team"]
+    over_under_score = game["over_under_score"]
+    game_id = game["game_id"]
     
     # If there are picks currently listed in the session state
     if st.session_state.point_picks:

@@ -1,17 +1,28 @@
-from pandas import col
+# Warning page before submission of picks
+# Displays the user's name and ensures that the user is ready to submit before making the database call
+
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from time import sleep
 
+# If name or point_picks are not in the session state (happens on refresh), redirect the user back to the landing page
 if "name" not in st.session_state or "point_picks" not in st.session_state:
     st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Return to Landing Page", key="return_to_landing", width="stretch"):
+            st.switch_page("pages/landing_page.py")
+
+# Otherwise, display the warning page with the user's name and their picks
 else:
+    # instantiate database connection
     conn = st.connection("user_picks", type=SupabaseConnection)
     st.title(f"You are about to submit your picks on behalf of {st.session_state['name']}.", text_alignment="center")
     st.divider(width='stretch')
 
+    # warning text
     st.markdown("#### If this is not your name, return to the landing page and select your name", text_alignment="center")
     st.markdown("#### Your current picks are saved, so selecting a new name will not reset those picks.", text_alignment="center")
     st.markdown("#### If you're still unsure about your picks, click on the \"No, return to View My Picks\" button below to review your picks before finalizing your submission.", text_alignment="center")
@@ -19,8 +30,11 @@ else:
 
     st.title(f"Are you sure you want to submit your picks, {st.session_state['name']}?", text_alignment="center")
 
+    # Button columns
+    # leftmost button returns to the display picks page
+    # middle button stores picks in the database, returns to landing page
+    # rightmost button returns to the landing page without storing picks in the database
     col1, col2, col3 = st.columns([1, 1, 1])
-
     with col1:
         if st.button("No, return to View My Picks", key="return_to_picks", width="stretch"):
             st.switch_page("pages/display_picks.py")
@@ -46,5 +60,5 @@ else:
             st.switch_page("pages/landing_page.py")
     
     with col3:
-        if st.button("No, return to landing page.", key="return_to_landing", width="stretch"):
+        if st.button("Return to Landing Page", key="return_to_landing", width="stretch"):
             st.switch_page("pages/landing_page.py")

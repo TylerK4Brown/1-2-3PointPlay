@@ -10,6 +10,10 @@ from time import sleep
 # selecting a name in the landing page will initialize these session states
 if "name" not in st.session_state or "point_picks" not in st.session_state:
     st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Return to Landing Page", key="return_to_landing", width="stretch"):
+            st.switch_page("pages/landing_page.py")
 
 # otherwise, iterate through the custom dictionary and display the user's picks
 else:
@@ -48,19 +52,19 @@ else:
         
         st.divider(width='stretch')
 
-# buttons to finalize picks, continue making picks, or return to the landing page
-col1, col2, col3 = st.columns([1, 1, 1])
-# TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
-if "disabled" in st.session_state:
-    with col2:
-        if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
-            st.switch_page("pages/warning_before_submission.py")
-            
-with col1:
-    if "name" in st.session_state and "point_picks" in st.session_state:
-        if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
-            st.switch_page("pages/make_your_picks.py")
+    # buttons to finalize picks, continue making picks, or return to the landing page
+    col1, col2, col3 = st.columns([1, 1, 1])
+    # TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
+    if "disabled" in st.session_state:
+        with col2:
+            if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
+                st.switch_page("pages/warning_before_submission.py")
+                
+    with col1:
+        if "name" in st.session_state and "point_picks" in st.session_state:
+            if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
+                st.switch_page("pages/make_your_picks.py")
 
-with col3:
-    if st.button("Return to Landing Page", width=700, key="return_landing_page"):
-        st.switch_page("pages/landing_page.py")
+    with col3:
+        if st.button("Return to Landing Page", width=700, key="return_landing_page"):
+            st.switch_page("pages/landing_page.py")

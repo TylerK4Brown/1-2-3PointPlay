@@ -6,17 +6,10 @@ from st_supabase_connection import SupabaseConnection
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from time import sleep
+from default_behavior import check_session_states
 
-# If name or point_picks are not in the session state (happens on refresh), redirect the user back to the landing page
-if "name" not in st.session_state or "point_picks" not in st.session_state:
-    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        if st.button("Return to Landing Page", key="return_to_landing", width="stretch"):
-            st.switch_page("pages/landing_page.py")
-
-# Otherwise, display the warning page with the user's name and their picks
-else:
+if check_session_states():
+    # Otherwise, display the warning page with the user's name and their picks
     # instantiate database connection
     conn = st.connection("user_picks", type=SupabaseConnection)
     st.title(f"You are about to submit your picks on behalf of {st.session_state['name']}.", text_alignment="center")

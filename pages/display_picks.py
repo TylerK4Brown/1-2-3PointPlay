@@ -4,19 +4,10 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 import json
-from time import sleep
+from default_behavior import check_session_states
 
-# if these are not in the session state, redirect the user back to the landing page
-# selecting a name in the landing page will initialize these session states
-if "name" not in st.session_state or "point_picks" not in st.session_state:
-    st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        if st.button("Return to Landing Page", key="return_to_landing", width="stretch"):
-            st.switch_page("pages/landing_page.py")
-
-# otherwise, iterate through the custom dictionary and display the user's picks
-else:
+if check_session_states():
+    #iterate through the custom dictionary and display the user's picks
     st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
     st.markdown("#### Please carefully review your picks below.", text_alignment="center")
     st.markdown("#### If you are satisfied with your selections, click the 'FINALIZE PICKS' button at the bottom of the page to submit your picks.", text_alignment="center")
@@ -42,13 +33,13 @@ else:
         # put 20 in the middle to push the images on the right all the way to the right
         col1, col2, col3 = st.columns([1, 20, 1])
         with col1:
-            st.image(f"images/{pick['away_team'].lower()}.png", width="stretch")
+            st.image(f"images_mlb/{pick['away_team'].lower()}.png", width="stretch")
         with col2:
             st.markdown(f"### {pick['away_team']} @ {pick['home_team']}", text_alignment="center")
             st.markdown(f"#### Your pick: {pick['over_under']} (O/U: {pick['over_under_score']})", text_alignment="center")
             st.markdown(f"#### Points: {pick['point_value']}", text_alignment="center")
         with col3:
-            st.image(f"images/{pick['home_team'].lower()}.png", width="stretch")
+            st.image(f"images_mlb/{pick['home_team'].lower()}.png", width="stretch")
         
         st.divider(width='stretch')
 

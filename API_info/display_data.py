@@ -81,7 +81,7 @@ def generate_expander(data_obj, button_id):
 
     col1, col2, col3 = st.columns([1, 5, 1])
     with col2:
-        with st.expander(f'''{away_team} @ {home_team}, Spread: {team_favored_abbreviation} {point_spread_favored}''', expanded=False):
+        with st.expander(f'''{away_team} @ {home_team} ---------------- Spread: {team_favored_abbreviation} {point_spread_favored}''', expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:

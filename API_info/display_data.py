@@ -5,6 +5,7 @@ import json
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
     load_css_gamedisplay()
+    buttons_already_selected()
     over_under = None
     button_id = 1
     if "game_information" not in st.session_state:
@@ -13,7 +14,7 @@ def display_data_mlb (data):
     st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")
 
     # TODO: store gameID in session state on this loop to avoid having to loop through the data again when the user selects something
-    for data_obj in data:
+    for data_obj in data[0:6]:
         # skip an iteration if no bookmaker is listed for the game
         if len(data_obj["bookmakers"]) == 0:
             continue
@@ -75,6 +76,7 @@ def display_data_mlb (data):
                         button_id += 1
 
                         st.divider(width='stretch')
+
     
 # Callback function that handles changes to point values and updates states accordingly
 def handle_change(changed_key, game_info):
@@ -184,3 +186,11 @@ def add_new_game_information_to_session_state(button_id, game_id, home_team_name
 # For later when we're gonna go week by week for the NFL
 def calculate_date_time():
     pass
+
+# Update button states based on the picks the user already made in the session state
+def buttons_already_selected():
+    for pick in st.session_state.point_picks:
+        recrafted_key_points = str(pick['button_id']) + "_points"
+        recrafted_key_OU = str(pick['button_id']) + "_OU"
+        st.session_state[recrafted_key_points] = pick['point_value']
+        st.session_state[recrafted_key_OU] = pick['over_under']

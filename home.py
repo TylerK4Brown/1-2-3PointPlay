@@ -17,7 +17,10 @@ pages = {
     ],
     "Display Your Picks": [
         st.Page("pages/display_picks.py", title="Display Your Picks"),
-    ]
+    ],
+    "Finalize Your Picks": [
+        st.Page("pages/warning_before_submission.py", title="Finalize Your Picks"),
+    ],
 }
 
 pg = st.navigation(pages, position="hidden")

@@ -6,8 +6,6 @@ from st_supabase_connection import SupabaseConnection
 import json
 from time import sleep
 
-# Initialize database connection
-conn = st.connection("user_picks", type=SupabaseConnection)
 # if these are not in the session state, redirect the user back to the landing page
 # selecting a name in the landing page will initialize these session states
 if "name" not in st.session_state or "point_picks" not in st.session_state:
@@ -56,31 +54,13 @@ col1, col2, col3 = st.columns([1, 1, 1])
 if "disabled" in st.session_state:
     with col2:
         if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
-            # instantiate connection to database
-            # store the user's picks in the database
-            time_of_submission = datetime.now((ZoneInfo("America/New_York"))).strftime("%A, %B %d, %Y at %I:%M %p")
-
-            data = {
-                "name": st.session_state.name,
-                "time_of_submission": time_of_submission,
-                "current_picks": {
-                    "picks": sorted_point_picks
-                }
-            }
-            # execute the insert query, store data in database
-            conn.table("user_picks").insert(data).execute()
-            st.success("Your picks have been finalized! Navigating back to landing page...")
-            sleep(2)
-            st.switch_page("pages/landing_page.py")
+            st.switch_page("pages/warning_before_submission.py")
             
-with col2:
+with col1:
     if "name" in st.session_state and "point_picks" in st.session_state:
-        st.markdown("")
-        st.markdown("")
         if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
             st.switch_page("pages/make_your_picks.py")
 
-    st.markdown("")
-    st.markdown("")
+with col3:
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):
         st.switch_page("pages/landing_page.py")

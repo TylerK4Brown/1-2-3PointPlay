@@ -3,6 +3,7 @@
 
 import streamlit as st
 from API_info.odds_api_call import make_api_call
+from css.streamlit_css import load_css_buttons_homepage
 
 if "name" not in st.session_state or "point_picks" not in st.session_state:
     st.title("NAME NOT SELECTED - PLEASE RETURN TO THE LANDING PAGE AND SELECT A NAME", text_alignment="center")
@@ -19,15 +20,16 @@ else:
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # add spacing between expander and button
-    st.markdown("")
-    if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
-        st.switch_page("pages/display_picks.py")
+    if "name" in st.session_state and "point_picks" in st.session_state:
+        st.markdown("")
+        st.markdown("")
+        if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
+            st.switch_page("pages/display_picks.py")
 
 # centered return to landing page button
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # add spacing between buttons
-    st.markdown("")
     st.markdown("")
     st.markdown("")
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):

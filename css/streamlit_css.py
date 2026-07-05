@@ -35,6 +35,12 @@ def load_css_buttons_homepage():
                        
         [data-testid="stButton"] button {
             height: 100px;
+            background-color: #2d60cf;
         }
+                       
+        [data-testid="stButton"] button:hover {
+            background-color: #6481c1;
+        }
+                    
     </style>
     ''', unsafe_allow_html=True)

@@ -15,9 +15,6 @@ if "name" not in st.session_state or "point_picks" not in st.session_state:
 else:
     st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
     st.divider(width='stretch')
-    
-    if len(st.session_state.point_picks) == 0:
-        st.markdown("### You have not made any picks yet. Please return to the picks page to make your selections.", text_alignment="center")
 
     # Only display completed picks (point_value AND over_under values must not be null)
     point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
@@ -70,10 +67,11 @@ if "disabled" in st.session_state:
             st.switch_page("pages/landing_page.py")
             
 with col2:
-    st.markdown("")
-    st.markdown("")
-    if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
-        st.switch_page("pages/make_your_picks.py")
+    if "name" in st.session_state and "point_picks" in st.session_state:
+        st.markdown("")
+        st.markdown("")
+        if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
+            st.switch_page("pages/make_your_picks.py")
 
     st.markdown("")
     st.markdown("")

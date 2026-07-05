@@ -11,7 +11,7 @@ def make_api_call():
     if "api_data" not in st.session_state:
         # Initialize session state to none at first
         st.session_state.api_data = None
-        api_key = "fbd28c927419891b76b59b6528531cd2"
+        api_key = st.secrets["OddsAPI_key"]
         sport_key = "baseball_mlb"
         bookmakers = "espnbet"
         markets = "totals"
@@ -26,7 +26,6 @@ def make_api_call():
         st.session_state.api_data = data
         # Debug statements to check if the API call was successful
         # print("API CALL MADE - INFORMATION STORED IN SESSION STATE")
-        # print(json.dumps(data, indent=2))
         display_data.display_data_mlb(data)
 
     # Otherwise, use the data stored in session state and display it

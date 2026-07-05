@@ -8,8 +8,15 @@ from zoneinfo import ZoneInfo
 def display_data_mlb (data):
     over_under = None
     button_id = 1
+    # create the game_information list in session state if it doesn't already exist
     if "game_information" not in st.session_state:
         st.session_state.game_information = []
+    
+    # reset session state for game information if it already exists
+    # clicking on buttons rerenders the entire page, which would cause this list to grow indefinitely
+    if "game_information" in st.session_state:
+        st.session_state.game_information = []
+
     # load hacky CSS that messes with the expander element display
     load_css_gamedisplay()
     # checks if the user has already made picks in this session - updates state accordingly

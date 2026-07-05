@@ -1,5 +1,6 @@
 # Display user's picks on a new page when they click submit
 import streamlit as st
+from st_supabase_connection import SupabaseConnection
 import json
 
 # if these are not in the session state, redirect the user back to the landing page
@@ -51,7 +52,18 @@ col1, col2, col3 = st.columns([1, 1, 1])
 if "disabled" in st.session_state:
     with col2:
         if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
-            st.success("Your picks have been finalized! Thank you for playing!")
+            # instantiate connection to database
+            conn = st.connection("user_picks", type=SupabaseConnection)
+            # store the user's picks in the database
+            data = {
+                "name": st.session_state.name,
+                "current_picks": {
+                    "picks": sorted_point_picks
+                }
+            }
+            # execute the insert query, store data in database
+            conn.table("user_picks").insert(data).execute()
+            st.success("Your picks have been finalized and stored in the database!")
 
 with col2:
     st.markdown("")

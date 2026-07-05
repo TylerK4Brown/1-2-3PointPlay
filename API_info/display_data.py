@@ -1,19 +1,22 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
-
+    over_under = None
+    button_id = 1
+    if "game_information" not in st.session_state:
+        st.session_state.game_information = []
     # load hacky CSS that messes with the expander element display
     load_css_gamedisplay()
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
 
-    over_under = None
-    button_id = 1
-    if "game_information" not in st.session_state:
-        st.session_state.game_information = []
+    # sort the data by the commence_time key in ascending order so that the earliest games are displayed first
+    data = sorted(data, key=lambda game: datetime.strptime(game['commence_time'], '%Y-%m-%dT%H:%M:%SZ'))
 
     st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")
 
@@ -29,6 +32,12 @@ def display_data_mlb (data):
             away_team = data_obj["away_team"]
             over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
             game_id = data_obj['id']
+
+            # convert date_time into a datetime object
+            # convert to EST
+            date_time = datetime.strptime(data_obj['commence_time'], '%Y-%m-%dT%H:%M:%SZ')
+            date_time = date_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
+
             add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, over_under)
 
             col1, col2, col3 = st.columns([1, 5, 1])
@@ -41,16 +50,20 @@ def display_data_mlb (data):
                         
                     with col2:
                         # make the @ symbol larger and centered between the team logos
-                        st.markdown('''<div 
-                                        style='text-align: center; 
-                                        font-size: 6rem;'>
-                                        @</div>''', unsafe_allow_html=True)    
-                        
+                        st.markdown(
+                        f'''<div 
+                                style='text-align: center; 
+                                font-size: 6rem;'>
+                                @
+                            </div>
+                        ''', unsafe_allow_html=True)    
                     with col3:
                         st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
                     
+                    # display the date and time of the game in a readable format
                     # display the over/under line for the game
                     st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
+                    
                     # Create columns with an intentionally narrow middle column
                     # center the segmented controls in the middle column
                     # segmented control allows the user to make selections, and the key is stored in session state for tracking

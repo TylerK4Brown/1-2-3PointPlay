@@ -17,6 +17,8 @@ else:
 
     # Only display completed picks (point_value AND over_under values must not be null)
     point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
+    # Sort picks by point value in ascending order
+    sorted_point_picks = sorted(point_picks, key=lambda pick: pick["point_value"])
 
     # If all picks are not complete (this list will be less than 3), disable the finalize button and display a warning message
     # Otherwise, enable the finalize button
@@ -26,10 +28,10 @@ else:
     else:
         st.session_state.disabled = False
     
-    print("UPDATED PICKS LISTING: ", json.dumps(point_picks, indent=2))
+    print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
 
     # Loop over all picks and print them to the page
-    for pick in point_picks:
+    for pick in sorted_point_picks:
         # put 20 in the middle to push the images on the right all the way to the right
         col1, col2, col3 = st.columns([1, 20, 1])
         with col1:

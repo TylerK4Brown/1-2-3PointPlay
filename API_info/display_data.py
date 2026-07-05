@@ -28,7 +28,7 @@ def display_data_mlb (data):
     st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")
 
     # TODO: store gameID in session state on this loop to avoid having to loop through the data again when the user selects something
-    for data_obj in data[0:8]:
+    for data_obj in data[0:16]:
         # skip an iteration if no bookmaker is listed for the game
         if len(data_obj["bookmakers"]) == 0:
             continue

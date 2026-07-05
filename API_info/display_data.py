@@ -57,9 +57,9 @@ def generate_expander(data_obj, button_id):
     # If the spread is 0, that means the spread is even
     # In that case, we will set the favored and underdog teams to "EVEN" and the point spreads to empty strings
     if is_spread_even:
-        team_favored = "EVEN"
+        team_favored = f"EVEN"
         point_spread_favored = ''
-        team_underdog = "EVEN"
+        team_underdog = f"EVEN"
         point_spread_underdog = ''
     
     game_id = data_obj['id']
@@ -106,7 +106,7 @@ def generate_expander(data_obj, button_id):
             with col2:
                 st.segmented_control (
                     label="spread", 
-                    options=[f"{team_favored} {point_spread_favored}", f"{team_underdog} +{point_spread_underdog}"], 
+                    options=[f"{team_favored} {point_spread_favored}", f"{team_underdog} {point_spread_underdog}"], 
                     key=f"{button_id}_spread", 
                     width="stretch", 
                     label_visibility="collapsed",
@@ -205,6 +205,7 @@ def handle_change(changed_key, game_info):
         )
         
     # print for debugging
+    print("\n\n -------NEW ENTRY-------")
     print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user

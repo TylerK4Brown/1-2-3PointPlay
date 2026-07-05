@@ -85,7 +85,7 @@ def generate_expander(data_obj, button_id):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 1, 1])
             with col1:
-                st.image(f"images_nfl/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                st.image(f"images_nfl/{away_team.lower()}.png", width=100)
                 
             with col2:
                 # make the @ symbol larger and centered between the team logos
@@ -97,7 +97,7 @@ def generate_expander(data_obj, button_id):
                     </div>
                 ''', unsafe_allow_html=True)    
             with col3:
-                st.image(f"images_nfl/{home_team.lower()}.png", width=200, caption=f"{home_team}")
+                st.image(f"images_nfl/{home_team.lower()}.png", width=100)
             
             # display the date and time of the game in a readable format
             # display the over/under line for the game

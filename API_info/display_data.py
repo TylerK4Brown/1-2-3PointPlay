@@ -6,7 +6,6 @@ from zoneinfo import ZoneInfo
 
 # Display the upcoming MLB games and O/U numbers
 def display_data_mlb (data):
-    over_under = None
     button_id = 1
     # create the game_information list in session state if it doesn't already exist
     if "game_information" not in st.session_state:
@@ -26,86 +25,88 @@ def display_data_mlb (data):
     data = sorted(data, key=lambda game: datetime.strptime(game['commence_time'], '%Y-%m-%dT%H:%M:%SZ'))
 
     st.markdown("### LISTING OF UPCOMING MLB GAMES AND THEIR OVER/UNDERS", text_alignment="center")
-
-    # TODO: store gameID in session state on this loop to avoid having to loop through the data again when the user selects something
     for data_obj in data[0:16]:
         # skip an iteration if no bookmaker is listed for the game
         if len(data_obj["bookmakers"]) == 0:
             continue
         else:
-            # create multiple expanders for each game
-            # home and away team names displayed, plus the over/under number for the game
-            home_team = data_obj["home_team"]
-            away_team = data_obj["away_team"]
-            over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
-            game_id = data_obj['id']
+            generate_expander(data_obj, button_id)
+            button_id += 1
 
-            # convert date_time into a datetime object
-            # convert to EST
-            date_time = datetime.strptime(data_obj['commence_time'], '%Y-%m-%dT%H:%M:%SZ')
-            date_time = date_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
+# Generate expander elements for each game made available from the API call
+def generate_expander(data_obj, button_id):
+    # extract home team, away team, over/under and game_id from the data object
+    home_team = data_obj["home_team"]
+    away_team = data_obj["away_team"]
+    over_under = data_obj["bookmakers"][0]["markets"][0]["outcomes"][0]["point"]
+    game_id = data_obj['id']
 
-            add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, over_under)
+    # # convert date_time into a datetime object
+    # # convert to EST
+    # Not using this yet so comment it out
+    # date_time = datetime.strptime(data_obj['commence_time'], '%Y-%m-%dT%H:%M:%SZ')
+    # date_time = date_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
 
-            col1, col2, col3 = st.columns([1, 5, 1])
+    # create a new entry in the session state for the game
+    add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, over_under)
+
+    col1, col2, col3 = st.columns([1, 5, 1])
+    with col2:
+        with st.expander(f'''{away_team} @ {home_team}, O/U: {over_under}''', expanded=False):
+            # create columns within the expander to display team logs
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
+                
             with col2:
-                with st.expander(f'''{away_team} @ {home_team}, O/U: {over_under}''', expanded=False):
-                    # create columns within the expander to display team logs
-                    col1, col2, col3 = st.columns([1, 1, 1])
-                    with col1:
-                        st.image(f"images/{away_team.lower()}.png", width=200, caption=f"{away_team}")
-                        
-                    with col2:
-                        # make the @ symbol larger and centered between the team logos
-                        st.markdown(
-                        f'''<div 
-                                style='text-align: center; 
-                                font-size: 6rem;'>
-                                @
-                            </div>
-                        ''', unsafe_allow_html=True)    
-                    with col3:
-                        st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
-                    
-                    # display the date and time of the game in a readable format
-                    # display the over/under line for the game
-                    st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
-                    
-                    # Create columns with an intentionally narrow middle column
-                    # center the segmented controls in the middle column
-                    # segmented control allows the user to make selections, and the key is stored in session state for tracking
-                    # on_change contains a reference to a callback function, args passes in the changed key upon change
-                    # allows us to edit states manually when the user clicks on buttons on the frontend
-                    col1, col2, col3 = st.columns([1, 2, 1])
-                    with col2:
-                        st.segmented_control (
-                            label="over_under", 
-                            options=["OVER", "UNDER"], 
-                            key=f"{button_id}_OU", 
-                            width="stretch", 
-                            label_visibility="collapsed",
-                            on_change=handle_change,
-                            args=(f"{button_id}_OU", st.session_state.game_information,)
-                        )
+                # make the @ symbol larger and centered between the team logos
+                st.markdown(
+                f'''<div 
+                        style='text-align: center; 
+                        font-size: 6rem;'>
+                        @
+                    </div>
+                ''', unsafe_allow_html=True)    
+            with col3:
+                st.image(f"images/{home_team.lower()}.png", width=200, caption=f"{home_team}")
+            
+            # display the date and time of the game in a readable format
+            # display the over/under line for the game
+            st.markdown(f"## **O/U**: {over_under}", text_alignment='center')
+            
+            # Create columns with an intentionally narrow middle column
+            # center the segmented controls in the middle column
+            # segmented control allows the user to make selections, and the key is stored in session state for tracking
+            # on_change contains a reference to a callback function, args passes in the changed key upon change
+            # allows us to edit states manually when the user clicks on buttons on the frontend
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                st.segmented_control (
+                    label="over_under", 
+                    options=["OVER", "UNDER"], 
+                    key=f"{button_id}_OU", 
+                    width="stretch", 
+                    label_visibility="collapsed",
+                    on_change=handle_change,
+                    args=(f"{button_id}_OU", st.session_state.game_information,)
+                )
 
-                        st.segmented_control (
-                            label="points", 
-                            options=["1", "2", "3"], 
-                            key=f"{button_id}_points", 
-                            width="stretch", 
-                            label_visibility="collapsed",
-                            on_change=handle_change,
-                            args=(f"{button_id}_points", st.session_state.game_information,)
-                        )
-                        button_id += 1
+                st.segmented_control (
+                    label="points", 
+                    options=["1", "2", "3"], 
+                    key=f"{button_id}_points", 
+                    width="stretch", 
+                    label_visibility="collapsed",
+                    on_change=handle_change,
+                    args=(f"{button_id}_points", st.session_state.game_information,)
+                )
+                button_id += 1
+                st.divider(width='stretch')
 
-                        st.divider(width='stretch')
-
-    
 # Callback function that handles changes to point values and updates states accordingly
 def handle_change(changed_key, game_info):
     duplicate_exists = False
-    # Split the changed key to get key type ("points" or "OU") and the home team name
+    # Split the changed key to get key type ("points" or "OU")
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
 
@@ -138,12 +139,13 @@ def handle_change(changed_key, game_info):
                 elif key_type == "OU":
                     print("updating OU value!")
                     pick['over_under'] = st.session_state[changed_key]
-            
+    
             # If the point selection conflicts with another point selection, pop the old selection from the list
             # Does not check for a conflict if the game ID is the same (i.e. the user is changing their pick for the same game)
             if key_type == "points":
                 if st.session_state[changed_key] == pick['point_value'] and not same_ID:
                     print("different games with the same point value assignment - pop the old pick from the list")
+                    st.toast(f"Resetting previous pick, please do not make any edits until this disappears!", icon="⏳", duration=2)
 
                     # pop the entire pick from the list if there was no over/under value selected
                     # only append picks to the new session state list if that pick's point value is not equal to the selected point value
@@ -155,7 +157,7 @@ def handle_change(changed_key, game_info):
                     recrafted_key2 = str(pick['button_id']) + "_OU"
                     st.session_state[recrafted_key2] = None
                     st.session_state[recrafted_key] = None
-
+                
         # if there is no duplicate, append it to the running list of picks
         if not duplicate_exists:
             print("no duplicate exists - adding new value")
@@ -185,6 +187,7 @@ def handle_change(changed_key, game_info):
     # print for debugging
     print(json.dumps(st.session_state.point_picks, indent=2))
 
+# Creats a new dictionary entry in session state for each pick made by the user
 def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, over_under, over_under_score, game_id, button_id):
     st.session_state.point_picks.append({
         "home_team": home_team_name,
@@ -196,6 +199,7 @@ def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, o
         "button_id": button_id
     })
 
+# Creates a new dictionary entry for each game in the API call to narrow down relevant information for later usage
 def add_new_game_information_to_session_state(button_id, game_id, home_team_name, away_team_name, over_under_score):
     st.session_state.game_information.append({
         "button_id": button_id,
@@ -205,14 +209,16 @@ def add_new_game_information_to_session_state(button_id, game_id, home_team_name
         "over_under_score": over_under_score
     })
 
-# For later when we're gonna go week by week for the NFL
-def calculate_date_time():
-    pass
-
 # Update button states based on the picks the user already made in the session state
+# This is to avoid buttons being reset when the user navigates to a different page
 def buttons_already_selected():
     for pick in st.session_state.point_picks:
         recrafted_key_points = str(pick['button_id']) + "_points"
         recrafted_key_OU = str(pick['button_id']) + "_OU"
         st.session_state[recrafted_key_points] = pick['point_value']
         st.session_state[recrafted_key_OU] = pick['over_under']
+
+# For later when we're gonna go week by week for the NFL
+def calculate_date_time():
+    pass
+

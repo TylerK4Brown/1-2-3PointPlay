@@ -20,7 +20,7 @@ col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # add spacing between expander and button
     st.markdown("")
-    if st.button("Submit Picks", width=700, key="submit_picks"):
+    if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
         st.switch_page("pages/display_picks.py")
 
 # centered return to landing page button

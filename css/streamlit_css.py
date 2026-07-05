@@ -6,7 +6,7 @@ def load_css_gamedisplay():
         [data-testid="stExpander"] div {
             display: flex;
             justify-content: center;
-            font-size: 18px;
+            font-size: 15px;
         }
                 
         [data-testid="stExpander"] details {
@@ -16,7 +16,11 @@ def load_css_gamedisplay():
         [data-testid="stCaptionContainer"] p {
             font-size: 25px;
         }
-                
+                       
+        [data-testid="stToast"] div {
+            display: flex;
+            align-items: center;
+        }
     </style>
 
     ''', unsafe_allow_html=True)
@@ -25,12 +29,12 @@ def load_css_gamedisplay():
 def load_css_buttons_homepage():
     return st.markdown('''
     <style>
-        [data-testid="stBidiComponentIsolated"] {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        [data-testid="stButton"] p {
+            font-size: 40px;
+        }
+                       
+        [data-testid="stButton"] button {
             height: 100px;
-            font-size: 30px;
         }
     </style>
     ''', unsafe_allow_html=True)

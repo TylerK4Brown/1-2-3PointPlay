@@ -1,8 +1,11 @@
-# Display user's picks on a new page when they click submit
+# Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 import json
+from time import sleep
 
+# Initialize database connection
+conn = st.connection("user_picks", type=SupabaseConnection)
 # if these are not in the session state, redirect the user back to the landing page
 # selecting a name in the landing page will initialize these session states
 if "name" not in st.session_state or "point_picks" not in st.session_state:
@@ -24,7 +27,7 @@ else:
     # If all picks are not complete (this list will be less than 3), disable the finalize button and display a warning message
     # Otherwise, enable the finalize button
     if len(point_picks) < 3:
-        st.warning("You have not completed all of your picks yet. The 'FINALIZE' button will be enabled once all picks are completed.")
+        st.warning("You have not completed all of your picks yet. The 'FINALIZE PICKS' button will be enabled once all picks are completed.", icon="‼️")
         st.session_state.disabled = True
     else:
         st.session_state.disabled = False
@@ -53,7 +56,6 @@ if "disabled" in st.session_state:
     with col2:
         if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
             # instantiate connection to database
-            conn = st.connection("user_picks", type=SupabaseConnection)
             # store the user's picks in the database
             data = {
                 "name": st.session_state.name,
@@ -63,8 +65,10 @@ if "disabled" in st.session_state:
             }
             # execute the insert query, store data in database
             conn.table("user_picks").insert(data).execute()
-            st.success("Your picks have been finalized and stored in the database!")
-
+            st.success("Your picks have been finalized! Navigating back to landing page...")
+            sleep(2)
+            st.switch_page("pages/landing_page.py")
+            
 with col2:
     st.markdown("")
     st.markdown("")

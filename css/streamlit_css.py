@@ -53,7 +53,7 @@ def load_css_buttons_gamepage():
         }
         
         [data-testid="stBaseButton-segmented_control"] p {
-            font-size: 25px;
+            font-size: 20px;
         }
     </style>
     ''', unsafe_allow_html=True)

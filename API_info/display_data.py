@@ -83,7 +83,7 @@ def generate_expander(data_obj, button_id):
     with col2:
         with st.expander(f'''{away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}''', expanded=False):
             # create columns within the expander to display team logs
-            col1, col2, col3 = st.columns([1, 1, 1])
+            col1, col2, col3 = st.columns([1, 3, 1])
             with col1:
                 st.image(f"images_nfl/{away_team.lower()}.png", width=100)
                 

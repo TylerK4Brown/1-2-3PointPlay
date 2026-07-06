@@ -32,13 +32,13 @@ if check_session_states():
     for pick in sorted_point_picks:
         # put 20 in the middle to push the images on the right all the way to the right
         col1, col2, col3 = st.columns([1, 20, 1])
-        with col1:
+        with col2:
             st.image(f"images_nfl/{pick['away_team'].lower()}.png", width=75)
         with col2:
-            st.markdown(f"### {pick['away_team']} @ {pick['home_team']}", text_alignment="center")
-            st.markdown(f"#### Your pick: {pick['spread']}", text_alignment="center")
-            st.markdown(f"#### Points: {pick['point_value']}", text_alignment="center")
-        with col3:
+            st.markdown(f"### {pick['away_team']} @ {pick['home_team']}",)
+            st.markdown(f"#### Your pick: {pick['spread']}", )
+            st.markdown(f"#### Points: {pick['point_value']}", )
+        with col2:
             st.image(f"images_nfl/{pick['home_team'].lower()}.png", width=75)
         
         st.divider(width='stretch')

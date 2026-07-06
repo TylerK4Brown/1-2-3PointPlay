@@ -6,7 +6,7 @@ def load_css_gamedisplay():
         [data-testid="stExpander"] div {
             display: flex;
             justify-content: center;
-            font-size: 15px;
+            font-size: 20px;
         }
                 
         [data-testid="stExpander"] details {
@@ -14,7 +14,7 @@ def load_css_gamedisplay():
         }
         
         [data-testid="stCaptionContainer"] p {
-            font-size: 25px;
+            font-size: 20px;
         }
                        
         [data-testid="stToast"] div {

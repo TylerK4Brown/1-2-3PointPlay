@@ -1,5 +1,5 @@
 import streamlit as st
-from css.streamlit_css import load_css_gamedisplay
+from css.streamlit_css import load_css_gamedisplay, load_css_buttons_gamepage
 from API_info.abbreviation_mapping import map_abbreviations
 import json
 from datetime import datetime
@@ -33,6 +33,7 @@ def display_data_nfl (data):
         if len(data_obj["bookmakers"]) == 0:
             continue
         else:
+            load_css_buttons_gamepage()
             generate_expander(data_obj, button_id)
             button_id += 1
 

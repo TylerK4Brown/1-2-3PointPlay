@@ -34,7 +34,7 @@ def load_css_buttons_homepage():
         }
                        
         [data-testid="stButton"] button {
-            height: 150px;
+            height: 125px;
             background-color: #2d60cf;
         }
                        
@@ -42,5 +42,18 @@ def load_css_buttons_homepage():
             background-color: #6481c1;
         }
                     
+    </style>
+    ''', unsafe_allow_html=True)
+    
+def load_css_buttons_gamepage():
+    return st.markdown('''
+    <style>            
+        [data-testid="stButtonGroup"] button {
+            height: 55px;
+        }
+        
+        [data-testid="stBaseButton-segmented_control"] p {
+            font-size: 25px;
+        }
     </style>
     ''', unsafe_allow_html=True)

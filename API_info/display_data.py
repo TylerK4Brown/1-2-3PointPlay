@@ -87,15 +87,8 @@ def generate_expander(data_obj, button_id):
             with col1:
                 st.image(f"images_nfl/{away_team.lower()}.png", width=100)
                 
-            with col2:
-                # make the @ symbol larger and centered between the team logos
-                st.markdown(
-                f'''<div 
-                        style='text-align: center; 
-                        font-size: 6rem;'>
-                        @
-                    </div>
-                ''', unsafe_allow_html=True)    
+            with col2:  
+                st.title(f"@", text_alignment='center') 
             with col3:
                 st.image(f"images_nfl/{home_team.lower()}.png", width=100)
             

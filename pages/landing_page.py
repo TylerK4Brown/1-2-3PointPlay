@@ -59,3 +59,10 @@ if st.button(st.session_state.tj_buttontext, width='stretch', key="tj_button", d
 if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_button", disabled=st.session_state.disable_tyler_button):
     st.session_state.name = "Tyler"
     st.switch_page("pages/make_your_picks.py")
+
+# Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
+st.divider(width='stretch')
+
+st.markdown("## 🏆 View the running leaderboard here! 🏆", text_alignment="center")
+if st.button("View Leaderboard Information", width='stretch', key="view_leaderboard"):
+    st.switch_page("pages/view_leaderboard.py")

@@ -21,6 +21,9 @@ pages = {
     "Finalize Your Picks": [
         st.Page("pages/warning_before_submission.py", title="Finalize Your Picks"),
     ],
+    "View Leaderboard": [
+        st.Page("pages/view_leaderboard.py", title="View Leaderboard"),
+    ],
 }
 
 pg = st.navigation(pages, position="hidden")

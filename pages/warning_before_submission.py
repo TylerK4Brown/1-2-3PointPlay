@@ -7,8 +7,10 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from time import sleep
 from default_behavior import check_session_states
+from css.streamlit_css import load_css_buttons_display_picks
 
 if check_session_states():
+    load_css_buttons_display_picks()
     # Otherwise, display the warning page with the user's name and their picks
     # instantiate database connection
     conn = st.connection("user_picks", type=SupabaseConnection)

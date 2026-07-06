@@ -21,6 +21,18 @@ def load_css_gamedisplay():
             display: flex;
             align-items: center;
         }
+        
+        [data-testid="stButtonGroup"] button {
+            height: 55px;
+        }
+        
+        [data-testid="stBaseButton-segmented_control"] p {
+            font-size: 20px;
+        }
+        
+        [data-testid="stButton"] button {
+            height: 75px;
+        }
     </style>
 
     ''', unsafe_allow_html=True)
@@ -45,15 +57,13 @@ def load_css_buttons_homepage():
     </style>
     ''', unsafe_allow_html=True)
     
-def load_css_buttons_gamepage():
+def load_css_buttons_display_picks():
     return st.markdown('''
-    <style>            
-        [data-testid="stButtonGroup"] button {
-            height: 55px;
+    <style>     
+    
+        [data-testid="stButton"] button {
+            height: 75px;
         }
         
-        [data-testid="stBaseButton-segmented_control"] p {
-            font-size: 20px;
-        }
     </style>
     ''', unsafe_allow_html=True)

@@ -5,8 +5,11 @@ import streamlit as st
 from st_supabase_connection import SupabaseConnection
 import json
 from default_behavior import check_session_states
+from css.streamlit_css import load_css_buttons_display_picks
 
 if check_session_states():
+    # Load custom CSS for display picks buttons
+    load_css_buttons_display_picks()
     #iterate through the custom dictionary and display the user's picks
     st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
     st.markdown("#### Please carefully review your picks below.", text_alignment="center")

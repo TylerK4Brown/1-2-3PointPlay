@@ -1,5 +1,5 @@
 import streamlit as st
-from css.streamlit_css import load_css_gamedisplay, load_css_buttons_gamepage
+from css.streamlit_css import load_css_gamedisplay
 from API_info.abbreviation_mapping import map_abbreviations
 import json
 from datetime import datetime
@@ -33,7 +33,6 @@ def display_data_nfl (data):
         if len(data_obj["bookmakers"]) == 0:
             continue
         else:
-            load_css_buttons_gamepage()
             generate_expander(data_obj, button_id)
             button_id += 1
 
@@ -174,7 +173,7 @@ def handle_change(changed_key, game_info):
             if key_type == "points":
                 if st.session_state[changed_key] == pick['point_value'] and not same_id:
                     # print("different games with the same point value assignment - pop the old pick from the list")
-                    st.toast(f"Resetting previous {pick['point_value']} point pick, please do not make any new selections until this disappears!", icon="⏳", duration=2)
+                    st.toast(f"Resetting previous {pick['point_value']} point pick, please do not make any new selections until this disappears!", icon="⏳", duration=4)
 
                     # pop the entire pick from the list if there was no spread value selected
                     # only append picks to the new session state list if that pick's point value is not equal to the selected point value

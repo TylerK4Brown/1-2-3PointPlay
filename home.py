@@ -5,6 +5,7 @@ import streamlit as st
 
 st.set_page_config(
     page_title="1-2-3 Point Play",
+    page_icon="🗣️",
     layout="wide"
 )
 

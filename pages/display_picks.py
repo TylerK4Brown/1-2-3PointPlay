@@ -47,11 +47,11 @@ if check_session_states():
     col1, col2, col3 = st.columns([1, 1, 1])
     # TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
     if "disabled" in st.session_state:
-        with col2:
+        with col1:
             if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
                 st.switch_page("pages/warning_before_submission.py")
                 
-    with col1:
+    with col2:
         if "name" in st.session_state and "point_picks" in st.session_state:
             if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
                 st.switch_page("pages/make_your_picks.py")

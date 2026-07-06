@@ -28,11 +28,11 @@ if check_session_states():
     # middle button stores picks in the database, returns to landing page
     # rightmost button returns to the landing page without storing picks in the database
     col1, col2, col3 = st.columns([1, 1, 1])
-    with col1:
+    with col2:
         if st.button("No, return to View My Picks", key="return_to_picks", width="stretch"):
             st.switch_page("pages/display_picks.py")
 
-    with col2:
+    with col1:
         if st.button("Yes, submit my picks!", key="view_picks", type="primary", width="stretch"):
             # store the user's picks in the database
             time_of_submission = datetime.now((ZoneInfo("America/New_York"))).strftime("%A, %B %d, %Y at %I:%M %p")

@@ -33,6 +33,11 @@ def load_css_gamedisplay():
         [data-testid="stButton"] button {
             height: 75px;
         }
+                       
+        [data-testid="stMarkdownContainer"] hr {
+            border: 0.01rem solid #3b3b3b;
+            border-radius: 5px;
+        }
     </style>
 
     ''', unsafe_allow_html=True)

@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+
 # Display the upcoming NFL games and point spreads
 def display_data_nfl (data):
     button_id = 1
@@ -21,27 +22,28 @@ def display_data_nfl (data):
     load_css_gamedisplay()
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
-    # store the abbreviation mapping in a variable for later use when displaying the data
-    abbreviation_mapping = map_abbreviations()
 
     # sort the data by the commence_time key in ascending order so that the earliest games are displayed first
     data = sorted(data, key=lambda game: datetime.strptime(game['commence_time'], '%Y-%m-%dT%H:%M:%SZ'))
 
     st.markdown("### LISTING OF UPCOMING NFL GAMES AND THEIR POINT SPREADS", text_alignment="center")
+    start_times_list = []
     for data_obj in data[0:16]:
         # skip an iteration if no bookmaker is listed for the game
         if len(data_obj["bookmakers"]) == 0:
             continue
         else:
-            generate_expander(data_obj, button_id)
+            generate_expander(data_obj, button_id, start_times_list)
             button_id += 1
 
 # Generate expander elements for each game made available from the API call
-def generate_expander(data_obj, button_id):
+def generate_expander(data_obj, button_id, start_times_list):
     # extract home team, away team, point spreads for the favored and underdog teams, and the game ID from the API call data
+    # also call the abbreviation mapping function for later use in the expander display
     abbreviation_mapping = map_abbreviations()
     home_team = data_obj["home_team"]
     away_team = data_obj["away_team"]
+    start_time = data_obj["commence_time"]
     point_spread = data_obj["bookmakers"][0]["markets"][0]["outcomes"]
     team_favored, team_favored_abbreviation, point_spread_favored, team_underdog, team_underdog_abbreviation, point_spread_underdog = None, None, None, None, None, None
     is_spread_even = False
@@ -63,25 +65,42 @@ def generate_expander(data_obj, button_id):
     # If the spread is 0, that means the spread is even
     # In that case, we will set the favored and underdog teams to "EVEN" and the point spreads to empty strings
     if is_spread_even:
-        team_favored = f"EVEN"
-        point_spread_favored = ''
-        team_underdog = f"EVEN"
-        point_spread_underdog = ''
+        home_team_abbreviation = abbreviation_mapping[home_team]
+        away_team_abbreviation = abbreviation_mapping[away_team]
     
     game_id = data_obj['id']
-
-    # # convert date_time into a datetime object
-    # # convert to EST
-    # Not using this yet so comment it out
-    # date_time = datetime.strptime(data_obj['commence_time'], '%Y-%m-%dT%H:%M:%SZ')
-    # date_time = date_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
 
     # create a new entry in the session state for the game
     add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, point_spread, team_favored)
 
+    # First, check if the list is empty. If it is, append an entry and display it to the page
+    if len(start_times_list) == 0:
+        st.divider(width='stretch')
+        start_times_list.append(start_time)
+        # create a datetime object from start time, replace its info with UTC, convert it to EST, and then format it in a readable string
+        start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
+        st.markdown(f"### :red[{start_time}]", text_alignment='center')
+    # If it's not empty, iterate through the list to see if a duplicate entry exists. If it does, break the loop and do not display it to the page
+    else:
+        for previous_start_times in start_times_list:
+            if start_time == previous_start_times:
+                break
+        
+        # If it doesn't exist, append it to the list and display it to the page
+        else:
+            st.divider(width='stretch')
+            start_times_list.append(start_time)
+            # create a datetime object from start time, replace its info with UTC, convert it to EST, and then format it in a readable string
+            start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
+            st.markdown(f"### :red[{start_time}]", text_alignment='center')
+
     col1, col2, col3 = st.columns([1, 5, 1])
     with col2:
-        with st.expander(f'''{away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}''', expanded=False):
+        if is_spread_even:
+            expander_string = f"{away_team} @ {home_team} → → → → Spread: EVEN"
+        else:
+            expander_string = f"{away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}"
+        with st.expander(expander_string, expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 3, 1])
             with col1:
@@ -94,18 +113,25 @@ def generate_expander(data_obj, button_id):
             
             # display the date and time of the game in a readable format
             # display the over/under line for the game
-            st.markdown(f"## **SPREAD**: {team_favored_abbreviation} {point_spread_favored}", text_alignment='center')
+            if is_spread_even:
+                st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
+            else:
+                st.markdown(f"## **SPREAD**: {team_favored_abbreviation} {point_spread_favored}", text_alignment='center')
             
             # Create columns with an intentionally narrow middle column
             # center the segmented controls in the middle column
             # segmented control allows the user to make selections, and the key is stored in session state for tracking
             # on_change contains a reference to a callback function, args passes in the changed key upon change
             # allows us to edit states manually when the user clicks on buttons on the frontend
+            if is_spread_even:
+                options_list = [f"{home_team_abbreviation}", f"{away_team_abbreviation}"]
+            else:
+                options_list = [f"{team_favored_abbreviation} {point_spread_favored}", f"{team_underdog_abbreviation} +{point_spread_underdog}"]
             col1, col2, col3 = st.columns([1, 2, 1])
             with col2:
                 st.segmented_control (
                     label="spread", 
-                    options=[f"{team_favored_abbreviation} {point_spread_favored}", f"{team_underdog_abbreviation} +{point_spread_underdog}"], 
+                    options=options_list, 
                     key=f"{button_id}_spread", 
                     width="stretch", 
                     label_visibility="collapsed",

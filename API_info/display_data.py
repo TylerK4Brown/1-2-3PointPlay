@@ -23,9 +23,6 @@ def display_data_nfl (data):
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
 
-    # sort the data by the commence_time key in ascending order so that the earliest games are displayed first
-    data = sorted(data, key=lambda game: datetime.strptime(game['commence_time'], '%Y-%m-%dT%H:%M:%SZ'))
-
     st.markdown("### LISTING OF UPCOMING NFL GAMES AND THEIR POINT SPREADS", text_alignment="center")
     start_times_list = []
     for data_obj in data[0:16]:

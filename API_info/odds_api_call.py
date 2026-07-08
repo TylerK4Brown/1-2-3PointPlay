@@ -33,3 +33,15 @@ def make_api_call():
         # Debug statement to show it pulls data from the session state
         # print("API DATA ALREADY IN SESSION STATE - USING STORED DATA")
         display_data.display_data_nfl(st.session_state.api_data)
+
+# Making an API call to the scores API to get the scores for a specific game ID
+def make_scores_api_call(eventId):
+    api_key = st.secrets["OddsAPI_key"]
+    sport_key = "americanfootball_nfl"
+    
+    api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?apiKey={api_key}&eventIds={eventId}"
+    
+    response = requests.get(api_url)
+    data = response.json()
+
+    return data

@@ -49,7 +49,6 @@ def generate_expander(data_obj, button_id, start_times_list):
     for spread in point_spread:
         if spread["point"] == 0:
             is_spread_even = True
-            break
         if spread["point"] < 0:
             team_favored = spread["name"]
             team_favored_abbreviation = abbreviation_mapping[team_favored]

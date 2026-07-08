@@ -2,7 +2,6 @@
 # The name selected will be stored in session state and used to personalize the picks page
 
 import streamlit as st
-from streamlit_extras.card_selector import *
 from css.streamlit_css import load_css_buttons_homepage
 from st_supabase_connection import SupabaseConnection
 
@@ -63,6 +62,6 @@ if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_butt
 # Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
 st.divider(width='stretch')
 
-st.markdown("## 🏆 View the running leaderboard here! 🏆", text_alignment="center")
-if st.button("View Leaderboard Information", width='stretch', key="view_leaderboard"):
-    st.switch_page("pages/view_leaderboard.py")
+st.markdown("## View this week's picks!", text_alignment="center")
+if st.button("View Leaderboard Information", width='stretch', key="view_player_picks"):
+    st.switch_page("pages/view_player_picks.py")

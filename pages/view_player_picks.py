@@ -5,6 +5,7 @@ import streamlit as st
 from st_supabase_connection import SupabaseConnection
 from css.streamlit_css import load_css_gamedisplay
 from API_info.odds_api_call import make_scores_api_call
+from API_info.abbreviation_mapping import reverse_map_abbreviations
 import json
 
 # Initialize database connection
@@ -29,17 +30,19 @@ for row in rows:
     
     for pick in sorted_picks:
         # Pull all relevant information from the output JSON object and store it in variables for easier access
+        abbreviation_mapping = reverse_map_abbreviations()
         home_team = pick["home_team"]
         away_team = pick["away_team"]
         point_spread = pick["spread"]
         point_value = pick["point_value"]
         team_favored_abbreviation = point_spread.split(" ")[0] if len(point_spread.split(" ")) > 1 else None
+        point_spread_favored = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
+        # Determine which team is not favored based on the point spread and the team abbreviations
+        team_not_favored_abbreviation = abbreviation_mapping[home_team] if team_favored_abbreviation == abbreviation_mapping[away_team] else abbreviation_mapping[away_team]
         score_home_team = ""
         score_away_team = ""
         pick_scores = make_scores_api_call(pick["game_id"])
         print(json.dumps(pick_scores, indent=2))
-        
-        point_spread_favored = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
         
         # If there's no scores, don't list any
         # If there are, pull the scores from the JSON
@@ -74,7 +77,6 @@ for row in rows:
                     st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
                 else:
                     st.markdown(f"## **SPREAD**: {team_favored_abbreviation} {point_spread_favored}", text_alignment='center')
-                    
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -82,4 +84,16 @@ with col2:
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):
         st.switch_page("pages/landing_page.py")
 
-   
+# This is too much and there's gotta be a better way of doing this...
+# TODO: we'll experiment with this tomorrow!
+def calculate_spread_coverage(point_spread, home_team, away_team, team_favored_abbreviation, team_not_favored_abbreviation, score_home_team, score_away_team, abbreviation_mapping):
+    # If the point spread is EVEN, return "N/A"
+    if point_spread == "EVEN":
+        point_spread = 0
+        
+    
+    
+    
+    
+    
+    

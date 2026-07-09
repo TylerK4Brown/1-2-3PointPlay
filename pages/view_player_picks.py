@@ -18,7 +18,10 @@ def calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_aw
     primary_score = score_home_team if is_pick_home else score_away_team
     secondary_score = score_away_team if is_pick_home else score_home_team
 
-    result = (primary_score - secondary_score) + float(point_spread.split(" ")[1]) if len(point_spread.split(" ")) > 1 else 0
+    if len(point_spread.split(" ")) > 1:
+        result = (primary_score - secondary_score) + float(point_spread.split(" ")[1])
+    else:
+        result = (primary_score - secondary_score)
     return result > 0
 
 # Initialize database connection
@@ -74,7 +77,7 @@ for row in rows:
         col1, col2, col3 = st.columns([1, 5, 1])
         with col2:
             if point_spread_pick == None:
-                expander_string = f"{point_value} POINT PLAY:{away_team} @ {home_team} → → → → Spread: EVEN → → → → Covering Spread: {'✅' if covering_spread else '❌'}"
+                expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: EVEN → → → → Covering Spread: {'✅' if covering_spread else '❌'}"
             else:
                 expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: {spread_pick_abbreviation} {point_spread_pick} → → → → {'✅' if covering_spread else '❌'}"
             with st.expander(expander_string, expanded=False):

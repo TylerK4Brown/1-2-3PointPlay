@@ -1,6 +1,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
-from API_info.abbreviation_mapping import map_abbreviations
+from API_info.abbreviation_mapping import map_abbreviations, reverse_map_abbreviations
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -148,17 +148,31 @@ def generate_expander(data_obj, button_id, start_times_list):
                 st.divider(width='stretch')
 
 # Callback function that handles changes to point values and updates states accordingly
+# TODO: this function is quite the struggle to parse through - it will be refactored after the completion of MVP #5
 def handle_change(changed_key, game_info):
     duplicate_exists = False
     # Split the changed key to get key type ("points" or "spread")
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
+    print(f"CHANGED KEY: {changed_key} | KEY TYPE: {key_type} | BUTTON ID: {button_id}")
 
     # get the game information for the button that was clicked
+    reverse_abbreviation_mapping = reverse_map_abbreviations()
     game = game_info[button_id - 1]
     home_team_name = game["home_team"]
     away_team_name = game["away_team"]
     game_id = game["game_id"]
+    is_pick_home = False
+
+    # If the key type is spread, determine if the pick is for the home team or the away team
+    # This helps later when we are calculating if the pick covered the spread or not
+    if key_type == "spread":
+        spread_pick = st.session_state[changed_key]
+        pick_abbreviation = spread_pick.split(" ")[0]
+        print(reverse_abbreviation_mapping[pick_abbreviation])
+        print(home_team_name)
+        if reverse_abbreviation_mapping[pick_abbreviation] == home_team_name:
+            is_pick_home = True
     
     # If there are picks currently listed in the session state
     if st.session_state.point_picks:
@@ -182,6 +196,7 @@ def handle_change(changed_key, game_info):
                 elif key_type == "spread":
                     # print("updating spread value!")
                     pick['spread'] = st.session_state[changed_key]
+                    pick['is_pick_home'] = is_pick_home
     
             # If the point selection conflicts with another point selection, pop the old selection from the list
             # Does not check for a conflict if the game ID is the same (i.e. the user is changing their pick for the same game)
@@ -209,6 +224,7 @@ def handle_change(changed_key, game_info):
                 away_team_name,
                 st.session_state[changed_key] if key_type == "points" else None, 
                 st.session_state[changed_key] if key_type == "spread" else None,
+                is_pick_home,
                 game_id,
                 button_id
             )
@@ -221,6 +237,7 @@ def handle_change(changed_key, game_info):
             away_team_name,
             st.session_state[changed_key] if key_type == "points" else None, 
             st.session_state[changed_key] if key_type == "spread" else None,
+            is_pick_home,
             game_id,
             button_id
         )
@@ -230,13 +247,14 @@ def handle_change(changed_key, game_info):
     print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
-def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, game_id, button_id):
+def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id):
     st.session_state.point_picks.append({
         "home_team": home_team_name,
         "away_team": away_team_name,
         "point_value": point_value,
         "spread": spread_pick,
         "game_id": game_id,
+        "is_pick_home": is_pick_home,
         "button_id": button_id
     })
 
@@ -248,7 +266,7 @@ def add_new_game_information_to_session_state(button_id, game_id, home_team_name
         "home_team": home_team_name,
         "away_team": away_team_name,
         "spread": spread,
-        "team_favored": team_favored
+        "team_favored": team_favored,
     })
 
 # Update button states based on the picks the user already made in the session state

@@ -1,4 +1,4 @@
-def map_abbreviations():
+def reverse_map_abbreviations():
     """
     Returns a dictionary that maps team abbreviations to their full names.
     """
@@ -37,7 +37,10 @@ def map_abbreviations():
         "WAS": "Washington Commanders",
     }
 
-def reverse_map_abbreviations():
+def map_abbreviations():
+   """
+   Same thing as above, but reversed!
+   """
    return {
         "Arizona Cardinals": "ARI",
         "Atlanta Falcons": "ATL",

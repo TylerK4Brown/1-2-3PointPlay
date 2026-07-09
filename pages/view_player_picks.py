@@ -74,7 +74,7 @@ for row in rows:
         col1, col2, col3 = st.columns([1, 5, 1])
         with col2:
             if point_spread_pick == None:
-                expander_string = f"{point_value} POINT PLAY:{away_team} @ {home_team} → → → → Spread: EVEN → → → → Covering Spread: {'Yes' if covering_spread else 'No'}"
+                expander_string = f"{point_value} POINT PLAY:{away_team} @ {home_team} → → → → Spread: EVEN → → → → Covering Spread: {'✅' if covering_spread else '❌'}"
             else:
                 expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: {spread_pick_abbreviation} {point_spread_pick} → → → → {'✅' if covering_spread else '❌'}"
             with st.expander(expander_string, expanded=False):

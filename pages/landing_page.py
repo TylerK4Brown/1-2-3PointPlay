@@ -62,6 +62,6 @@ if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_butt
 # Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
 st.divider(width='stretch')
 
-st.markdown("## View this week's picks!", text_alignment="center")
-if st.button("View Leaderboard Information", width='stretch', key="view_player_picks"):
+st.markdown("## View this week's picks from all players!", text_alignment="center")
+if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
     st.switch_page("pages/view_player_picks.py")

@@ -1,12 +1,25 @@
 # View picks page
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
+
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 from css.streamlit_css import load_css_gamedisplay
 from API_info.odds_api_call import make_scores_api_call
 from API_info.abbreviation_mapping import reverse_map_abbreviations
+import random
 import json
+
+# spread coverage math
+# sets the user's pick as the primary score, and the other team as the secondary score
+# subtract the primary from the secondary, and then add the spread to the result (i.e. spread is -3.5, primary score is 40, secondary score is 37
+# the result is (40 - 37) + (-3.5) = -0.5, which means the pick did not cover the spread)
+def calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team):
+    primary_score = score_home_team if is_pick_home else score_away_team
+    secondary_score = score_away_team if is_pick_home else score_home_team
+
+    result = (primary_score - secondary_score) + float(point_spread.split(" ")[1]) if len(point_spread.split(" ")) > 1 else 0
+    return result > 0
 
 # Initialize database connection
 conn = st.connection("user_picks", type=SupabaseConnection)
@@ -35,10 +48,9 @@ for row in rows:
         away_team = pick["away_team"]
         point_spread = pick["spread"]
         point_value = pick["point_value"]
-        team_favored_abbreviation = point_spread.split(" ")[0] if len(point_spread.split(" ")) > 1 else None
-        point_spread_favored = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
-        # Determine which team is not favored based on the point spread and the team abbreviations
-        team_not_favored_abbreviation = abbreviation_mapping[home_team] if team_favored_abbreviation == abbreviation_mapping[away_team] else abbreviation_mapping[away_team]
+        is_pick_home = pick["is_pick_home"]
+        spread_pick_abbreviation = point_spread.split(" ")[0] if len(point_spread.split(" ")) > 1 else None
+        point_spread_pick = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
         score_home_team = ""
         score_away_team = ""
         pick_scores = make_scores_api_call(pick["game_id"])
@@ -47,20 +59,24 @@ for row in rows:
         # If there's no scores, don't list any
         # If there are, pull the scores from the JSON
         if pick_scores[0]["scores"] == None:
-            score_home_team = "N/A"
-            score_away_team = "N/A"
+            score_home_team = 0
+            score_away_team = 0
         else:
             score_home_team = pick_scores[0]["scores"][0]["score"]
             score_away_team = pick_scores[0]["scores"][1]["score"] 
+        
+        score_home_team = random.randint(0, 50)
+        score_away_team = random.randint(0, 50)
+        covering_spread = calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team)
             
         # Build expander elements based on the information gathered above
         # Similar to the implementation in display_data.py, does not include the buttons
         col1, col2, col3 = st.columns([1, 5, 1])
         with col2:
-            if point_spread_favored == None:
-                expander_string = f"{point_value} POINT PLAY:{away_team} @ {home_team} → → → → Spread: EVEN"
+            if point_spread_pick == None:
+                expander_string = f"{point_value} POINT PLAY:{away_team} @ {home_team} → → → → Spread: EVEN → → → → Covering Spread: {'Yes' if covering_spread else 'No'}"
             else:
-                expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}"
+                expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: {spread_pick_abbreviation} {point_spread_pick} → → → → {'✅' if covering_spread else '❌'}"
             with st.expander(expander_string, expanded=False):
                 # create columns within the expander to display team logs
                 col1, col2, col3 = st.columns([1, 3, 1])
@@ -73,10 +89,13 @@ for row in rows:
                     st.image(f"images_nfl/{home_team.lower()}.png", width=100, caption=f"{score_home_team}")
                 
                 # display the spread information below the team logos
-                if point_spread_favored == None:
+                if point_spread_pick == None:
                     st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
                 else:
-                    st.markdown(f"## **SPREAD**: {team_favored_abbreviation} {point_spread_favored}", text_alignment='center')
+                    st.markdown(f"## **SPREAD**: {spread_pick_abbreviation} {point_spread_pick}", text_alignment='center')
+                
+                st.markdown("## YOUR PICK: " + point_spread, text_alignment='center')
+                st.markdown(f"## **COVERING SPREAD**: {'✅' if covering_spread else '❌'}", text_alignment='center')
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -84,13 +103,7 @@ with col2:
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):
         st.switch_page("pages/landing_page.py")
 
-# This is too much and there's gotta be a better way of doing this...
-# TODO: we'll experiment with this tomorrow!
-def calculate_spread_coverage(point_spread, home_team, away_team, team_favored_abbreviation, team_not_favored_abbreviation, score_home_team, score_away_team, abbreviation_mapping):
-    # If the point spread is EVEN, return "N/A"
-    if point_spread == "EVEN":
-        point_spread = 0
-        
+
     
     
     

@@ -166,7 +166,7 @@ def handle_change(changed_key, game_info):
 
     # If the key type is spread, determine if the pick is for the home team or the away team
     # This helps later when we are calculating if the pick covered the spread or not
-    if key_type == "spread":
+    if key_type == "spread" and st.session_state[changed_key] is not None:
         spread_pick = st.session_state[changed_key]
         pick_abbreviation = spread_pick.split(" ")[0]
         print(reverse_abbreviation_mapping[pick_abbreviation])

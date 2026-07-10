@@ -36,7 +36,7 @@ st.divider(width='stretch')
 
 # iterate through each users picks
 for row in rows:
-    total_points = 0
+    current_week_total = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
     st.divider(width='stretch')
@@ -71,7 +71,7 @@ for row in rows:
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team)
-        total_points += (int(point_value)) if covering_spread else 0
+        current_week_total += (int(point_value)) if covering_spread else 0
             
         # Build expander elements based on the information gathered above
         # Similar to the implementation in display_data.py, does not include the buttons
@@ -101,20 +101,27 @@ for row in rows:
                 st.markdown("## YOUR PICK: " + point_spread, text_alignment='center')
                 st.markdown(f"## **COVERING SPREAD**: {'✅' if covering_spread else '❌'}", text_alignment='center')
     
-    # Display the points earned this week and the total amount of points accumulated so far
-    st.markdown(f"### Points This Week: {total_points}", text_alignment='center')
-    running_total_points = total_points + row["total_points"]
-    st.markdown(f"### Total Points: {running_total_points}", text_alignment='center')
-    # Check if the user's current total has changed since last update or if the user for this week has not been recorded yet
-    # Update the database with an accumulated points score for the user
-    # eq makes sure that we only update the row corresponding to the current user based on their name
+    # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:
-        conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
-    # If the user's current week total is different from the total points calculated
-    # calculate the difference between the new total points and the previous current week total, store in the database
-    if row['current_week_total'] != total_points:
-        total_points -= row['current_week_total']
-        conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
+        conn.table("user_picks").update({
+                "current_week_total": current_week_total, 
+                "accumulated_points": current_week_total + row['accumulated_points']
+            }).eq("name", row["name"]).execute()
+        # Display the points earned this week and the total amount of points accumulated so far
+        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
+        
+    # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
+    elif row['current_week_total'] != current_week_total:
+        difference = current_week_total - row['current_week_total']
+        conn.table("user_picks").update({
+                "current_week_total": current_week_total, 
+                "accumulated_points": row['accumulated_points'] + difference
+            }).eq("name", row["name"]).execute()
+        # Display the points earned this week and the total amount of points accumulated so far
+        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
+        
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])

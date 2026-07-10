@@ -27,7 +27,6 @@ def calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_aw
 # Initialize database connection
 conn = st.connection("user_picks", type=SupabaseConnection)
 rows = conn.table("user_picks").select("*").execute().data
-
 # Load css and sort the rows by the user's name
 load_css_gamedisplay()
 rows = sorted(rows, key=lambda user: user["name"])
@@ -37,6 +36,7 @@ st.divider(width='stretch')
 
 # iterate through each users picks
 for row in rows:
+    total_points = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
     st.divider(width='stretch')
@@ -71,6 +71,7 @@ for row in rows:
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team)
+        total_points += (int(point_value)) if covering_spread else 0
             
         # Build expander elements based on the information gathered above
         # Similar to the implementation in display_data.py, does not include the buttons
@@ -96,9 +97,17 @@ for row in rows:
                     st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
                 else:
                     st.markdown(f"## **SPREAD**: {spread_pick_abbreviation} {point_spread_pick}", text_alignment='center')
-                
+               
                 st.markdown("## YOUR PICK: " + point_spread, text_alignment='center')
                 st.markdown(f"## **COVERING SPREAD**: {'✅' if covering_spread else '❌'}", text_alignment='center')
+    
+    # Display the points earned this week and the total amount of points accumulated so far
+    st.markdown(f"### Points This Week: {total_points}", text_alignment='center')
+    running_total_points = total_points + row["total_points"]
+    st.markdown(f"### Total Points: {running_total_points}", text_alignment='center')
+    # Update the database with an accumulated points score for the user
+    # eq makes sure that we only update the row corresponding to the current user based on their name
+    conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])

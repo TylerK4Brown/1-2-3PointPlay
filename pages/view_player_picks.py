@@ -108,7 +108,12 @@ for row in rows:
     # Check if the user's current total has changed since last update or if the user for this week has not been recorded yet
     # Update the database with an accumulated points score for the user
     # eq makes sure that we only update the row corresponding to the current user based on their name
-    if row['current_week_total'] is None or row['current_week_total'] != total_points:
+    if row['current_week_total'] is None:
+        conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
+    # If the user's current week total is different from the total points calculated
+    # calculate the difference between the new total points and the previous current week total, store in the database
+    if row['current_week_total'] != total_points:
+        total_points -= row['current_week_total']
         conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
     st.divider(width='stretch')
 

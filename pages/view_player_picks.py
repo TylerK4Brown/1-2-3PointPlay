@@ -105,9 +105,11 @@ for row in rows:
     st.markdown(f"### Points This Week: {total_points}", text_alignment='center')
     running_total_points = total_points + row["total_points"]
     st.markdown(f"### Total Points: {running_total_points}", text_alignment='center')
+    # Check if the user's current total has changed since last update or if the user for this week has not been recorded yet
     # Update the database with an accumulated points score for the user
     # eq makes sure that we only update the row corresponding to the current user based on their name
-    conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
+    if row['current_week_total'] is None or row['current_week_total'] != total_points:
+        conn.table("user_picks").update({"total_points": running_total_points}).eq("name", row["name"]).execute()
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])

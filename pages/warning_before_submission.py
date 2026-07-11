@@ -50,10 +50,10 @@ if check_session_states():
             }
             # if an entry exists for the user, update it. If not, create a new entry
             try:
-                conn.table("user_picks").update(data).eq("name", st.session_state.name).execute()
-            except Exception as e:
                 conn.table("user_picks").insert(data).execute()
-                
+            except Exception as e:
+                conn.table("user_picks").update(data).eq("name", st.session_state.name).execute()
+
             st.success("Your picks have been finalized! Navigating back to landing page...")
             sleep(2)
             st.switch_page("pages/landing_page.py")

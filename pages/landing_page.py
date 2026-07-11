@@ -3,10 +3,7 @@
 
 import streamlit as st
 from css.streamlit_css import load_css_buttons_homepage
-from st_supabase_connection import SupabaseConnection
-
-# Initialize database connection
-conn = st.connection("user_picks", type=SupabaseConnection)
+from database_operations.database import get_all_user_picks
 
 # Initialize button disabling sessions state variables - disables buttons if a name has already been logged in the database
 if "disable_tyler_button" not in st.session_state and "tyler_buttontext" not in st.session_state:
@@ -28,7 +25,7 @@ if "point_picks" not in st.session_state:
     st.session_state.point_picks = []
 
 # Check the database for existing names, disable the buttons accordingly
-rows = conn.table("user_picks").select("*").execute().data
+rows = get_all_user_picks()
 for row_data in rows:
     if row_data["name"] == "Tyler" and row_data["time_of_submission"] is not None:
         st.session_state.disable_tyler_button = True

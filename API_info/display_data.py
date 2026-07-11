@@ -42,6 +42,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     away_team = data_obj["away_team"]
     start_time = data_obj["commence_time"]
     point_spread = data_obj["bookmakers"][0]["markets"][0]["outcomes"]
+    game_id = data_obj['id']
     team_favored, team_favored_abbreviation, point_spread_favored, team_underdog, team_underdog_abbreviation, point_spread_underdog = None, None, None, None, None, None
     is_spread_even = False
 
@@ -49,6 +50,8 @@ def generate_expander(data_obj, button_id, start_times_list):
     for spread in point_spread:
         if spread["point"] == 0:
             is_spread_even = True
+            home_team_abbreviation = abbreviation_mapping[home_team]
+            away_team_abbreviation = abbreviation_mapping[away_team]
         if spread["point"] < 0:
             team_favored = spread["name"]
             team_favored_abbreviation = abbreviation_mapping[team_favored]
@@ -58,25 +61,19 @@ def generate_expander(data_obj, button_id, start_times_list):
             team_underdog_abbreviation = abbreviation_mapping[team_underdog]
             point_spread_underdog = spread["point"]
 
-    # If the spread is 0, that means the spread is even
-    # In that case, we will set the favored and underdog teams to "EVEN" and the point spreads to empty strings
-    if is_spread_even:
-        home_team_abbreviation = abbreviation_mapping[home_team]
-        away_team_abbreviation = abbreviation_mapping[away_team]
-    
-    game_id = data_obj['id']
-
     # create a new entry in the session state for the game
     add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, point_spread, team_favored)
 
-    # First, check if the list is empty. If it is, append an entry and display it to the page
+    # Start times list: instantiate before iterating through each expander generation
+    # Starts off empty - appends new start times and writes them on the page as they're encountered
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
         # create a datetime object from start time, replace its info with UTC, convert it to EST, and then format it in a readable string
         start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
         st.markdown(f"### :red[{start_time}]", text_alignment='center')
-    # If it's not empty, iterate through the list to see if a duplicate entry exists. If it does, break the loop and do not display it to the page
+    # If it's not empty, iterate through the list to see if a duplicate entry exists. 
+    # If it does, break the loop and do not display it to the page
     else:
         for previous_start_times in start_times_list:
             if start_time == previous_start_times:
@@ -90,6 +87,7 @@ def generate_expander(data_obj, button_id, start_times_list):
             start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
             st.markdown(f"### :red[{start_time}]", text_alignment='center')
 
+    # Start generating the expanders for each game in the current week
     col1, col2, col3 = st.columns([1, 5, 1])
     with col2:
         if is_spread_even:
@@ -107,8 +105,8 @@ def generate_expander(data_obj, button_id, start_times_list):
             with col3:
                 st.image(f"images_nfl/{home_team.lower()}.png", width=100)
             
-            # display the date and time of the game in a readable format
-            # display the over/under line for the game
+            # display the date and time of the game 
+            # display the spread for the game
             if is_spread_even:
                 st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
             else:
@@ -154,7 +152,7 @@ def handle_change(changed_key, game_info):
     # Split the changed key to get key type ("points" or "spread")
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
-    print(f"CHANGED KEY: {changed_key} | KEY TYPE: {key_type} | BUTTON ID: {button_id}")
+    # print(f"CHANGED KEY: {changed_key} | KEY TYPE: {key_type} | BUTTON ID: {button_id}")
 
     # get the game information for the button that was clicked
     reverse_abbreviation_mapping = reverse_map_abbreviations()
@@ -165,12 +163,11 @@ def handle_change(changed_key, game_info):
     is_pick_home = False
 
     # If the key type is spread, determine if the pick is for the home team or the away team
+    # is_pick_home stays false if the home team name is not the one selected in the spread pick
     # This helps later when we are calculating if the pick covered the spread or not
     if key_type == "spread" and st.session_state[changed_key] is not None:
         spread_pick = st.session_state[changed_key]
         pick_abbreviation = spread_pick.split(" ")[0]
-        print(reverse_abbreviation_mapping[pick_abbreviation])
-        print(home_team_name)
         if reverse_abbreviation_mapping[pick_abbreviation] == home_team_name:
             is_pick_home = True
     

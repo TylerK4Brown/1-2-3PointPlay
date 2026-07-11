@@ -12,10 +12,10 @@ if check_session_states():
     # set a disabled state for the segmented controls buttons that are created in the display_data_mlb function.
     if "disabled" not in st.session_state:
         st.session_state.disabled = True
+    
+    # Make API call, which also displays the games for the week
     make_api_call()
 
-    # TODO: submit button that will eventually reroute to a page that will require the user to confirm their picks
-    # will also contain checks to make sure all required values are filled out before allowing submission
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         # add spacing between expander and button

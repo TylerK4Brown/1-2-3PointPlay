@@ -2,27 +2,24 @@
 # Displays the user's name and ensures that the user is ready to submit before making the database call
 
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from time import sleep
 from default_behavior import check_session_states
 from css.streamlit_css import load_css_buttons_display_picks
+from database_operations.database import create_user_db_entry, update_user_picks
 
 if check_session_states():
     load_css_buttons_display_picks()
-    # Otherwise, display the warning page with the user's name and their picks
-    # instantiate database connection
-    conn = st.connection("user_picks", type=SupabaseConnection)
     st.title(f"You are about to submit your picks on behalf of {st.session_state['name']}.", text_alignment="center")
     st.divider(width='stretch')
-
+    
     # warning text
     st.markdown("#### If this is not your name, return to the landing page and select your name", text_alignment="center")
     st.markdown("#### Your current picks are saved, so selecting a new name will not reset those picks.", text_alignment="center")
     st.markdown("#### If you're still unsure about your picks, click on the \"No, return to View My Picks\" button below to review your picks before finalizing your submission.", text_alignment="center")
     st.divider(width='stretch')
-
+    
     st.title(f"Are you sure you want to submit your picks, {st.session_state['name']}?", text_alignment="center")
 
     # Button columns
@@ -50,9 +47,9 @@ if check_session_states():
             }
             # if an entry exists for the user, update it. If not, create a new entry
             try:
-                conn.table("user_picks").insert(data).execute()
+                create_user_db_entry(data)
             except Exception as e:
-                conn.table("user_picks").update(data).eq("name", st.session_state.name).execute()
+                update_user_picks(st.session_state.name, data)
 
             st.success("Your picks have been finalized! Navigating back to landing page...")
             sleep(2)

@@ -15,8 +15,8 @@ def make_api_call():
         sport_key = "baseball_mlb"
         bookmakers = "espnbet"
         markets = "totals"
-        commence_timeFrom = '2026-07-05T00:00:00Z'
-        commence_timeTo = '2026-07-16T22:34:00Z'
+        commence_timeFrom = '2026-07-11T22:10:00Z'
+        commence_timeTo = '2026-07-12T04:00:00Z'
 
         api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/?apiKey={api_key}&markets={markets}&bookmakers={bookmakers}&commenceTimeFrom={commence_timeFrom}&commenceTimeTo={commence_timeTo}"
 

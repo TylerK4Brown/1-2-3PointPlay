@@ -1,12 +1,12 @@
 # View picks page
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
-
 import streamlit as st
 from st_supabase_connection import SupabaseConnection
 from css.streamlit_css import load_css_gamedisplay
 from API_info.odds_api_call import make_scores_api_call
 from API_info.abbreviation_mapping import reverse_map_abbreviations
+from database_operations.database import update_user_points, get_all_user_picks
 import random
 import json
 
@@ -24,9 +24,8 @@ def calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_aw
         result = (primary_score - secondary_score)
     return result > 0
 
-# Initialize database connection
-conn = st.connection("user_picks", type=SupabaseConnection)
-rows = conn.table("user_picks").select("*").execute().data
+# database call to return every player's pick
+rows = get_all_user_picks()
 # Load css and sort the rows by the user's name
 load_css_gamedisplay()
 rows = sorted(rows, key=lambda user: user["name"])
@@ -71,6 +70,7 @@ for row in rows:
             score_home_team = pick_scores[0]["scores"][0]["score"]
             score_away_team = pick_scores[0]["scores"][1]["score"] 
         
+        # Calculate if the player is covering the spread using randomly generated test values
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team)
@@ -110,10 +110,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
-        conn.table("user_picks").update({
-                "current_week_total": current_week_total, 
-                "accumulated_points": current_week_total + row['accumulated_points']
-            }).eq("name", row["name"]).execute()
+        update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
        
         
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
@@ -123,10 +120,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
-        conn.table("user_picks").update({
-                "current_week_total": current_week_total, 
-                "accumulated_points": row['accumulated_points'] + difference
-            }).eq("name", row["name"]).execute()
+        update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
     # No database updates are necessary since the current week's total has not changed
@@ -140,11 +134,3 @@ col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):
         st.switch_page("pages/landing_page.py")
-
-
-    
-    
-    
-    
-    
-    

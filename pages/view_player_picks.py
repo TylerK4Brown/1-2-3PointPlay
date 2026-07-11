@@ -103,24 +103,27 @@ for row in rows:
     
     # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:
+        # Display the points earned this week and the total amount of points accumulated so far
+        # Print this first since it would sometimes bug out if the database updated before picks did
+        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
         conn.table("user_picks").update({
                 "current_week_total": current_week_total, 
                 "accumulated_points": current_week_total + row['accumulated_points']
             }).eq("name", row["name"]).execute()
-        # Display the points earned this week and the total amount of points accumulated so far
-        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
-        st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
+       
         
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
         difference = current_week_total - row['current_week_total']
+        # Display the points earned this week and the total amount of points accumulated so far
+        # Print this first since it would sometimes bug out if the database updated before picks did
+        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
         conn.table("user_picks").update({
                 "current_week_total": current_week_total, 
                 "accumulated_points": row['accumulated_points'] + difference
             }).eq("name", row["name"]).execute()
-        # Display the points earned this week and the total amount of points accumulated so far
-        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
-        st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
         
     st.divider(width='stretch')
 

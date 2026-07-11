@@ -39,12 +39,17 @@ for row in rows:
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
 
+    # If there's no picks for this user yet, continue to the next user in the loop
     if row["current_picks"] is None:
         st.markdown(f"#### {name} has no picks for this week yet.", text_alignment="center")
         st.divider(width='stretch')
         continue
     # Sort picks by point value, ascending order
     sorted_picks = sorted(row["current_picks"]["picks"], key=lambda pick: pick["point_value"])
+    game_id_list = [pick["game_id"] for pick in sorted_picks]
+    # Make an API call with all three game IDs for the current user's picks
+    pick_scores = make_scores_api_call(game_id_list)
+    iteration_index = 0
     
     for pick in sorted_picks:
         # Pull all relevant information from the output JSON object and store it in variables for easier access
@@ -54,22 +59,22 @@ for row in rows:
         point_spread = pick["spread"]
         point_value = pick["point_value"]
         is_pick_home = pick["is_pick_home"]
+        game_id = pick["game_id"]
         spread_pick_abbreviation = point_spread.split(" ")[0] if len(point_spread.split(" ")) > 1 else None
         point_spread_pick = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
         score_home_team = ""
         score_away_team = ""
-        pick_scores = make_scores_api_call(pick["game_id"])
-        print(json.dumps(pick_scores, indent=2))
         
         # If there's no scores, don't list any
         # If there are, pull the scores from the JSON
-        if pick_scores[0]["scores"] == None:
+        if pick_scores[iteration_index]["scores"] == None:
             score_home_team = 0
             score_away_team = 0
         else:
-            score_home_team = pick_scores[0]["scores"][0]["score"]
-            score_away_team = pick_scores[0]["scores"][1]["score"] 
+            score_home_team = pick_scores[iteration_index]["scores"][0]["score"]
+            score_away_team = pick_scores[iteration_index]["scores"][1]["score"] 
         
+        iteration_index += 1
         # Calculate if the player is covering the spread using randomly generated test values
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
@@ -111,8 +116,7 @@ for row in rows:
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
         update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
-       
-        
+           
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
         difference = current_week_total - row['current_week_total']
@@ -127,7 +131,7 @@ for row in rows:
     else:
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
-        
+    
     st.divider(width='stretch')
 
 col1, col2, col3 = st.columns([1, 1, 1])

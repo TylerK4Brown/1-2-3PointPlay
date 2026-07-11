@@ -36,7 +36,7 @@ if check_session_states():
             # store the user's picks in the database
             time_of_submission = datetime.now((ZoneInfo("America/New_York"))).strftime("%A, %B %d, %Y at %I:%M %p")
             # Only store completed picks (point_value AND spread values must not be null)
-            point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread"] is not None]
+            point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
 
             data = {
                 "name": st.session_state.name,

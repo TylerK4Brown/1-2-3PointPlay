@@ -16,8 +16,8 @@ if check_session_states():
     st.markdown("#### If you are satisfied with your selections, click the 'FINALIZE PICKS' button at the bottom of the page to submit your picks.", text_alignment="center")
     st.divider(width='stretch')
 
-    # Only display completed picks (point_value AND spread values must not be null)
-    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread"] is not None]
+    # Only display completed picks (point_value AND O/U values must not be null)
+    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
     # Sort picks by point value in ascending order
     sorted_point_picks = sorted(point_picks, key=lambda pick: pick["point_value"])
 
@@ -36,13 +36,13 @@ if check_session_states():
         # put 20 in the middle to push the images on the right all the way to the right
         col1, col2, col3 = st.columns([1, 20, 1])
         with col2:
-            st.image(f"images_nfl/{pick['away_team'].lower()}.png", width=75)
+            st.image(f"images_mlb/{pick['away_team'].lower()}.png", width=75)
         with col2:
             st.markdown(f"### {pick['away_team']} @ {pick['home_team']}",)
-            st.markdown(f"#### Your pick: {pick['spread']}", )
+            st.markdown(f"#### Your pick: {pick['over_under']} {pick['over_under_score']}", )
             st.markdown(f"#### Points: {pick['point_value']}", )
         with col2:
-            st.image(f"images_nfl/{pick['home_team'].lower()}.png", width=75)
+            st.image(f"images_mlb/{pick['home_team'].lower()}.png", width=75)
         
         st.divider(width='stretch')
 

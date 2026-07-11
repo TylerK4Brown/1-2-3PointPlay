@@ -11,12 +11,8 @@ import json
 
 # over/under coverage math
 def calculate_spread_cover(over_under_pick, over_under_score, score_home_team, score_away_team):
-    if over_under_pick == "OVER":
-        primary_score = score_home_team + score_away_team
-        secondary_score = over_under_score
-    else:
-        primary_score = over_under_score
-        secondary_score = score_home_team + score_away_team
+    primary_score = score_home_team + score_away_team if over_under_pick == "OVER" else over_under_score
+    secondary_score = over_under_score if over_under_pick == "OVER" else score_home_team + score_away_team
 
     result = (primary_score - secondary_score)
     return result > 0

@@ -30,13 +30,13 @@ if "point_picks" not in st.session_state:
 # Check the database for existing names, disable the buttons accordingly
 rows = conn.table("user_picks").select("*").execute().data
 for row_data in rows:
-    if row_data["name"] == "Tyler":
+    if row_data["name"] == "Tyler" and row_data["time_of_submission"] is not None:
         st.session_state.disable_tyler_button = True
         st.session_state.tyler_buttontext = f"Tyler (Picks submitted on {row_data['time_of_submission']})"
-    elif row_data["name"] == "TJ":
+    elif row_data["name"] == "TJ" and row_data["time_of_submission"] is not None:
         st.session_state.disable_tj_button = True
         st.session_state.tj_buttontext = f"TJ (Picks submitted on {row_data['time_of_submission']})"
-    elif row_data["name"] == "Dad":
+    elif row_data["name"] == "Dad" and row_data["time_of_submission"] is not None:
         st.session_state.disable_dad_button = True
         st.session_state.dad_buttontext = f"Dad (Picks submitted on {row_data['time_of_submission']})"
 

@@ -39,8 +39,11 @@ for row in rows:
     current_week_total = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
-    st.divider(width='stretch')
 
+    if row["current_picks"] is None:
+        st.markdown(f"#### {name} has no picks for this week yet.", text_alignment="center")
+        st.divider(width='stretch')
+        continue
     # Sort picks by point value, ascending order
     sorted_picks = sorted(row["current_picks"]["picks"], key=lambda pick: pick["point_value"])
     

@@ -127,6 +127,12 @@ for row in rows:
                 "current_week_total": current_week_total, 
                 "accumulated_points": row['accumulated_points'] + difference
             }).eq("name", row["name"]).execute()
+    
+    # If none of these conditions are met, still display the points earned and the total points for the week
+    # No database updates are necessary since the current week's total has not changed
+    else:
+        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
         
     st.divider(width='stretch')
 

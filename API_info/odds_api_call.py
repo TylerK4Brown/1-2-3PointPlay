@@ -38,9 +38,10 @@ def make_api_call():
 def make_scores_api_call(event_id_list):
     api_key = st.secrets["OddsAPI_key"]
     sport_key = "baseball_mlb"
+    days_from = 3
     string_event_ids = ','.join(event_id_list)
     print(f"MAKING API CALL TO ODDS API FOR GAME SCORES | EVENT ID LIST: {string_event_ids}")
-    api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?apiKey={api_key}&eventIds={','.join(event_id_list)}"
+    api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?apiKey={api_key}&eventIds={','.join(event_id_list)}&daysFrom={days_from}"
     
     response = requests.get(api_url)
     data = response.json()

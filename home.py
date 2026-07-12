@@ -1,5 +1,4 @@
 # Page configuration file for the app
-# Starts with two pages, one for the landing page and one for making picks
 
 import streamlit as st
 
@@ -22,10 +21,14 @@ pages = {
     "Finalize Your Picks": [
         st.Page("pages/warning_before_submission.py", title="Finalize Your Picks"),
     ],
+    "View Player Picks": [
+        st.Page("pages/view_player_picks.py", title="View Player Picks"),
+    ],
     "View Leaderboard": [
-        st.Page("pages/view_player_picks.py", title="View Leaderboard"),
+        st.Page("pages/view_leaderboard.py", title="View Leaderboard"),
     ],
 }
 
+# Hide the navigation bar and run the app with the defined page structure
 pg = st.navigation(pages, position="hidden")
 pg.run()

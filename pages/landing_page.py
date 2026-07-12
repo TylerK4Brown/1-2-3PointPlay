@@ -59,6 +59,11 @@ if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_butt
 # Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
 st.divider(width='stretch')
 
-st.markdown("## View this week's picks from all players!", text_alignment="center")
+st.markdown("## View this week's picks from all players", text_alignment="center")
 if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
     st.switch_page("pages/view_player_picks.py")
+
+st.divider(width='stretch')
+st.markdown("## View the current leaderboard", text_alignment="center")
+if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
+    st.switch_page("pages/view_leaderboard.py")

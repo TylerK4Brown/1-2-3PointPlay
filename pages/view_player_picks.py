@@ -65,16 +65,18 @@ for row in rows:
         score_home_team = ""
         score_away_team = ""
         
-        # If there's no scores, don't list any
-        # If there are, pull the scores from the JSON
-        if pick_scores[iteration_index]["scores"] == None:
-            score_home_team = 0
-            score_away_team = 0
-        else:
-            score_home_team = pick_scores[iteration_index]["scores"][0]["score"]
-            score_away_team = pick_scores[iteration_index]["scores"][1]["score"] 
+        # iterate through each score returned by the API call to find the score for the current game ID
+        for score in pick_scores:
+            if score["id"] == game_id:
+                if score["scores"] is None:
+                    score_home_team = 0
+                    score_away_team = 0
+                    game_start = score["commence_time"]
+                else:
+                    score_home_team = int(score["scores"][0]["score"])
+                    score_away_team = int(score["scores"][1]["score"])
+                    game_start = score["commence_time"]
         
-        iteration_index += 1
         # Calculate if the player is covering the spread using randomly generated test values
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
@@ -115,7 +117,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
-        update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
+        update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'], score_home_team, score_away_team, covering_spread)
            
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
@@ -124,7 +126,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
-        update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
+        update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference, score_home_team, score_away_team, covering_spread)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
     # No database updates are necessary since the current week's total has not changed

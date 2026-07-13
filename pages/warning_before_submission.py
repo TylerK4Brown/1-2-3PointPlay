@@ -42,7 +42,10 @@ if check_session_states():
                 "name": st.session_state.name,
                 "time_of_submission": time_of_submission,
                 "current_picks": {
-                    "picks": point_picks
+                    "picks": point_picks,
+                    "points_home": 0,
+                    "points_away": 0,
+                    "covering_spread": False
                 }
             }
             # if an entry exists for the user, update it. If not, create a new entry

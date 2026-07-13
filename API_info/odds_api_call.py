@@ -16,10 +16,11 @@ def make_api_call():
         sport_key = "americanfootball_nfl"
         bookmakers = "espnbet"
         markets = "spreads"
+        daysFrom = 3
         commence_timeFrom = '2026-09-10T00:00:00Z'
         commence_timeTo = '2026-09-16T00:00:00Z'
 
-        api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/?apiKey={api_key}&markets={markets}&bookmakers={bookmakers}&commenceTimeFrom={commence_timeFrom}&commenceTimeTo={commence_timeTo}"
+        api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/?apiKey={api_key}&markets={markets}&bookmakers={bookmakers}&commenceTimeFrom={commence_timeFrom}&commenceTimeTo={commence_timeTo}&daysFrom={daysFrom}"
 
         response = requests.get(api_url)
         data = response.json()

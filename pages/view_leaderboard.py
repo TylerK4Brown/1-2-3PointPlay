@@ -1,5 +1,5 @@
 import streamlit as st
-from database_operations.database import get_all_user_picks, get_user_points
+from database_operations.database import get_user_points
 
 st.markdown("# Current leaderboard", text_alignment="center")
 st.divider(width='stretch')

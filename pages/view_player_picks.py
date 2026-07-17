@@ -70,8 +70,8 @@ for row in rows:
                     score_home_team = int(score["scores"][0]["score"])
                     score_away_team = int(score["scores"][1]["score"])
         
-        score_home_team = random.randint(0, 14)
-        score_away_team = random.randint(0, 14)
+        # score_home_team = random.randint(0, 14)
+        # score_away_team = random.randint(0, 14)
         # Convert game time from iso UTC format to Eastern Time and format it for display
         game_start = datetime.fromisoformat(game_start.replace("Z", "+00:00")).astimezone(ZoneInfo("America/New_York")).strftime("%A, %B %d, %Y at %I:%M %p")
 

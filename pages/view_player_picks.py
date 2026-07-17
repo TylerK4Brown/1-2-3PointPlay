@@ -8,6 +8,7 @@ from database_operations.database import update_user_points, get_all_user_picks
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
+import random
 
 # over/under coverage math
 def calculate_spread_cover(over_under_pick, over_under_score, score_home_team, score_away_team):
@@ -61,15 +62,16 @@ for row in rows:
         # iterate through each score returned by the API call to find the score for the current game ID
         for score in pick_scores:
             if score["id"] == game_id:
+                game_start = score["commence_time"]
                 if score["scores"] is None:
                     score_home_team = 0
                     score_away_team = 0
-                    game_start = score["commence_time"]
                 else:
                     score_home_team = int(score["scores"][0]["score"])
                     score_away_team = int(score["scores"][1]["score"])
-                    game_start = score["commence_time"]
         
+        score_home_team = random.randint(0, 14)
+        score_away_team = random.randint(0, 14)
         # Convert game time from iso UTC format to Eastern Time and format it for display
         game_start = datetime.fromisoformat(game_start.replace("Z", "+00:00")).astimezone(ZoneInfo("America/New_York")).strftime("%A, %B %d, %Y at %I:%M %p")
 

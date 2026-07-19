@@ -1,9 +1,7 @@
 # Picks page for the app
-# Will eventually make an API call to The Odds API to gather MLB data and display it for the user to make their picks
-
+# Makes an API call to The Odds API to get the games for the week, and displays them in Streamlit expander elements
 import streamlit as st
 from API_info.odds_api_call import make_api_call
-from css.streamlit_css import load_css_buttons_homepage
 from default_behavior import check_session_states
 
 # Makes sure all proper state variables are present before starting

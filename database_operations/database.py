@@ -4,19 +4,28 @@
 from st_supabase_connection import SupabaseConnection
 import streamlit as st
 
+# Get all user picks
+# Select * from the user_picks table and return the rows
 def get_all_user_picks():
     conn = st.connection("user_picks", type=SupabaseConnection)
     rows = conn.table("user_picks").select("*").execute().data
     return rows
 
+# Create a new user entry in the database if the name does not exist yet
+# This will only be used at the start of the season to create initial entries for each user
 def create_user_db_entry(data_entry):
     conn = st.connection("user_picks", type=SupabaseConnection)
     conn.table("user_picks").insert(data_entry).execute()
 
+# Update the user picks in the database for a specific user
 def update_user_picks(name, data_entry):
     conn = st.connection("user_picks", type=SupabaseConnection)
     conn.table("user_picks").update(data_entry).eq("name", name).execute()
-    
+
+# Update points for a specific user in the database
+# Called after user clicks on the "view_player_picks" page
+# Updates point totals based on the live score of the game
+# Also updates the home and away team score for that game, plus the covering status
 def update_user_points(name, current_week_total, accumulated_points):
     conn = st.connection("user_picks", type=SupabaseConnection)
     conn.table("user_picks").update({
@@ -24,11 +33,14 @@ def update_user_points(name, current_week_total, accumulated_points):
             "accumulated_points": accumulated_points
         }).eq("name", name).execute()
 
+# Get the current user points for each user, store in session state
+# Used in the leaderboard page to display accumulated points for each user
 def get_user_points():
     name_list = ["Dad", "TJ", "Tyler"]
     conn = st.connection("user_picks", type=SupabaseConnection)
     for name in name_list:
         row = conn.table("user_picks").select("accumulated_points").eq("name", name).execute().data
+        print(row)
         if row:
             accumulated_points = row[0]["accumulated_points"]
             st.session_state[f"{name}_accumulated_points"] = accumulated_points

@@ -44,17 +44,21 @@ st.divider(width='stretch')
 # Display three buttons for the user to select - clicking on a button will store the user's name in session state
 # relocates to the make_your_picks page
 load_css_buttons_homepage()
-if st.button(st.session_state.dad_buttontext, width='stretch', key="dad_button", disabled=st.session_state.disable_dad_button):
-    st.session_state.name = "Dad"
-    st.switch_page("pages/make_your_picks.py")
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button(st.session_state.dad_buttontext, width='stretch', key="dad_button", disabled=st.session_state.disable_dad_button):
+        st.session_state.name = "Dad"
+        st.switch_page("pages/make_your_picks.py")
 
-if st.button(st.session_state.tj_buttontext, width='stretch', key="tj_button", disabled=st.session_state.disable_tj_button):
-    st.session_state.name = "TJ"
-    st.switch_page("pages/make_your_picks.py")
-
-if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_button", disabled=st.session_state.disable_tyler_button):
-    st.session_state.name = "Tyler"
-    st.switch_page("pages/make_your_picks.py")
+with col2:
+    if st.button(st.session_state.tj_buttontext, width='stretch', key="tj_button", disabled=st.session_state.disable_tj_button):
+        st.session_state.name = "TJ"
+        st.switch_page("pages/make_your_picks.py")
+        
+with col3:
+    if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_button", disabled=st.session_state.disable_tyler_button):
+        st.session_state.name = "Tyler"
+        st.switch_page("pages/make_your_picks.py")
 
 # Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
 st.divider(width='stretch')

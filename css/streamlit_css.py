@@ -47,11 +47,11 @@ def load_css_buttons_homepage():
     return st.markdown('''
     <style>
         [data-testid="stButton"] p {
-            font-size: 30px;
+            font-size: 21px;
         }
                        
         [data-testid="stButton"] button {
-            height: 125px;
+            height: 85px;
             background-color: #2d60cf;
             color: #ffffff;
         }

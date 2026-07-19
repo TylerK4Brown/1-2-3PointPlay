@@ -12,7 +12,9 @@ points_data = {
     "Tyler": st.session_state.get("Tyler_accumulated_points")
 }
 
-# Creates a tuple, takes index 1 (points value) from the tuple for each item in the dictionary, sorts the dictionary by that value, and returns a new dictionary with the sorted values
+# Creates a tuple, takes index 1 (points value) from the tuple for each item in the dictionary
+# sorts the dictionary by that value
+# returns a new dictionary with the sorted values
 points_data_sorted = dict(sorted(points_data.items(), key=lambda item: item[1], reverse=True))
 
 # enumerate makes it so we can get the index of the items stored in the dictionary

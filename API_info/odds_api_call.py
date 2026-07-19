@@ -14,7 +14,7 @@ def make_api_call():
         api_key = st.secrets["OddsAPI_key"]
         # sport_key = "americanfootball_nfl_preseason"
         sport_key = "americanfootball_nfl"
-        bookmakers = "espnbet"
+        bookmakers = "draftkings"
         markets = "spreads"
         daysFrom = 3
         commence_timeFrom = '2026-09-10T00:00:00Z'

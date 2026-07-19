@@ -2,12 +2,8 @@
 # The name selected will be stored in session state and used to personalize the picks page
 
 import streamlit as st
-from streamlit_extras.card_selector import *
 from css.streamlit_css import load_css_buttons_homepage
-from st_supabase_connection import SupabaseConnection
-
-# Initialize database connection
-conn = st.connection("user_picks", type=SupabaseConnection)
+from database_operations.database import get_all_user_picks
 
 # Initialize button disabling sessions state variables - disables buttons if a name has already been logged in the database
 if "disable_tyler_button" not in st.session_state and "tyler_buttontext" not in st.session_state:
@@ -29,15 +25,15 @@ if "point_picks" not in st.session_state:
     st.session_state.point_picks = []
 
 # Check the database for existing names, disable the buttons accordingly
-rows = conn.table("user_picks").select("*").execute().data
+rows = get_all_user_picks()
 for row_data in rows:
-    if row_data["name"] == "Tyler":
+    if row_data["name"] == "Tyler" and row_data["time_of_submission"] is not None:
         st.session_state.disable_tyler_button = True
         st.session_state.tyler_buttontext = f"Tyler (Picks submitted on {row_data['time_of_submission']})"
-    elif row_data["name"] == "TJ":
+    elif row_data["name"] == "TJ" and row_data["time_of_submission"] is not None:
         st.session_state.disable_tj_button = True
         st.session_state.tj_buttontext = f"TJ (Picks submitted on {row_data['time_of_submission']})"
-    elif row_data["name"] == "Dad":
+    elif row_data["name"] == "Dad" and row_data["time_of_submission"] is not None:
         st.session_state.disable_dad_button = True
         st.session_state.dad_buttontext = f"Dad (Picks submitted on {row_data['time_of_submission']})"
 
@@ -59,3 +55,15 @@ if st.button(st.session_state.tj_buttontext, width='stretch', key="tj_button", d
 if st.button(st.session_state.tyler_buttontext, width='stretch', key="tyler_button", disabled=st.session_state.disable_tyler_button):
     st.session_state.name = "Tyler"
     st.switch_page("pages/make_your_picks.py")
+
+# Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
+st.divider(width='stretch')
+
+st.markdown("## View this week's picks from all players", text_alignment="center")
+if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
+    st.switch_page("pages/view_player_picks.py")
+
+st.divider(width='stretch')
+st.markdown("## View the current leaderboard", text_alignment="center")
+if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
+    st.switch_page("pages/view_leaderboard.py")

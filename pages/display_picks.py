@@ -5,16 +5,19 @@ import streamlit as st
 from st_supabase_connection import SupabaseConnection
 import json
 from default_behavior import check_session_states
+from css.streamlit_css import load_css_buttons_display_picks
 
 if check_session_states():
+    # Load custom CSS for display picks buttons
+    load_css_buttons_display_picks()
     #iterate through the custom dictionary and display the user's picks
     st.title(f"Here are your picks, {st.session_state.name}!", text_alignment="center")
     st.markdown("#### Please carefully review your picks below.", text_alignment="center")
     st.markdown("#### If you are satisfied with your selections, click the 'FINALIZE PICKS' button at the bottom of the page to submit your picks.", text_alignment="center")
     st.divider(width='stretch')
 
-    # Only display completed picks (point_value AND over_under values must not be null)
-    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["over_under"] is not None]
+    # Only display completed picks (point_value AND spread values must not be null)
+    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread"] is not None]
     # Sort picks by point value in ascending order
     sorted_point_picks = sorted(point_picks, key=lambda pick: pick["point_value"])
 
@@ -32,14 +35,14 @@ if check_session_states():
     for pick in sorted_point_picks:
         # put 20 in the middle to push the images on the right all the way to the right
         col1, col2, col3 = st.columns([1, 20, 1])
-        with col1:
-            st.image(f"images_mlb/{pick['away_team'].lower()}.png", width="stretch")
         with col2:
-            st.markdown(f"### {pick['away_team']} @ {pick['home_team']}", text_alignment="center")
-            st.markdown(f"#### Your pick: {pick['over_under']} (O/U: {pick['over_under_score']})", text_alignment="center")
-            st.markdown(f"#### Points: {pick['point_value']}", text_alignment="center")
-        with col3:
-            st.image(f"images_mlb/{pick['home_team'].lower()}.png", width="stretch")
+            st.image(f"images_nfl/{pick['away_team'].lower()}.png", width=75)
+        with col2:
+            st.markdown(f"### {pick['away_team']} @ {pick['home_team']}",)
+            st.markdown(f"#### Your pick: {pick['spread']}", )
+            st.markdown(f"#### Points: {pick['point_value']}", )
+        with col2:
+            st.image(f"images_nfl/{pick['home_team'].lower()}.png", width=75)
         
         st.divider(width='stretch')
 
@@ -47,11 +50,11 @@ if check_session_states():
     col1, col2, col3 = st.columns([1, 1, 1])
     # TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
     if "disabled" in st.session_state:
-        with col2:
+        with col1:
             if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
                 st.switch_page("pages/warning_before_submission.py")
                 
-    with col1:
+    with col2:
         if "name" in st.session_state and "point_picks" in st.session_state:
             if st.button("Continue Making Picks", width=700, key="continue_making_picks"):
                 st.switch_page("pages/make_your_picks.py")

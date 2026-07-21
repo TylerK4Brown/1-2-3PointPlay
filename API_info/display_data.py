@@ -245,6 +245,8 @@ def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, s
         "home_team": home_team_name,
         "away_team": away_team_name,
         "point_value": point_value,
+        "home_team_score": 0,
+        "away_team_score": 0,
         "spread": spread_pick,
         "game_id": game_id,
         "is_pick_home": is_pick_home,

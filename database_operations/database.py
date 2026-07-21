@@ -45,3 +45,20 @@ def get_user_points():
             accumulated_points = row[0]["accumulated_points"]
             st.session_state[f"{name}_accumulated_points"] = accumulated_points
             print(st.session_state[f"{name}_accumulated_points"])
+
+# Update the score of a specific pick for a specific user in the database
+# Called after clicking on the "view_player_picks" page, after the API call is made to get the live scores for each game
+def update_scores(name, score_home_team, score_away_team, iteration_index, sorted_picks, covering_spread):
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    # update the pick at the specific index (0 - 2)
+    pick_to_update = sorted_picks[iteration_index]
+    # update the home team/away team scores + the covering status
+    pick_to_update["home_team_score"] = score_home_team
+    pick_to_update["away_team_score"] = score_away_team
+    pick_to_update["covering_spread"] = covering_spread
+    # update the picks in the DB
+    conn.table("user_picks").update({
+            "current_picks": {
+                "picks": sorted_picks
+            }
+        }).eq("name", name).execute()

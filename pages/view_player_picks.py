@@ -2,13 +2,11 @@
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
 from css.streamlit_css import load_css_gamedisplay
 from API_info.odds_api_call import make_scores_api_call
 from API_info.abbreviation_mapping import reverse_map_abbreviations
-from database_operations.database import update_user_points, get_all_user_picks
+from database_operations.database import update_user_points, get_all_user_picks, update_scores
 import random
-import json
 
 # spread coverage math
 # sets the user's pick as the primary score, and the other team as the secondary score
@@ -36,6 +34,7 @@ st.divider(width='stretch')
 # iterate through each users picks
 for row in rows:
     current_week_total = 0
+    iteration_index = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
 
@@ -49,7 +48,6 @@ for row in rows:
     game_id_list = [pick["game_id"] for pick in sorted_picks]
     # Make an API call with all three game IDs for the current user's picks
     pick_scores = make_scores_api_call(game_id_list)
-    iteration_index = 0
     
     for pick in sorted_picks:
         # Pull all relevant information from the output JSON object and store it in variables for easier access
@@ -110,6 +108,11 @@ for row in rows:
                
                 st.markdown("## YOUR PICK: " + point_spread, text_alignment='center')
                 st.markdown(f"## **COVERING SPREAD**: {'✅' if covering_spread else '❌'}", text_alignment='center')
+
+        # Update scores for this pick in the database
+        # Combats the issue of API not allowing for the game score history to be pulled after x amount of days
+        update_scores(row["name"], score_home_team, score_away_team, iteration_index, sorted_picks, covering_spread)
+        iteration_index += 1
     
     # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:
@@ -117,8 +120,8 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
-        update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'], score_home_team, score_away_team, covering_spread)
-           
+        update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
+    
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
         difference = current_week_total - row['current_week_total']
@@ -126,7 +129,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
-        update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference, score_home_team, score_away_team, covering_spread)
+        update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
     # No database updates are necessary since the current week's total has not changed

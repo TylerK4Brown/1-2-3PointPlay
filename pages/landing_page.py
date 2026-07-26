@@ -57,7 +57,6 @@ with col1:
         # if they don't, user starts with an empty list of pick
         db_picks = get_user_picks(st.session_state.name)
         # defaults to none if no picks exist to ensure no error is thrown
-
         db_picks = db_picks[0]["current_picks"]["picks"] if db_picks[0]["current_picks"] is not None else None
         if db_picks is not None:
             st.session_state.point_picks = db_picks
@@ -66,7 +65,6 @@ with col1:
 with col2:
     if st.button(st.session_state.tj_buttontext, width='stretch', key="tj_button", disabled=st.session_state.disable_tj_button):
         st.session_state.name = "TJ"
-
         # load user picks from the database into session state if they exist
         # if they don't, user starts with an empty list of picks
         db_picks = get_user_picks(st.session_state.name)
@@ -99,18 +97,3 @@ st.divider(width='stretch')
 st.markdown("## View the current leaderboard", text_alignment="center")
 if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
     st.switch_page("pages/view_leaderboard.py")
-
-def add_db_picks_to_session_state(db_picks):
-    for pick in db_picks:
-        st.session_state.point_picks.append({
-            "home_team": pick["home_team"],
-            "away_team": pick["away_team"],
-            "point_value": pick["point_value"],
-            "home_team_score": pick["home_team_score"],
-            "away_team_score": pick["away_team_score"],
-            "spread": pick["spread"],
-            "game_id": pick["game_id"],
-            "is_pick_home": pick["is_pick_home"],
-            "button_id": pick["button_id"],
-            "is_pick_in_database": True
-        })

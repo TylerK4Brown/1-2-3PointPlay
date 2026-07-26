@@ -45,11 +45,9 @@ def get_user_points():
     conn = st.connection("user_picks", type=SupabaseConnection)
     for name in name_list:
         row = conn.table("user_picks").select("accumulated_points").eq("name", name).execute().data
-        print(row)
         if row:
             accumulated_points = row[0]["accumulated_points"]
             st.session_state[f"{name}_accumulated_points"] = accumulated_points
-            print(st.session_state[f"{name}_accumulated_points"])
 
 # Update the score of a specific pick for a specific user in the database
 # Called after clicking on the "view_player_picks" page, after the API call is made to get the live scores for each game

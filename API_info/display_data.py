@@ -148,8 +148,6 @@ def generate_expander(data_obj, button_id, start_times_list):
                 
                 st.divider(width='stretch')
             
-           
-
 # Callback function that handles changes to point values and updates states accordingly
 # changed_key = "<button_id>_<key_type>" (e.g., "1_points" or "2_spread")
 # game_info is a list of dictionaries containing information about each game from the API call
@@ -165,14 +163,26 @@ def handle_change(changed_key, game_info):
     button_id = int(changed_key.split("_")[0])
     value_of_pick = st.session_state[changed_key]
 
+    # PART 2: Check if this pick selection has been finalized in the database
+    # Does two checks:
+    # 1. If the button ID matches an existing pick in the session state, reset the button states to their selected values
+    # 2. If the point value matches an existing pick in the session state, reset the pick made to None
     for pick in st.session_state.point_picks:
+        if pick["is_pick_in_database"] == False:
+            continue
+
         if pick["button_id"] == button_id and pick["is_pick_in_database"] == True:
             st.toast(f"Cannot change a pick that has already been finalized. Please tell Tyler if you need to make changes.", icon="⚠️", duration=5)
             # reset the button state to None - deselects the button on the page
             st.session_state[changed_key] = value_of_pick
             return
+        elif key_type == "points" and pick["point_value"] == value_of_pick:
+            st.toast(f"{pick['point_value']} point play has already been finalized. Please assign a different point value to this game.", icon="⚠️", duration=5)
+            # reset the button state to None - deselects the button on the page
+            st.session_state[changed_key] = None
+            return
 
-    # PART 2: Grab information about the game that corresponds to that button ID from the game_info list
+    # PART 3: Grab information about the game that corresponds to that button ID from the game_info list
     reverse_abbreviation_mapping = reverse_map_abbreviations()
     game = game_info[button_id - 1]
     home_team_name = game["home_team"]

@@ -33,4 +33,4 @@ ABBREVIATION_MAPPING = {
     "Washington Commanders": "WAS",
     }
 
-REVERSED_ABBREVIATION_MAPPING = {full_team_name: name_abbreviation for name_abbreviation, full_team_name in ABBREVIATION_MAPPING.items()}
+REVERSED_ABBREVIATION_MAPPING = {name_abbreviation: full_team_name for full_team_name, name_abbreviation in ABBREVIATION_MAPPING.items()}

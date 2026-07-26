@@ -6,7 +6,6 @@ import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-
 # Display the upcoming NFL games and point spreads
 def display_data_nfl (data):
     button_id = 1

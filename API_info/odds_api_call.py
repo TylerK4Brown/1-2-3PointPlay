@@ -1,7 +1,6 @@
 # Either makes an API call to the Odds API or uses the data already stored in session state to display the upcoming MLB games and their point spreads
 
 import requests
-import json
 import streamlit as st
 import API_info.display_data as display_data
 from database_operations.database import get_week_number
@@ -15,7 +14,7 @@ def make_api_call():
         st.session_state.api_data = None
         api_key = st.secrets["OddsAPI_key"]
         # sport_key = "americanfootball_nfl_preseason"
-        sport_key = "americanfootball_nfl"
+        sport_key = "americanfootball_nfl_preseason"
         bookmakers = "draftkings"
         markets = "spreads"
         daysFrom = 3

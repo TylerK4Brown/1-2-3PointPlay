@@ -1,6 +1,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
-from database_operations.database import get_user_picks
+from dictionaries.games_per_week import NFL_GAMES_PER_WEEK
 from API_info.abbreviation_mapping import map_abbreviations, reverse_map_abbreviations
 import json
 from datetime import datetime
@@ -10,6 +10,15 @@ from zoneinfo import ZoneInfo
 # Display the upcoming NFL games and point spreads
 def display_data_nfl (data):
     button_id = 1
+    week_number = st.session_state.week_number
+
+    # Checks to make sure the length of the data returned from the API call is the expected number
+    # If not, this probably means that an older game is no longer returned by the API (i.e, a game played on Wednesday this week will be removed from the API call on Sunday morning)
+    # To avoid a mismatch between the button IDs and the game information, increment the button ID
+    # This allows for the button IDs to match the game information in session state and in the database
+    if len(data) < NFL_GAMES_PER_WEEK[week_number]:
+        increment_button_id = NFL_GAMES_PER_WEEK[week_number] - len(data)
+        button_id += increment_button_id
     # create the game_information list in session state if it doesn't already exist
     if "game_information" not in st.session_state:
         st.session_state.game_information = []

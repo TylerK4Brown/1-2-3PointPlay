@@ -21,7 +21,10 @@ def make_api_call():
         daysFrom = 3
         # Grab week number from the database, compare it to the dictionary of week + time windows
         # Use those values to complete the API call
+        # Store in session state so it can be used later
         current_week_number = get_week_number()
+        if "week_number" not in st.session_state:
+            st.session_state.week_number = current_week_number
         commence_timeFrom = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeFrom"]
         commence_timeTo = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeTo"]
 

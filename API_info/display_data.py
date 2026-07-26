@@ -1,7 +1,7 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from dictionaries.games_per_week import NFL_GAMES_PER_WEEK
-from API_info.abbreviation_mapping import map_abbreviations, reverse_map_abbreviations
+from dictionaries.abbreviation_mapping import ABBREVIATION_MAPPING, REVERSED_ABBREVIATION_MAPPING
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -47,7 +47,6 @@ def display_data_nfl (data):
 def generate_expander(data_obj, button_id, start_times_list):
     # extract home team, away team, point spreads for the favored and underdog teams, and the game ID from the API call data
     # also call the abbreviation mapping function for later use in the expander display
-    abbreviation_mapping = map_abbreviations()
     home_team = data_obj["home_team"]
     away_team = data_obj["away_team"]
     start_time = data_obj["commence_time"]
@@ -60,15 +59,15 @@ def generate_expander(data_obj, button_id, start_times_list):
     for spread in point_spread:
         if spread["point"] == 0:
             is_spread_even = True
-            home_team_abbreviation = abbreviation_mapping[home_team]
-            away_team_abbreviation = abbreviation_mapping[away_team]
+            home_team_abbreviation = ABBREVIATION_MAPPING[home_team]
+            away_team_abbreviation = ABBREVIATION_MAPPING[away_team]
         if spread["point"] < 0:
             team_favored = spread["name"]
-            team_favored_abbreviation = abbreviation_mapping[team_favored]
+            team_favored_abbreviation = ABBREVIATION_MAPPING[team_favored]
             point_spread_favored = spread["point"]
         if spread["point"] > 0:
             team_underdog = spread["name"]
-            team_underdog_abbreviation = abbreviation_mapping[team_underdog]
+            team_underdog_abbreviation = ABBREVIATION_MAPPING[team_underdog]
             point_spread_underdog = spread["point"]
 
     # create a new entry in the session state for the game
@@ -204,7 +203,6 @@ def handle_change(changed_key, game_info):
             return
 
     # PART 4: Grab information about the game that corresponds to that button ID from the game_info list
-    reverse_abbreviation_mapping = reverse_map_abbreviations()
     home_team_name = game["home_team"]
     away_team_name = game["away_team"]
     game_id = game["game_id"]
@@ -217,7 +215,7 @@ def handle_change(changed_key, game_info):
     if key_type == "spread" and value_of_pick is not None:
         spread_pick = value_of_pick
         pick_abbreviation = spread_pick.split(" ")[0]
-        if reverse_abbreviation_mapping[pick_abbreviation] == home_team_name:
+        if REVERSED_ABBREVIATION_MAPPING[pick_abbreviation] == home_team_name:
             is_pick_home = True
     
     # -- UPDATE SESSION STATE BASED ON THE INFORMATION GATHERED ABOVE --

@@ -1,5 +1,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
+from database_operations.database import get_user_picks
 from API_info.abbreviation_mapping import map_abbreviations, reverse_map_abbreviations
 import json
 from datetime import datetime
@@ -123,6 +124,7 @@ def generate_expander(data_obj, button_id, start_times_list):
             else:
                 options_list = [f"{team_favored_abbreviation} {point_spread_favored}", f"{team_underdog_abbreviation} +{point_spread_underdog}"]
             col1, col2, col3 = st.columns([1, 2, 1])
+            
             with col2:
                 st.segmented_control (
                     label="spread", 
@@ -143,21 +145,44 @@ def generate_expander(data_obj, button_id, start_times_list):
                     on_change=handle_change,
                     args=(f"{button_id}_points", st.session_state.game_information,)
                 )
-                # makes each button unique by incrementing the button_id for each game
-                button_id += 1
+                
                 st.divider(width='stretch')
-
+            
 # Callback function that handles changes to point values and updates states accordingly
 # changed_key = "<button_id>_<key_type>" (e.g., "1_points" or "2_spread")
 # game_info is a list of dictionaries containing information about each game from the API call
 def handle_change(changed_key, game_info):
-    # Split the changed key to get key type ("points" or "spread")
+
+    # -- INITIAL INFORMATION GATHERING, TWO PARTS --
+    
+    # PART 1: Grab information about the button that was clicked
+    # 1. key_type = points or spread (key_type is in the format "<button_id>_<key_type>", so we split it to get the key_type)
+    # 2. button_id = the ID of the button that was clicked (used to find the game information in the game_info list)
+    # 3. value_of_pick = the value of the pick that was selected (e.g., "1", "2", "3" for points or "<team_abbreviation> <spread_value>" for spread)
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
     value_of_pick = st.session_state[changed_key]
-    # print(f"CHANGED KEY: {changed_key} | KEY TYPE: {key_type} | BUTTON ID: {button_id}")
 
-    # get the game information for the button that was clicked
+    # PART 2: Check if this pick selection has been finalized in the database
+    # Does two checks:
+    # 1. If the button ID matches an existing pick in the session state, reset the button states to their selected values
+    # 2. If the point value matches an existing pick in the session state, reset the pick made to None
+    for pick in st.session_state.point_picks:
+        if pick["is_pick_in_database"] == False:
+            continue
+
+        if pick["button_id"] == button_id and pick["is_pick_in_database"] == True:
+            st.toast(f"Cannot change a pick that has already been finalized. Please tell Tyler if you need to make changes.", icon="⚠️", duration=5)
+            # reset the button state to None - deselects the button on the page
+            st.session_state[changed_key] = value_of_pick
+            return
+        elif key_type == "points" and pick["point_value"] == value_of_pick:
+            st.toast(f"{pick['point_value']} point play has already been finalized. Please assign a different point value to this game.", icon="⚠️", duration=5)
+            # reset the button state to None - deselects the button on the page
+            st.session_state[changed_key] = None
+            return
+
+    # PART 3: Grab information about the game that corresponds to that button ID from the game_info list
     reverse_abbreviation_mapping = reverse_map_abbreviations()
     game = game_info[button_id - 1]
     home_team_name = game["home_team"]
@@ -174,7 +199,8 @@ def handle_change(changed_key, game_info):
         if reverse_abbreviation_mapping[pick_abbreviation] == home_team_name:
             is_pick_home = True
     
-     # If there are no picks in the session state, add a new entry
+    # -- UPDATE SESSION STATE BASED ON THE INFORMATION GATHERED ABOVE --
+    # PART 1: If there are no picks in the session state, add a new entry
     if not st.session_state.point_picks:
         add_new_pick_to_session_state(
             home_team_name, 
@@ -185,13 +211,13 @@ def handle_change(changed_key, game_info):
             game_id,
             button_id
         )
-    # If a pick does not exist in the session state, iterate through existing picks
-    # In here, we specifically check for
-    # 1. Duplicate entries (same game ID - update the existing pick if this is the case)
-    # 2. Conflicting point selections (same point value for different games)
+        
+    # PART 2: If a pick does not exist in the session state, iterate through existing picks (max 3 iterations)
     else:
+        # For each existing pick in the session state, check if the game ID matches the current game ID
+        # If it does, update the existing pick with the new value
+        # If it doesn't, add a new entry to the session state
         for existing_pick in st.session_state.point_picks:
-            # get the game ID for the current pick selected in the loop
             existing_game_id = existing_pick['game_id']
             same_id = False
             # if the game ID already exists in our list, update the same_id flag
@@ -205,10 +231,12 @@ def handle_change(changed_key, game_info):
                     # update is_pick_home for easier spread coverage calculation in view_player_picks.py
                     existing_pick['is_pick_home'] = is_pick_home
     
-            # If the point selection conflicts with another point selection, pop the old selection from the list
-            # Does not check for a conflict if the game ID is the same (i.e. the user is changing their pick for the same game)
-            if key_type == "points":
-                if value_of_pick == existing_pick['point_value'] and not same_id:
+           # PART 3: Point conflict check (skips if the game ID is the same)
+           # If the user selects a point value that has already been selected for a different game:
+           # 1. Pop the old pick from the session state list
+           # 2. Reset the button states for the old pick to None (deselects the button on the frontend)
+            if not same_id:
+                if key_type == "points" and value_of_pick == existing_pick['point_value']:
                     # print("different games with the same point value assignment - pop the old pick from the list")
                     st.toast(f"Resetting previous {existing_pick['point_value']} point pick, please do not make any new selections until this disappears!", icon="⏳", duration=4)
 
@@ -250,7 +278,8 @@ def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, s
         "spread": spread_pick,
         "game_id": game_id,
         "is_pick_home": is_pick_home,
-        "button_id": button_id
+        "button_id": button_id,
+        "is_pick_in_database": False
     })
 
 # Creates a new dictionary entry for each game that is displayed by the API call

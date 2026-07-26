@@ -36,14 +36,22 @@ if check_session_states():
             # store the user's picks in the database
             time_of_submission = datetime.now((ZoneInfo("America/New_York"))).strftime("%A, %B %d, %Y at %I:%M %p")
             # Only store completed picks (point_value AND spread values must not be null)
+            are_picks_finalized = False
             point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread"] is not None]
 
+            if len(point_picks) == 3:
+                are_picks_finalized = True
+            
+            for pick in point_picks:
+                pick["is_pick_in_database"] = True
+                
             data = {
                 "name": st.session_state.name,
                 "time_of_submission": time_of_submission,
                 "current_picks": {
                     "picks": point_picks
-                }
+                },
+                "are_picks_finalized": are_picks_finalized
             }
             # if an entry exists for the user, update it. If not, create a new entry
             try:

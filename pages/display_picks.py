@@ -1,8 +1,5 @@
 # Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
-from datetime import datetime
-from zoneinfo import ZoneInfo
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
 import json
 from default_behavior import check_session_states
 from css.streamlit_css import load_css_buttons_display_picks
@@ -24,10 +21,7 @@ if check_session_states():
     # If all picks are not complete (this list will be less than 3), disable the finalize button and display a warning message
     # Otherwise, enable the finalize button
     if len(point_picks) < 3:
-        st.warning("You have not completed all of your picks yet. The 'FINALIZE PICKS' button will be enabled once all picks are completed.", icon="‼️")
-        st.session_state.disabled = True
-    else:
-        st.session_state.disabled = False
+        st.warning("WARNING: You have not completed all of your picks yet. If this is intentional, please proceed. Otherwise, complete all your picks before finalizing.", icon="‼️")
     
     print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
 
@@ -49,10 +43,10 @@ if check_session_states():
     # buttons to finalize picks, continue making picks, or return to the landing page
     col1, col2, col3 = st.columns([1, 1, 1])
     # TODO: Make this call a function that will call upon a database to store the user's picks and their name, and then return to the landing page
-    if "disabled" in st.session_state:
-        with col1:
-            if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary", disabled=st.session_state.disabled):
-                st.switch_page("pages/warning_before_submission.py")
+   
+    with col1:
+        if st.button("FINALIZE PICKS", width=700, key="finalize_picks", type="primary"):
+            st.switch_page("pages/warning_before_submission.py")
                 
     with col2:
         if "name" in st.session_state and "point_picks" in st.session_state:

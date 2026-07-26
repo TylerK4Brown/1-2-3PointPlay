@@ -1,5 +1,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
+from database_operations.database import get_user_picks
 from API_info.abbreviation_mapping import map_abbreviations, reverse_map_abbreviations
 import json
 from datetime import datetime
@@ -18,8 +19,13 @@ def display_data_nfl (data):
     if "game_information" in st.session_state:
         st.session_state.game_information = []
 
+
     # load hacky CSS that messes with the expander element display
     load_css_gamedisplay()
+    db_picks = get_user_picks(st.session_state.name)
+    db_picks = db_picks[0]["current_picks"]["picks"]
+    if db_picks is not None:
+        add_db_picks_to_session_state(db_picks)
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
 
@@ -153,6 +159,7 @@ def generate_expander(data_obj, button_id, start_times_list):
 # changed_key = "<button_id>_<key_type>" (e.g., "1_points" or "2_spread")
 # game_info is a list of dictionaries containing information about each game from the API call
 def handle_change(changed_key, game_info):
+
     # -- INITIAL INFORMATION GATHERING, TWO PARTS --
     
     # PART 1: Grab information about the button that was clicked
@@ -193,7 +200,7 @@ def handle_change(changed_key, game_info):
             button_id
         )
         
-    # PART 2: If a pick does not exist in the session state, iterate through existing picks
+    # PART 2: If a pick does not exist in the session state, iterate through existing picks (max 3 iterations)
     else:
         # For each existing pick in the session state, check if the game ID matches the current game ID
         # If it does, update the existing pick with the new value
@@ -212,12 +219,12 @@ def handle_change(changed_key, game_info):
                     # update is_pick_home for easier spread coverage calculation in view_player_picks.py
                     existing_pick['is_pick_home'] = is_pick_home
     
-           # PART 3: Point conflict check
+           # PART 3: Point conflict check (skips if the game ID is the same)
            # If the user selects a point value that has already been selected for a different game:
            # 1. Pop the old pick from the session state list
            # 2. Reset the button states for the old pick to None (deselects the button on the frontend)
-            if key_type == "points":
-                if value_of_pick == existing_pick['point_value'] and not same_id:
+            if not same_id:
+                if key_type == "points" and value_of_pick == existing_pick['point_value']:
                     # print("different games with the same point value assignment - pop the old pick from the list")
                     st.toast(f"Resetting previous {existing_pick['point_value']} point pick, please do not make any new selections until this disappears!", icon="⏳", duration=4)
 
@@ -259,7 +266,8 @@ def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, s
         "spread": spread_pick,
         "game_id": game_id,
         "is_pick_home": is_pick_home,
-        "button_id": button_id
+        "button_id": button_id,
+        "is_pick_in_database": False
     })
 
 # Creates a new dictionary entry for each game that is displayed by the API call
@@ -282,3 +290,18 @@ def buttons_already_selected():
         recrafted_key_spread = str(pick['button_id']) + "_spread"
         st.session_state[recrafted_key_points] = pick['point_value']
         st.session_state[recrafted_key_spread] = pick['spread']
+
+def add_db_picks_to_session_state(db_picks):
+    for pick in db_picks:
+        st.session_state.point_picks.append({
+            "home_team": pick["home_team"],
+            "away_team": pick["away_team"],
+            "point_value": pick["point_value"],
+            "home_team_score": pick["home_team_score"],
+            "away_team_score": pick["away_team_score"],
+            "spread": pick["spread"],
+            "game_id": pick["game_id"],
+            "is_pick_home": pick["is_pick_home"],
+            "button_id": pick["button_id"],
+            "is_pick_in_database": True
+        })

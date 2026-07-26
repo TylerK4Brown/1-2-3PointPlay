@@ -11,6 +11,11 @@ def get_all_user_picks():
     rows = conn.table("user_picks").select("*").execute().data
     return rows
 
+def get_user_picks(name):
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    row = conn.table("user_picks").select("*").eq("name", name).execute().data
+    return row
+
 # Create a new user entry in the database if the name does not exist yet
 # This will only be used at the start of the season to create initial entries for each user
 def create_user_db_entry(data_entry):

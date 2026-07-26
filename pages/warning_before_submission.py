@@ -41,6 +41,9 @@ if check_session_states():
 
             if len(point_picks) == 3:
                 are_picks_finalized = True
+            
+            for pick in point_picks:
+                pick["is_pick_in_database"] = True
                 
             data = {
                 "name": st.session_state.name,

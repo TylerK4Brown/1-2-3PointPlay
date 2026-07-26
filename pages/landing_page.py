@@ -24,6 +24,11 @@ if "name" not in st.session_state:
 if "point_picks" not in st.session_state:
     st.session_state.point_picks = []
 
+# remove any DB picks from session state if they exist
+# accomodates for the situation where a user selects the wrong name
+if len(st.session_state.point_picks) != 0:
+    st.session_state.point_picks = [existing_pick for existing_pick in st.session_state.point_picks if existing_pick["is_pick_in_database"] == False]
+
 # Check the database for existing names, disable the buttons accordingly
 rows = get_all_user_picks()
 for row_data in rows:

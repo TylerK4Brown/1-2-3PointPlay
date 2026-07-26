@@ -4,6 +4,8 @@ import requests
 import json
 import streamlit as st
 import API_info.display_data as display_data
+from database_operations.database import get_week_number
+from dictionaries.week_info import NFL_2026_WEEK_TIME_WINDOWS
 
 def make_api_call():
     
@@ -17,8 +19,14 @@ def make_api_call():
         bookmakers = "draftkings"
         markets = "spreads"
         daysFrom = 3
-        commence_timeFrom = '2026-09-10T00:00:00Z'
-        commence_timeTo = '2026-09-16T00:00:00Z'
+        # Grab week number from the database, compare it to the dictionary of week + time windows
+        # Use those values to complete the API call
+        # Store in session state so it can be used elsewhere
+        current_week_number = get_week_number()
+        if "week_number" not in st.session_state:
+            st.session_state.week_number = current_week_number
+        commence_timeFrom = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeFrom"]
+        commence_timeTo = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeTo"]
 
         api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/?apiKey={api_key}&markets={markets}&bookmakers={bookmakers}&commenceTimeFrom={commence_timeFrom}&commenceTimeTo={commence_timeTo}&daysFrom={daysFrom}"
 

@@ -11,6 +11,7 @@ def get_all_user_picks():
     rows = conn.table("user_picks").select("*").execute().data
     return rows
 
+# Get the picks for one single user
 def get_user_picks(name):
     conn = st.connection("user_picks", type=SupabaseConnection)
     row = conn.table("user_picks").select("*").eq("name", name).execute().data
@@ -65,3 +66,10 @@ def update_scores(name, score_home_team, score_away_team, iteration_index, sorte
                 "picks": sorted_picks
             }
         }).eq("name", name).execute()
+
+# Get the current week number from the database
+def get_week_number():
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    row = conn.table("user_picks").select("current_week").eq("name", "Tyler").execute().data
+    current_week_number = row[0]["current_week"]
+    return current_week_number

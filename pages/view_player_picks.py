@@ -4,7 +4,6 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from API_info.odds_api_call import make_scores_api_call
-from API_info.abbreviation_mapping import reverse_map_abbreviations
 from database_operations.database import update_user_points, get_all_user_picks, update_scores
 import random
 
@@ -51,7 +50,6 @@ for row in rows:
     
     for pick in sorted_picks:
         # Pull all relevant information from the output JSON object and store it in variables for easier access
-        abbreviation_mapping = reverse_map_abbreviations()
         home_team = pick["home_team"]
         away_team = pick["away_team"]
         point_spread = pick["spread"]

@@ -165,6 +165,13 @@ def handle_change(changed_key, game_info):
     button_id = int(changed_key.split("_")[0])
     value_of_pick = st.session_state[changed_key]
 
+    for pick in st.session_state.point_picks:
+        if pick["button_id"] == button_id and pick["is_pick_in_database"] == True:
+            st.toast(f"Cannot change a pick that has already been finalized. Please tell Tyler if you need to make changes.", icon="⚠️", duration=5)
+            # reset the button state to None - deselects the button on the page
+            st.session_state[changed_key] = value_of_pick
+            return
+
     # PART 2: Grab information about the game that corresponds to that button ID from the game_info list
     reverse_abbreviation_mapping = reverse_map_abbreviations()
     game = game_info[button_id - 1]

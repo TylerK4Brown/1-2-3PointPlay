@@ -1,8 +1,5 @@
 # Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
-from datetime import datetime
-from zoneinfo import ZoneInfo
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
 import json
 from default_behavior import check_session_states
 from css.streamlit_css import load_css_buttons_display_picks

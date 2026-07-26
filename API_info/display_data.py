@@ -26,7 +26,7 @@ def display_data_nfl (data):
 
     st.markdown("### LISTING OF UPCOMING NFL GAMES AND THEIR POINT SPREADS", text_alignment="center")
     start_times_list = []
-    for data_obj in data[0:16]:
+    for data_obj in data:
         # skip an iteration if no bookmaker is listed for the game
         if len(data_obj["bookmakers"]) == 0:
             continue

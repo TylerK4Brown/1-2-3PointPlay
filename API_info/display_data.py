@@ -19,13 +19,8 @@ def display_data_nfl (data):
     if "game_information" in st.session_state:
         st.session_state.game_information = []
 
-
     # load hacky CSS that messes with the expander element display
     load_css_gamedisplay()
-    db_picks = get_user_picks(st.session_state.name)
-    db_picks = db_picks[0]["current_picks"]["picks"]
-    if db_picks is not None:
-        add_db_picks_to_session_state(db_picks)
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
 
@@ -290,18 +285,3 @@ def buttons_already_selected():
         recrafted_key_spread = str(pick['button_id']) + "_spread"
         st.session_state[recrafted_key_points] = pick['point_value']
         st.session_state[recrafted_key_spread] = pick['spread']
-
-def add_db_picks_to_session_state(db_picks):
-    for pick in db_picks:
-        st.session_state.point_picks.append({
-            "home_team": pick["home_team"],
-            "away_team": pick["away_team"],
-            "point_value": pick["point_value"],
-            "home_team_score": pick["home_team_score"],
-            "away_team_score": pick["away_team_score"],
-            "spread": pick["spread"],
-            "game_id": pick["game_id"],
-            "is_pick_home": pick["is_pick_home"],
-            "button_id": pick["button_id"],
-            "is_pick_in_database": True
-        })

@@ -27,6 +27,9 @@ pages = {
     "View Leaderboard": [
         st.Page("pages/view_leaderboard.py", title="View Leaderboard"),
     ],
+    "View Statistics": [
+        st.Page("pages/statistics.py", title="View Statistics"),
+    ],
 }
 
 # Hide the navigation bar and run the app with the defined page structure

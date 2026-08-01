@@ -97,3 +97,8 @@ st.divider(width='stretch')
 st.markdown("## View the current leaderboard", text_alignment="center")
 if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
     st.switch_page("pages/view_leaderboard.py")
+
+st.divider(width='stretch')
+st.markdown("## View some fun statistics!", text_alignment="center")
+if st.button("View Statistics", width='stretch', key="view_statistics"):
+    st.switch_page("pages/statistics.py")

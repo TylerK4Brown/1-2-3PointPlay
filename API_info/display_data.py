@@ -81,8 +81,8 @@ def generate_expander(data_obj, button_id, start_times_list):
         start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
         st.markdown(f"### :red[{start_time}]", text_alignment='center')
         
-    # If it's not empty, iterate through the list to see if a duplicate entry exists. 
-    # If it does, break the loop and do not display it to the page
+    # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
+    # If a duplicate entry exists, break the loop and do not display it to the page
     else:
         for previous_start_times in start_times_list:
             if start_time == previous_start_times:

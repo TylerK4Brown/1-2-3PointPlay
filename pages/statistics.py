@@ -82,19 +82,6 @@ st.markdown(f"# 2 point picks correct: {two_point_picks_covering} / {total_possi
 st.markdown(f"# 3 point picks correct: {three_point_picks_covering} / {total_possible_point_plays} ({((three_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
 st.divider(width='stretch')
 
-st.markdown(f"# View a player's individual statistics", text_alignment="center")
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    if st.button("View Dad's Picks", width=700, key="view_dad_picks"):
-        st.switch_page("pages/individual_statistics.py")
-with col2:
-    if st.button("View TJ's Picks", width=700, key="view_tj_picks"):
-        st.switch_page("pages/individual_statistics.py")
-with col3:
-    if st.button("View Tyler's Picks", width=700, key="view_tyler_picks"):
-        st.switch_page("pages/individual_statistics.py")
-
-st.divider(width='stretch')
 newcol1, newcol2, newcol3 = st.columns([1, 1, 1])
 with newcol2:
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):

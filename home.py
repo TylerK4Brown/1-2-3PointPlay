@@ -18,9 +18,6 @@ pages = {
     "Display Your Picks": [
         st.Page("pages/display_picks.py", title="Display Your Picks"),
     ],
-    "Finalize Your Picks": [
-        st.Page("pages/warning_before_submission.py", title="Finalize Your Picks"),
-    ],
     "View Player Picks": [
         st.Page("pages/view_player_picks.py", title="View Player Picks"),
     ],

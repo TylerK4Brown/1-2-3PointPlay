@@ -71,14 +71,12 @@ def generate_expander(data_obj, button_id, start_times_list):
 
     # create a new entry in the session state for the game
     add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, point_spread, team_favored, start_time)
-
+    start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d')
     # Start times list: instantiate before iterating through each expander generation
     # Starts off empty - appends new start times and writes them on the page as they're encountered
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
-        # create a datetime object from start time, replace its info with UTC, convert it to EST, and then format it in a readable string
-        start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
         st.markdown(f"### :red[{start_time}]", text_alignment='center')
         
     # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
@@ -92,8 +90,6 @@ def generate_expander(data_obj, button_id, start_times_list):
         else:
             st.divider(width='stretch')
             start_times_list.append(start_time)
-            # create a datetime object from start time, replace its info with UTC, convert it to EST, and then format it in a readable string
-            start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d at %I:%M %p EST')
             st.markdown(f"### :red[{start_time}]", text_alignment='center')
 
     # Start generating the expanders for each game in the current week

@@ -86,19 +86,24 @@ with col3:
             st.session_state.point_picks = db_picks
         st.switch_page("pages/make_your_picks.py")
 
-# Leaderboard button to view the running leaderboard for the current year (and maybe previous years)
 st.divider(width='stretch')
 
 st.markdown("## View this week's picks from all players", text_alignment="center")
-if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
-    st.switch_page("pages/view_player_picks.py")
+pickscol1, pickscol2, pickscol3 = st.columns([1, 1, 1])
+with pickscol2:
+    if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
+        st.switch_page("pages/view_player_picks.py")
 
 st.divider(width='stretch')
 st.markdown("## View the current leaderboard", text_alignment="center")
-if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
-    st.switch_page("pages/view_leaderboard.py")
+leaderboardcol1, leaderboardcol2, leaderboardcol3 = st.columns([1, 1, 1])
+with leaderboardcol2:
+    if st.button("View Leaderboard", width='stretch', key="view_leaderboard"):
+        st.switch_page("pages/view_leaderboard.py")
 
 st.divider(width='stretch')
-st.markdown("## View some fun statistics!", text_alignment="center")
-if st.button("View Statistics", width='stretch', key="view_statistics"):
-    st.switch_page("pages/statistics.py")
+st.markdown("## View overall statistics", text_alignment="center")
+statscol1, statscol2, statscol3 = st.columns([1, 1, 1])
+with statscol2:
+    if st.button("View Statistics", width='stretch', key="view_statistics"):
+        st.switch_page("pages/statistics.py")

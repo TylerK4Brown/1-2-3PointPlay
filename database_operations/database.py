@@ -23,6 +23,12 @@ def create_user_db_entry(data_entry):
     conn = st.connection("user_picks", type=SupabaseConnection)
     conn.table("user_picks").insert(data_entry).execute()
 
+def get_picks_by_week(week_number):
+    week = f"week_{week_number}"
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    rows = conn.table("user_picks").select(week).execute().data
+    return rows
+
 # Update the user picks in the database for a specific user
 def update_user_picks(name, data_entry):
     conn = st.connection("user_picks", type=SupabaseConnection)

@@ -88,11 +88,14 @@ with col3:
 
 st.divider(width='stretch')
 
-st.markdown("## View this week's picks from all players", text_alignment="center")
-pickscol1, pickscol2, pickscol3 = st.columns([1, 1, 1])
+st.markdown("## Pick viewing options", text_alignment="center")
+pickscol1, pickscol2, pickscol3, pickscol4 = st.columns([1, 2, 2, 1])
 with pickscol2:
-    if st.button("View This Week's Picks", width='stretch', key="view_player_picks"):
+    if st.button("View Picks From This Week", width='stretch', key="view_player_picks"):
         st.switch_page("pages/view_player_picks.py")
+with pickscol3:
+    if st.button("View Picks History", width='stretch', key="view_pick_history"):
+        st.switch_page("pages/view_pick_history.py")
 
 st.divider(width='stretch')
 st.markdown("## View the current leaderboard", text_alignment="center")

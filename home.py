@@ -30,6 +30,9 @@ pages = {
     "View Individual Player Statistics": [
         st.Page("pages/individual_statistics.py", title="View Individual Player Statistics"),
     ],
+    "View Pick History": [
+        st.Page("pages/view_pick_history.py", title="View Pick History"),
+    ],
 }
 
 # Hide the navigation bar and run the app with the defined page structure

@@ -13,7 +13,7 @@ def get_pick_statistics(week_number):
     three_point_picks_covering = 0
 
     for week in week_number:
-        rows = get_picks_by_week(week)
+        rows = get_picks_by_week(week, None)
         # 3 rows get returned, one for each user.
         # Each row contains a picks list for that week.
         # Iterate through each row and then through each pick list to count

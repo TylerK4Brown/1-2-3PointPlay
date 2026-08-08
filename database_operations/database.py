@@ -23,11 +23,24 @@ def create_user_db_entry(data_entry):
     conn = st.connection("user_picks", type=SupabaseConnection)
     conn.table("user_picks").insert(data_entry).execute()
 
-def get_picks_by_week(week_number):
+def get_picks_by_week(week_number, name):
     week = f"week_{week_number}"
     conn = st.connection("user_picks", type=SupabaseConnection)
-    rows = conn.table("user_picks").select(week).execute().data
+    if name is None:
+        rows = conn.table("user_picks").select(week).execute().data
+        print(rows)
+    else:
+        rows = conn.table("user_picks").select(week).eq("name", name).execute().data
+        print(rows)
     return rows
+
+# Get the player's total points for a specific week from the database
+def get_point_total_for_week(name, week_number):
+    point_total_col_name = f"point_total_week_{week_number}"
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    row = conn.table("user_picks").select(point_total_col_name).eq("name", name).execute().data
+    point_total = row[0][point_total_col_name]
+    return point_total
 
 # Update the user picks in the database for a specific user
 def update_user_picks(name, data_entry):

@@ -53,12 +53,12 @@ for row in rows:
         # Pull all relevant information from the output JSON object and store it in variables for easier access
         home_team = pick["home_team"]
         away_team = pick["away_team"]
-        point_spread = pick["spread"]
+        point_spread = pick["original_spread"]
+        spread_pick = pick["spread_pick"]
         point_value = pick["point_value"]
         is_pick_home = pick["is_pick_home"]
         game_id = pick["game_id"]
-        spread_pick_abbreviation = point_spread.split(" ")[0] if len(point_spread.split(" ")) > 1 else None
-        point_spread_pick = point_spread.split(" ")[1] if len(point_spread.split(" ")) > 1 else None
+        spread_pick_point_value = spread_pick.split(" ")[1] if spread_pick != "EVEN" else 0
         score_home_team = ""
         score_away_team = ""
         
@@ -77,10 +77,10 @@ for row in rows:
         # Calculate if the player is covering the spread using randomly generated test values
         score_home_team = random.randint(0, 50)
         score_away_team = random.randint(0, 50)
-        covering_spread = calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_away_team)
+        covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
         current_week_total += (int(point_value)) if covering_spread else 0
 
-        display_player_picks(home_team, away_team, point_spread, point_value, spread_pick_abbreviation, point_spread_pick, score_home_team, score_away_team, covering_spread)
+        display_player_picks(home_team, away_team, point_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread)
 
         # Update scores for this pick in the database
         # Combats the issue of API not allowing for the game score history to be pulled after x amount of days

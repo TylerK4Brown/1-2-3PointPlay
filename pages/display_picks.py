@@ -18,7 +18,7 @@ if check_session_states():
     st.divider(width='stretch')
 
     # Only display completed picks (point_value AND spread values must not be null)
-    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread"] is not None]
+    point_picks = [pick for pick in st.session_state.point_picks if pick["point_value"] is not None and pick["spread_pick"] is not None]
     # Sort picks by point value in ascending order
     sorted_point_picks = sorted(point_picks, key=lambda pick: pick["point_value"])
 
@@ -37,7 +37,7 @@ if check_session_states():
             st.image(f"images_nfl/{pick['away_team'].lower()}.png", width=75)
         with col2:
             st.markdown(f"### {pick['away_team']} @ {pick['home_team']}",)
-            st.markdown(f"#### Your pick: {pick['spread']}", )
+            st.markdown(f"#### Your pick: {pick['spread_pick']}", )
             st.markdown(f"#### Points: {pick['point_value']}", )
         with col2:
             st.image(f"images_nfl/{pick['home_team'].lower()}.png", width=75)

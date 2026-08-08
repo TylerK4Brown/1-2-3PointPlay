@@ -69,6 +69,8 @@ def generate_expander(data_obj, button_id, start_times_list):
             team_underdog_abbreviation = ABBREVIATION_MAPPING[team_underdog]
             point_spread_underdog = spread["point"]
 
+    point_spread = f"{team_favored_abbreviation} {point_spread_favored}" if not is_spread_even else "EVEN"
+
     # create a new entry in the session state for the game
     add_new_game_information_to_session_state(button_id, game_id, home_team, away_team, point_spread, team_favored, start_time)
     start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York")).strftime('%A, %B %d')
@@ -167,6 +169,7 @@ def handle_change(changed_key, game_info):
     value_of_pick = st.session_state[changed_key]
     game = game_info[button_id - 1]
     start_time = game["start_time"]
+    original_spread = game["spread"]
 
     # PART 2: Check if a game has already started
     # If the game has started, reset the button state to None and display a message to the user
@@ -224,7 +227,8 @@ def handle_change(changed_key, game_info):
             is_pick_home,
             game_id,
             button_id,
-            start_time
+            start_time,
+            original_spread
         )
         
     # PART 2: If a pick does not exist in the session state, iterate through existing picks (max 3 iterations)
@@ -242,7 +246,7 @@ def handle_change(changed_key, game_info):
                 if key_type == "points":
                     existing_pick['point_value'] = value_of_pick
                 elif key_type == "spread":
-                    existing_pick['spread'] = value_of_pick
+                    existing_pick['spread_pick'] = value_of_pick
                     # update is_pick_home for easier spread coverage calculation in view_player_picks.py
                     existing_pick['is_pick_home'] = is_pick_home
     
@@ -276,7 +280,8 @@ def handle_change(changed_key, game_info):
                 is_pick_home,
                 game_id,
                 button_id,
-                start_time
+                start_time,
+                original_spread
             )
     
     # print for debugging purposes
@@ -284,14 +289,15 @@ def handle_change(changed_key, game_info):
     print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
-def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id, start_time):
+def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id, start_time, original_spread):
     st.session_state.point_picks.append({
         "home_team": home_team_name,
         "away_team": away_team_name,
         "point_value": point_value,
         "home_team_score": 0,
         "away_team_score": 0,
-        "spread": spread_pick,
+        "original_spread": original_spread,
+        "spread_pick": spread_pick,
         "game_id": game_id,
         "is_pick_home": is_pick_home,
         "button_id": button_id,
@@ -319,4 +325,4 @@ def buttons_already_selected():
         recrafted_key_points = str(pick['button_id']) + "_points"
         recrafted_key_spread = str(pick['button_id']) + "_spread"
         st.session_state[recrafted_key_points] = pick['point_value']
-        st.session_state[recrafted_key_spread] = pick['spread']
+        st.session_state[recrafted_key_spread] = pick['spread_pick']

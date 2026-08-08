@@ -3,6 +3,11 @@ from database_operations.database import get_picks_by_week, get_week_number, get
 from display_helpers.view_picks import display_player_picks
 from css.streamlit_css import load_css_gamedisplay
 
+# Callback function for the slider to save the selected week range in session state
+# Helps with persistence of the slider's value when a button is clicked to view a different player's pick history
+def save_week_slider_range():
+    st.session_state.week_slider_saved = st.session_state.week_slider
+
 load_css_gamedisplay()
 if "player_history_selected" not in st.session_state:
     st.session_state.player_history_selected = None
@@ -13,6 +18,9 @@ st.divider(width='stretch')
 # Get the week number minus 1, current week does not count towards the history
 week_number = get_week_number()
 week_number -= 1
+
+if "week_slider_saved" not in st.session_state:
+    st.session_state.week_slider_saved = (1, week_number)
 
 # Buttons to view different player's pick histories
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -33,12 +41,20 @@ with col3:
 # Only appears of at least 2 weeks have passed in the season
 with col2:
     if week_number >= 2:
-        week_slider = st.slider(
+        # Slider operates off of the last saved value in session state
+        # If there isn't a value, it defaults to the max range of weeks that have passed
+        # Otherwise, it uses the saved value to ensure persistence of the slider's range when displaying player pick history
+        if "week_slider" not in st.session_state:
+            st.session_state.week_slider = st.session_state.week_slider_saved
+
+        st.slider(
             "Select Week Range",
             min_value=1,
             max_value=week_number,
-            value=(1, week_number),
-            step=1
+            value=st.session_state.week_slider_saved,
+            key="week_slider",
+            step=1,
+            on_change=save_week_slider_range,
         )
 
 # Text to display which player's pick history is being viewed, or a message to select a player if none has been selected yet
@@ -58,7 +74,9 @@ if st.session_state.player_history_selected is not None:
         # grabs the range from the slider if the slider has been created
         # otherwise, create a list and put only week 1 in it so that the for loop below can iterate through it and display the pick history for week 1
         if week_number >= 2:
-            week_range = list(range(week_slider[0], week_slider[1] + 1))
+            if "week_slider" in st.session_state:
+                st.session_state.week_slider_saved = st.session_state.week_slider
+            week_range = list(range(st.session_state.week_slider_saved[0], st.session_state.week_slider_saved[1] + 1))
         else:
             week_range = [1]
 
@@ -96,4 +114,3 @@ with col2:
     st.markdown("")
     if st.button("Return to Landing Page", width=700, key="return_landing_page"):
         st.switch_page("pages/landing_page.py")
-

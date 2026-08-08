@@ -1,8 +1,10 @@
 import streamlit as st
 from database_operations.database import get_picks_by_week, get_week_number
+from css.streamlit_css import load_css_gamedisplay
 
 # Get totals for picks covering the spread for all users for a given week or weeks
 def get_pick_statistics(week_number):
+    load_css_gamedisplay()
     # if week number isn't a list, convert to a list so it can be iterated
     if not isinstance(week_number, list):
         week_number = [week_number]

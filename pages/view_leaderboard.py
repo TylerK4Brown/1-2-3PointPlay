@@ -1,6 +1,8 @@
 import streamlit as st
 from database_operations.database import get_user_points
+from css.streamlit_css import load_css_gamedisplay
 
+load_css_gamedisplay()
 st.markdown("# Current leaderboard", text_alignment="center")
 st.divider(width='stretch')
 

@@ -1,8 +1,9 @@
 # Picks page for the app
 # Makes an API call to The Odds API to get the games for the week, and displays them in Streamlit expander elements
 import streamlit as st
-from API_info.odds_api_call import make_api_call
+from services.odds_api_call import make_api_call
 from default_behavior import check_session_states
+from display_helpers.display_data import display_data_nfl
 
 # Makes sure all proper state variables are present before starting
 if check_session_states():
@@ -11,8 +12,11 @@ if check_session_states():
     if "disabled" not in st.session_state:
         st.session_state.disabled = True
     
-    # Make API call, which also displays the games for the week
-    make_api_call()
+    if "game_data" not in st.session_state:
+        st.session_state.game_data = None
+        make_api_call()
+
+    display_data_nfl(st.session_state.game_data)
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:

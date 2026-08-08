@@ -1,6 +1,6 @@
 import streamlit as st
 
-def display_player_picks(home_team, away_team, point_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread):
+def display_player_picks(home_team, away_team, game_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread):
     # Build expander elements based on the information gathered above
     # Similar to the implementation in display_data.py, does not include the buttons
     col1, col2, col3 = st.columns([1, 5, 1])
@@ -24,7 +24,7 @@ def display_player_picks(home_team, away_team, point_spread, point_value, spread
             if spread_pick == "EVEN":
                 st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
             else:
-                st.markdown(f"## **SPREAD**: {point_spread}", text_alignment='center')
+                st.markdown(f"## **SPREAD**: {game_spread}", text_alignment='center')
             
             st.markdown(f"## YOUR PICK: {spread_pick}", text_alignment='center')
             st.markdown(f"## **COVERING SPREAD**: {'✅' if covering_spread else '❌'}", text_alignment='center')

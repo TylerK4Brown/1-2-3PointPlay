@@ -1,12 +1,20 @@
 import streamlit as st
-from database_operations.database import get_picks_by_week, get_week_number
+from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week
+from display_helpers.view_picks import display_player_picks
+from css.streamlit_css import load_css_gamedisplay
 
+load_css_gamedisplay()
 if "player_history_selected" not in st.session_state:
     st.session_state.player_history_selected = None
     
 st.markdown("# Pick History", text_alignment="center")
 st.divider(width='stretch')
 
+# Get the week number minus 1, current week does not count towards the history
+week_number = get_week_number()
+week_number -= 1
+
+# Buttons to view different player's pick histories
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     if st.button("View Dad's Pick History", width='stretch', key="view_dad_history"):
@@ -21,9 +29,71 @@ with col3:
         st.session_state.player_history_selected = "Tyler"
         st.rerun()
 
+# A slider to view a range of weeks for the pick history
+# Only appears of at least 2 weeks have passed in the season
+with col2:
+    if week_number >= 2:
+        week_slider = st.slider(
+            "Select Week Range",
+            min_value=1,
+            max_value=week_number,
+            value=(1, week_number),
+            step=1
+        )
+
+# Text to display which player's pick history is being viewed, or a message to select a player if none has been selected yet
 if st.session_state.player_history_selected is None:
     st.markdown("## Please select a player to view their pick history.", text_alignment="center")
 else:
     st.markdown(f"## Viewing pick history for {st.session_state.player_history_selected}", text_alignment="center")
+    st.divider(width='stretch')
 
+# If a player has been selected, display their pick history for the selected range
+if st.session_state.player_history_selected is not None:
+    # If no weeks have passed, display a message to check back after the first week of the season
+    if week_number < 1:
+        st.markdown("## No pick history available yet. Please check back after the first week of the season.", text_alignment="center")
+    else:
+        # if more than 1 week has passed, create array of multiple weeks to display pick history for all weeks that have passed
+        # grabs the range from the slider if the slider has been created
+        # otherwise, create a list and put only week 1 in it so that the for loop below can iterate through it and display the pick history for week 1
+        if week_number >= 2:
+            week_range = list(range(week_slider[0], week_slider[1] + 1))
+        else:
+            week_range = [1]
+
+        # for each week in the range, get the picks by week from the database and display them using the display_player_picks display helper
+        for week in week_range:
+            week_total = 0
+            accumulated_points_on_this_week = get_point_total_for_week(week, st.session_state.player_history_selected)
+            st.markdown(f"### Week {week} Picks", text_alignment="center")
+            rows = get_picks_by_week(week, st.session_state.player_history_selected)
+            picks = rows[0][f"week_{week}"]["picks"]
+            for pick in picks:
+                home_team = pick["home_team"]
+                away_team = pick["away_team"]
+                game_spread = pick["original_spread"]
+                spread_pick = pick["spread_pick"]
+                point_value = pick["point_value"]
+                score_home_team = pick["home_team_score"]
+                score_away_team = pick["away_team_score"]
+                covering_spread = pick["covering_spread"]
+
+                # Display the player's picks using the display_player_picks function
+                display_player_picks(home_team, away_team, game_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread)
+                if covering_spread:
+                    week_total += int(point_value)
+
+            st.markdown(f"### Points Earned This Week: {week_total}", text_alignment="center")
+            st.markdown(f"### Total Points Accumulated: {accumulated_points_on_this_week}", text_alignment="center")
+            st.divider(width='stretch')
+
+# centered return to landing page button
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    # add spacing between buttons
+    st.markdown("")
+    st.markdown("")
+    if st.button("Return to Landing Page", width=700, key="return_landing_page"):
+        st.switch_page("pages/landing_page.py")
 

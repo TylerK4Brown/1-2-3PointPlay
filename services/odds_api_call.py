@@ -10,7 +10,7 @@ def make_api_call():
     st.session_state.game_data = None
     api_key = st.secrets["OddsAPI_key"]
     # sport_key = "americanfootball_nfl_preseason"
-    sport_key = "americanfootball_nfl_preseason"
+    sport_key = "americanfootball_nfl"
     bookmakers = "draftkings"
     markets = "spreads"
     daysFrom = 3

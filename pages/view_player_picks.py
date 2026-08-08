@@ -4,7 +4,7 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
-from database_operations.database import update_user_points, get_all_user_picks, update_scores
+from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number
 from display_helpers.view_picks import display_player_picks
 import random
 
@@ -24,6 +24,8 @@ def calculate_spread_cover(is_pick_home, point_spread, score_home_team, score_aw
 
 # database call to return every player's pick
 rows = get_all_user_picks()
+
+week_number = get_week_number()
 # Load css and sort the rows by the user's name
 load_css_gamedisplay()
 rows = sorted(rows, key=lambda user: user["name"])
@@ -34,6 +36,7 @@ st.divider(width='stretch')
 # iterate through each users picks
 for row in rows:
     current_week_total = 0
+    correct_picks = 0
     iteration_index = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
@@ -79,6 +82,7 @@ for row in rows:
         score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
         current_week_total += (int(point_value)) if covering_spread else 0
+        correct_picks += 1 if covering_spread else 0
 
         display_player_picks(home_team, away_team, point_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread)
 
@@ -86,13 +90,15 @@ for row in rows:
         # Combats the issue of API not allowing for the game score history to be pulled after x amount of days
         update_scores(row["name"], score_home_team, score_away_team, iteration_index, sorted_picks, covering_spread)
         iteration_index += 1
-    
+
+    record = f"{correct_picks} - {len(sorted_picks) - correct_picks}"
     # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:
         # Display the points earned this week and the total amount of points accumulated so far
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
+        st.markdown(f"### Record: {record}", text_alignment='center')
         update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
     
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
@@ -102,6 +108,7 @@ for row in rows:
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
+        st.markdown(f"### Record: {record}", text_alignment='center')
         update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
@@ -109,6 +116,7 @@ for row in rows:
     else:
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
+        st.markdown(f"### Record: {record}", text_alignment='center')
     
     st.divider(width='stretch')
 

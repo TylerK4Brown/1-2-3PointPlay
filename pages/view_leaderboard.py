@@ -28,7 +28,10 @@ for index, (name, points) in enumerate(points_data_sorted.items()):
     points_string = "points" if points != 1 else "point"
     st.markdown(f"# {medal} {name}: {format_points(points)} {points_string}", text_alignment="center")
     win_loss_record = get_win_loss_record(name)
-    st.markdown(f"### ({win_loss_record['picks_correct']} - {win_loss_record['picks_incorrect']} - {win_loss_record['picks_push']})", text_alignment="center")
+    if win_loss_record['picks_push'] == 0:
+        st.markdown(f"### ({win_loss_record['picks_correct']} - {win_loss_record['picks_incorrect']})", text_alignment="center")
+    else:
+        st.markdown(f"### ({win_loss_record['picks_correct']} - {win_loss_record['picks_incorrect']} - {win_loss_record['picks_push']})", text_alignment="center")
 
 st.divider(width='stretch')
 col1, col2, col3 = st.columns([1, 1, 1])

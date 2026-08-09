@@ -108,7 +108,10 @@ if st.session_state.player_history_selected is not None:
 
             st.markdown(f"### Points Earned This Week: {format_points(week_total)}", text_alignment="center")
             st.markdown(f"### Total Points Accumulated: {format_points(accumulated_points_on_this_week)}", text_alignment="center")
-            st.markdown(f"### W/L Record: {win_loss_data['picks_correct']} - {win_loss_data['picks_incorrect']} - {win_loss_data['picks_push']}", text_alignment="center")
+            if win_loss_data['picks_push'] == 0:
+                st.markdown(f"### W/L Record: {win_loss_data['picks_correct']} - {win_loss_data['picks_incorrect']}", text_alignment="center")
+            else:
+                st.markdown(f"### W/L Record: {win_loss_data['picks_correct']} - {win_loss_data['picks_incorrect']} - {win_loss_data['picks_push']}", text_alignment="center")
             st.divider(width='stretch')
 
 # centered return to landing page button

@@ -1,6 +1,7 @@
 import streamlit as st
-from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week
+from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week, get_win_loss_by_week
 from display_helpers.view_picks import display_player_picks
+from display_helpers.number_formatting import format_points
 from css.streamlit_css import load_css_gamedisplay
 
 # Callback function for the slider to save the selected week range in session state
@@ -84,6 +85,7 @@ if st.session_state.player_history_selected is not None:
         for week in week_range:
             week_total = 0
             accumulated_points_on_this_week = get_point_total_for_week(week, st.session_state.player_history_selected)
+            win_loss_data = get_win_loss_by_week(week, st.session_state.player_history_selected)
             st.markdown(f"### Week {week} Picks", text_alignment="center")
             rows = get_picks_by_week(week, st.session_state.player_history_selected)
             picks = rows[0][f"week_{week}"]["picks"]
@@ -99,11 +101,14 @@ if st.session_state.player_history_selected is not None:
 
                 # Display the player's picks using the display_player_picks function
                 display_player_picks(home_team, away_team, game_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread)
-                if covering_spread:
-                    week_total += int(point_value)
+                if covering_spread == True:
+                    week_total += float(point_value)
+                if covering_spread == "push":
+                    week_total += float(point_value) / 2
 
-            st.markdown(f"### Points Earned This Week: {week_total}", text_alignment="center")
-            st.markdown(f"### Total Points Accumulated: {accumulated_points_on_this_week}", text_alignment="center")
+            st.markdown(f"### Points Earned This Week: {format_points(week_total)}", text_alignment="center")
+            st.markdown(f"### Total Points Accumulated: {format_points(accumulated_points_on_this_week)}", text_alignment="center")
+            st.markdown(f"### W/L Record: {win_loss_data['picks_correct']} - {win_loss_data['picks_incorrect']} - {win_loss_data['picks_push']}", text_alignment="center")
             st.divider(width='stretch')
 
 # centered return to landing page button

@@ -4,7 +4,7 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
-from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number, update_picks_correct
+from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number, update_win_loss_info
 from display_helpers.view_picks import display_player_picks
 import random
 
@@ -66,20 +66,27 @@ for row in rows:
         score_away_team = ""
         
         # iterate through each score returned by the API call to find the score for the current game ID
+        # print(f"==== {pick_scores} ====")
         for score in pick_scores:
-            if score["id"] == game_id:
-                if score["scores"] is None:
+            if score.get("id") == game_id:
+                if score.get("scores") is None:
                     score_home_team = 0
                     score_away_team = 0
-                    game_start = score["commence_time"]
+                    game_start = score.get("commence_time")
                 else:
                     score_home_team = int(score["scores"][0]["score"])
                     score_away_team = int(score["scores"][1]["score"])
-                    game_start = score["commence_time"]
+                    game_start = score.get("commence_time")
+
+        # If these scores are still empty, it means the API call did not return scores for this game
+        # Use the scores stored in the database if this is the case
+        if score_home_team == "" and score_away_team == "":
+            score_home_team = pick["home_team_score"]
+            score_away_team = pick["away_team_score"]
         
-        # Calculate if the player is covering the spread using randomly generated test values
-        score_home_team = random.randint(0, 50)
-        score_away_team = random.randint(0, 50)
+        # # # Calculate if the player is covering the spread using randomly generated test values
+        # score_home_team = random.randint(0, 50)
+        # score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
         current_week_total += (int(point_value)) if covering_spread else 0
         correct_picks += 1 if covering_spread else 0
@@ -100,7 +107,7 @@ for row in rows:
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
         update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
-        update_picks_correct(row["name"], correct_picks + win_loss_data['picks_correct'], incorrect_picks + win_loss_data['picks_incorrect'])
+        update_win_loss_info(row["name"], correct_picks + win_loss_data['picks_correct'], incorrect_picks + win_loss_data['picks_incorrect'])
     
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
@@ -112,7 +119,7 @@ for row in rows:
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
         update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
-        update_picks_correct(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
+        update_win_loss_info(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
     # No database updates are necessary since the current week's total has not changed
@@ -121,7 +128,7 @@ for row in rows:
         difference_incorrect_picks = incorrect_picks - win_loss_data['picks_incorrect']
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
-        update_picks_correct(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
+        update_win_loss_info(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
     
     st.divider(width='stretch')
 

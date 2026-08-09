@@ -6,6 +6,7 @@ from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
 from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number, update_win_loss_info
 from display_helpers.view_picks import display_player_picks
+from display_helpers.number_formatting import format_points
 import random
 
 # spread coverage math
@@ -116,7 +117,7 @@ for row in rows:
     if row['current_week_total'] is None:
         # Display the points earned this week and the total amount of points accumulated so far
         # Print this first since it would sometimes bug out if the database updated before picks did
-        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Points This Week: {format_points(current_week_total)}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
         update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
         update_win_loss_info(row["name"], correct_picks + win_loss_data['picks_correct'], incorrect_picks + win_loss_data['picks_incorrect'], push_picks + win_loss_data['picks_push'])
@@ -129,7 +130,7 @@ for row in rows:
         difference_push_picks = push_picks - win_loss_data['picks_push']
         # Display the points earned this week and the total amount of points accumulated so far
         # Print this first since it would sometimes bug out if the database updated before picks did
-        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Points This Week: {format_points(current_week_total)}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
         update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
         update_win_loss_info(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks, win_loss_data['picks_push'] + difference_push_picks)
@@ -140,7 +141,7 @@ for row in rows:
         difference_correct_picks = correct_picks - win_loss_data['picks_correct']
         difference_incorrect_picks = incorrect_picks - win_loss_data['picks_incorrect']
         difference_push_picks = push_picks - win_loss_data['picks_push']
-        st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
+        st.markdown(f"### Points This Week: {format_points(current_week_total)}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
         update_win_loss_info(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks, win_loss_data['picks_push'] + difference_push_picks)
     

@@ -4,7 +4,7 @@
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
-from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number
+from database_operations.database import update_user_points, get_all_user_picks, update_scores, get_week_number, update_picks_correct
 from display_helpers.view_picks import display_player_picks
 import random
 
@@ -91,32 +91,38 @@ for row in rows:
         update_scores(row["name"], score_home_team, score_away_team, iteration_index, sorted_picks, covering_spread)
         iteration_index += 1
 
-    record = f"{correct_picks} - {len(sorted_picks) - correct_picks}"
+    win_loss_data = row["win_loss_record"]
+    print(win_loss_data)
+    incorrect_picks = len(sorted_picks) - correct_picks
     # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:
         # Display the points earned this week and the total amount of points accumulated so far
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + current_week_total}", text_alignment='center')
-        st.markdown(f"### Record: {record}", text_alignment='center')
         update_user_points(row["name"], current_week_total, current_week_total + row['accumulated_points'])
+        update_picks_correct(row["name"], correct_picks + win_loss_data['picks_correct'], incorrect_picks + win_loss_data['picks_incorrect'])
     
     # If the total for the current week has changed, find the difference, and update the accumulated points accordingly
     elif row['current_week_total'] != current_week_total:
         difference = current_week_total - row['current_week_total']
+        difference_correct_picks = correct_picks - win_loss_data['picks_correct']
+        difference_incorrect_picks = incorrect_picks - win_loss_data['picks_incorrect']
         # Display the points earned this week and the total amount of points accumulated so far
         # Print this first since it would sometimes bug out if the database updated before picks did
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points'] + difference}", text_alignment='center')
-        st.markdown(f"### Record: {record}", text_alignment='center')
         update_user_points(row["name"], current_week_total, row['accumulated_points'] + difference)
+        update_picks_correct(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
     
     # If none of these conditions are met, still display the points earned and the total points for the week
     # No database updates are necessary since the current week's total has not changed
     else:
+        difference_correct_picks = correct_picks - win_loss_data['picks_correct']
+        difference_incorrect_picks = incorrect_picks - win_loss_data['picks_incorrect']
         st.markdown(f"### Points This Week: {current_week_total}", text_alignment='center')
         st.markdown(f"### Total Points: {row['accumulated_points']}", text_alignment='center')
-        st.markdown(f"### Record: {record}", text_alignment='center')
+        update_picks_correct(row["name"], win_loss_data['picks_correct'] + difference_correct_picks, win_loss_data['picks_incorrect'] + difference_incorrect_picks)
     
     st.divider(width='stretch')
 

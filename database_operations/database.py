@@ -64,6 +64,12 @@ def update_picks_correct(name, correct_picks, incorrect_picks):
     }
     conn.table("user_picks").update({"win_loss_record": win_loss_json}).eq("name", name).execute()
 
+def get_win_loss_by_week(week_number, name):
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    row = conn.table("user_picks").select(f"win_loss_week_{week_number}").eq("name", name).execute().data
+    win_loss = row[0][f"win_loss_week_{week_number}"]
+    return win_loss
+
 # Get the current user points for each user, store in session state
 # Used in the leaderboard page to display accumulated points for each user
 def get_user_points():

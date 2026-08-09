@@ -92,7 +92,6 @@ for row in rows:
         iteration_index += 1
 
     win_loss_data = row["win_loss_record"]
-    print(win_loss_data)
     incorrect_picks = len(sorted_picks) - correct_picks
     # If there are no current totals for this week, update the database with the current week's total and add it to the accumulated points
     if row['current_week_total'] is None:

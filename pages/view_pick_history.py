@@ -1,5 +1,5 @@
 import streamlit as st
-from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week
+from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week, get_win_loss_by_week
 from display_helpers.view_picks import display_player_picks
 from css.streamlit_css import load_css_gamedisplay
 
@@ -84,6 +84,7 @@ if st.session_state.player_history_selected is not None:
         for week in week_range:
             week_total = 0
             accumulated_points_on_this_week = get_point_total_for_week(week, st.session_state.player_history_selected)
+            win_loss_data = get_win_loss_by_week(week, st.session_state.player_history_selected)
             st.markdown(f"### Week {week} Picks", text_alignment="center")
             rows = get_picks_by_week(week, st.session_state.player_history_selected)
             picks = rows[0][f"week_{week}"]["picks"]
@@ -104,6 +105,7 @@ if st.session_state.player_history_selected is not None:
 
             st.markdown(f"### Points Earned This Week: {week_total}", text_alignment="center")
             st.markdown(f"### Total Points Accumulated: {accumulated_points_on_this_week}", text_alignment="center")
+            st.markdown(f"### W/L Record: {win_loss_data['picks_correct']} - {win_loss_data['picks_incorrect']}", text_alignment="center")
             st.divider(width='stretch')
 
 # centered return to landing page button

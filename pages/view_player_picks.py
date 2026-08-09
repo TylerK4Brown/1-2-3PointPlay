@@ -91,9 +91,9 @@ for row in rows:
             score_home_team = pick["home_team_score"]
             score_away_team = pick["away_team_score"]
         
-        # Calculate if the player is covering the spread using randomly generated test values
-        score_home_team = 17
-        score_away_team = 20
+        # # Calculate if the player is covering the spread using randomly generated test values
+        # score_home_team = random.randint(0, 50)
+        # score_away_team = random.randint(0, 50)
         covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
 
         if covering_spread == True:

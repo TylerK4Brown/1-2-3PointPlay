@@ -70,6 +70,12 @@ def get_win_loss_by_week(week_number, name):
     win_loss = row[0][f"win_loss_week_{week_number}"]
     return win_loss
 
+def get_win_loss_record(name):
+    conn = st.connection("user_picks", type=SupabaseConnection)
+    row = conn.table("user_picks").select("win_loss_record").eq("name", name).execute().data
+    win_loss_record = row[0]["win_loss_record"]
+    return win_loss_record
+
 # Get the current user points for each user, store in session state
 # Used in the leaderboard page to display accumulated points for each user
 def get_user_points():

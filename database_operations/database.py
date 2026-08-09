@@ -56,11 +56,12 @@ def update_user_points(name, current_week_total, accumulated_points):
             "accumulated_points": accumulated_points
         }).eq("name", name).execute()
 
-def update_win_loss_info(name, correct_picks, incorrect_picks):
+def update_win_loss_info(name, correct_picks, incorrect_picks, push_picks):
     conn = st.connection("user_picks", type=SupabaseConnection)
     win_loss_json = {
         "picks_correct": correct_picks,
-        "picks_incorrect": incorrect_picks
+        "picks_incorrect": incorrect_picks,
+        "picks_push": push_picks
     }
     conn.table("user_picks").update({"win_loss_record": win_loss_json}).eq("name", name).execute()
 

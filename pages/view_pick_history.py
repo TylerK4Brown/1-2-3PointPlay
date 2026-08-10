@@ -40,7 +40,8 @@ with col3:
 
 # A slider to view a range of weeks for the pick history
 # Only appears of at least 2 weeks have passed in the season
-with col2:
+slidercol1, slidercol2, slidercol3 = st.columns([1, 1, 1])
+with slidercol2:
     if week_number >= 2:
         # Slider operates off of the last saved value in session state
         # If there isn't a value, it defaults to the max range of weeks that have passed

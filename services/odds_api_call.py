@@ -32,7 +32,7 @@ def make_api_call():
 # Making an API call to the scores API to get the scores for a specific game ID
 def make_scores_api_call(event_id_list):
     api_key = st.secrets["OddsAPI_key"]
-    sport_key = "americanfootball_nfl"
+    sport_key = "americanfootball_nfl_preseason"
     api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/scores/?apiKey={api_key}&eventIds={','.join(event_id_list)}"
     
     response = requests.get(api_url)

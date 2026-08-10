@@ -1,6 +1,7 @@
 # View picks page
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
+from datetime import datetime
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
@@ -68,42 +69,43 @@ for row in rows:
         point_value = pick["point_value"]
         is_pick_home = pick["is_pick_home"]
         game_id = pick["game_id"]
+        start_time = pick["start_time"]
         spread_pick_point_value = spread_pick.split(" ")[1] if spread_pick != "EVEN" else 0
         score_home_team = ""
         score_away_team = ""
+        covering_spread = None
         
-        # iterate through each score returned by the API call to find the score for the current game ID
-        # print(f"==== {pick_scores} ====")
-        for score in pick_scores:
-            if score["id"] == game_id:
-                if score["scores"] is None:
-                    score_home_team = 0
-                    score_away_team = 0
-                    game_start = score["commence_time"]
-                else:
-                    score_home_team = int(score["scores"][0]["score"])
-                    score_away_team = int(score["scores"][1]["score"])
-                    game_start = score["commence_time"]
+        datetime_sample = "2026-08-15T01:00:01Z"
+        # datetime_now = datetime.now().isoformat()
+        if start_time > datetime_sample:
+            covering_spread = "not started"
+        else:
+            # iterate through each score returned by the API call to find the score for the current game ID
+            # print(f"==== {pick_scores} ====")
+            for score in pick_scores:
+                if score["id"] == game_id:
+                    if score["scores"] is None:
+                        score_home_team = 0
+                        score_away_team = 0
+                    else:
+                        score_home_team = int(score["scores"][0]["score"])
+                        score_away_team = int(score["scores"][1]["score"])
 
-        # If these scores are still empty, it means the API call did not return scores for this game
-        # Use the scores stored in the database if this is the case
-        if score_home_team == "" and score_away_team == "":
-            score_home_team = pick["home_team_score"]
-            score_away_team = pick["away_team_score"]
-        
-        # # Calculate if the player is covering the spread using randomly generated test values
-        # score_home_team = random.randint(0, 50)
-        # score_away_team = random.randint(0, 50)
-        covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
+            # If these scores are still empty, it means the API call did not return scores for this game
+            # Use the scores stored in the database if this is the case
+            if score_home_team == "" and score_away_team == "":
+                score_home_team = pick["home_team_score"]
+                score_away_team = pick["away_team_score"]
+                
+            covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
+            if covering_spread == True:
+                current_week_total += int(point_value)
+                correct_picks += 1
+            elif covering_spread == "push":
+                current_week_total += int(point_value) / 2
+                push_picks += 1
 
-        if covering_spread == True:
-            current_week_total += int(point_value)
-            correct_picks += 1
-        elif covering_spread == "push":
-            current_week_total += int(point_value) / 2
-            push_picks += 1
-
-        display_player_picks(home_team, away_team, point_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread)
+        display_player_picks(home_team, away_team, point_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread, start_time)
 
         # Update scores for this pick in the database
         # Combats the issue of API not allowing for the game score history to be pulled after x amount of days

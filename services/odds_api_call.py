@@ -20,8 +20,8 @@ def make_api_call():
     current_week_number = get_week_number()
     if "week_number" not in st.session_state:
         st.session_state.week_number = current_week_number
-    commence_timeFrom = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeFrom"]
-    commence_timeTo = NFL_2026_WEEK_TIME_WINDOWS[current_week_number]["commence_timeTo"]
+    commence_timeFrom = NFL_2026_WEEK_TIME_WINDOWS.get(current_week_number, {}).get("commence_timeFrom")
+    commence_timeTo = NFL_2026_WEEK_TIME_WINDOWS.get(current_week_number, {}).get("commence_timeTo")
 
     api_url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds/?apiKey={api_key}&markets={markets}&bookmakers={bookmakers}&commenceTimeFrom={commence_timeFrom}&commenceTimeTo={commence_timeTo}&daysFrom={daysFrom}"
 

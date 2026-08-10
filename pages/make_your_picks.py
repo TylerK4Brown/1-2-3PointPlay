@@ -16,16 +16,19 @@ if check_session_states():
         st.session_state.game_data = None
         make_api_call()
 
-    display_data_nfl(st.session_state.game_data)
-
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        # add spacing between expander and button
-        if "name" in st.session_state and "point_picks" in st.session_state:
-            st.markdown("")
-            st.markdown("")
-            if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
-                st.switch_page("pages/display_picks.py")
+    # If the API returns a dictionary, it's an error message, which means the preseason games have concluded
+    if isinstance(st.session_state.game_data, dict):
+        st.markdown("# The preseason games have concluded! Thank you for participating :smile:", text_alignment="center")
+    else:
+        display_data_nfl(st.session_state.game_data)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            # add spacing between expander and button
+            if "name" in st.session_state and "point_picks" in st.session_state:
+                st.markdown("")
+                st.markdown("")
+                if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
+                    st.switch_page("pages/display_picks.py")
 
     # centered return to landing page button
     col1, col2, col3 = st.columns([1, 1, 1])

@@ -43,9 +43,15 @@ st.divider(width='stretch')
 
 # iterate through each users picks
 for row in rows:
+    # Current week total tallies up the points earned from each pick that covered the spread
+    # Correct picks counts the number of picks that covered the spread
+    # Push picks counts the number of picks that pushed (i.e. the spread was covered exactly)
+    # Games to consider subtracts from the total number of picks if a game has not started yet, so that the win/loss record is accurate
+    # Iteration index is used to update the correct pick in the sorted_picks list after the API call returns the live scores for each game
     current_week_total = 0
     correct_picks = 0
     push_picks = 0
+    games_to_consider = 3
     iteration_index = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
@@ -77,12 +83,13 @@ for row in rows:
         covering_spread = None
 
         # If a game has not started yet, set covering_spread to "not started"
-        # This effectively skips all spread and score calculation, since none of it actually exists yet
-        datetime_sample = "2026-08-20T23:00:01Z"
+        # This effectively skips all spread and score calculations, since no information to perform those calculations on is available yet
+        datetime_sample = "2026-10-31T00:15:01Z"
         # print(datetime.strptime(datetime_sample, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo('UTC')).astimezone(ZoneInfo('America/New_York')).strftime('%A, %B %d at %I:%M %p'))
         datetime_now = datetime.now().isoformat()
         if start_time > datetime_sample:
             covering_spread = "not started"
+            games_to_consider -= 1
             score_home_team = 0
             score_away_team = 0
         # If the game has started, iterate through the scores returned by the API call to find the score for the current game ID
@@ -123,7 +130,7 @@ for row in rows:
     # Get the current week number from the database to determine if this is the first week of the season or not
     # If it is the first week, there are no previous W/L records to pull, so the current week's W/L record will be used to update the database
     # Otherwise, use a previous week's W/L record to update the current week's W/L record in the database
-    incorrect_picks = len(sorted_picks) - correct_picks - push_picks
+    incorrect_picks = games_to_consider - correct_picks - push_picks
     week_number = get_week_number()
     week_number -= 1
     if week_number >= 1:

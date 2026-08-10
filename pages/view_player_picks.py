@@ -2,6 +2,7 @@
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from services.odds_api_call import make_scores_api_call
@@ -71,17 +72,22 @@ for row in rows:
         game_id = pick["game_id"]
         start_time = pick["start_time"]
         spread_pick_point_value = spread_pick.split(" ")[1] if spread_pick != "EVEN" else 0
-        score_home_team = ""
-        score_away_team = ""
+        score_home_team = None
+        score_away_team = None
         covering_spread = None
-        
-        datetime_sample = "2026-08-15T01:00:01Z"
-        # datetime_now = datetime.now().isoformat()
+
+        # If a game has not started yet, set covering_spread to "not started"
+        # This effectively skips all spread and score calculation, since none of it actually exists yet
+        datetime_sample = "2026-08-20T23:00:01Z"
+        # print(datetime.strptime(datetime_sample, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo('UTC')).astimezone(ZoneInfo('America/New_York')).strftime('%A, %B %d at %I:%M %p'))
+        datetime_now = datetime.now().isoformat()
         if start_time > datetime_sample:
             covering_spread = "not started"
+            score_home_team = 0
+            score_away_team = 0
+        # If the game has started, iterate through the scores returned by the API call to find the score for the current game ID
+        # If the API call does not return a score for this game, use the scores stored in the database instead
         else:
-            # iterate through each score returned by the API call to find the score for the current game ID
-            # print(f"==== {pick_scores} ====")
             for score in pick_scores:
                 if score["id"] == game_id:
                     if score["scores"] is None:
@@ -93,10 +99,12 @@ for row in rows:
 
             # If these scores are still empty, it means the API call did not return scores for this game
             # Use the scores stored in the database if this is the case
-            if score_home_team == "" and score_away_team == "":
+            if score_home_team == None and score_away_team == None:
                 score_home_team = pick["home_team_score"]
                 score_away_team = pick["away_team_score"]
-                
+
+            # score_home_team = random.randint(0, 50)
+            # score_away_team = random.randint(0, 50)
             covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
             if covering_spread == True:
                 current_week_total += int(point_value)

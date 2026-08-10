@@ -2,7 +2,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit as st
 
-def display_player_picks(home_team, away_team, game_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread, start_time):
+def display_player_picks(home_team, away_team, game_spread, point_value, spread_pick, score_home_team, score_away_team, covering_spread, start_time=None):
     # Build expander elements based on the information gathered above
     # Similar to the implementation in display_data.py, does not include the buttons
     col1, col2, col3 = st.columns([1, 5, 1])
@@ -43,10 +43,12 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
                 st.markdown(f"## **COVERING SPREAD**: {spread_emoji} (Game not started)", text_alignment='center')
             else:
                 st.markdown(f"## **COVERING SPREAD**: {spread_emoji}", text_alignment='center')
-            st.markdown(f"### :red[**GAME START TIME**: {datetime
-                                                        .strptime(start_time, '%Y-%m-%dT%H:%M:%SZ')
-                                                        .replace(tzinfo=ZoneInfo('UTC'))
-                                                        .astimezone(ZoneInfo('America/New_York'))
-                                                        .strftime('%A, %B %d at %I:%M %p')}]", text_alignment='center')
+
+            if start_time is not None:
+                st.markdown(f"### :red[**GAME START TIME**: {datetime
+                                                            .strptime(start_time, '%Y-%m-%dT%H:%M:%SZ')
+                                                            .replace(tzinfo=ZoneInfo('UTC'))
+                                                            .astimezone(ZoneInfo('America/New_York'))
+                                                            .strftime('%A, %B %d at %I:%M %p')}]", text_alignment='center')
 
   

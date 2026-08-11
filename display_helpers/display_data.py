@@ -79,7 +79,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
-        st.markdown(f"### :red[       {start_time}]", text_alignment='center')
+        st.markdown(f"### :red[{start_time}]", text_alignment='center')
         
     # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
     # If a duplicate entry exists, break the loop and do not display it to the page
@@ -179,7 +179,7 @@ def handle_change(changed_key, game_info):
 
     # PART 2: Check if a game has already started
     # If the game has started, reset the button state to None and display a message to the user
-    if datetime.fromisoformat(start_time.replace("Z", "+00:00")) < datetime.now(ZoneInfo("UTC")):
+    if start_time < datetime.now().isoformat():
         st.toast(f"PICK DENIED: Cannot make changes to a game that has already started.", icon="⚠️", duration=5)
         # reset the button state to None - deselects the button on the page
         st.session_state[changed_key] = None
@@ -290,9 +290,9 @@ def handle_change(changed_key, game_info):
                 original_spread
             )
     
-    # print for debugging purposes
-    print("\n\n -------NEW ENTRY-------")
-    print(json.dumps(st.session_state.point_picks, indent=2))
+    # # print for debugging purposes
+    # print("\n\n -------NEW ENTRY-------")
+    # print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
 def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id, start_time, original_spread):

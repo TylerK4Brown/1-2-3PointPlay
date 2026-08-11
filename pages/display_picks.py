@@ -27,7 +27,7 @@ if check_session_states():
     if len(point_picks) < 3:
         st.warning("WARNING: You have not completed all of your picks yet. If this is intentional, please proceed. Otherwise, complete all your picks before finalizing.", icon="‼️")
     
-    print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
+    # print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
 
     # Loop over all picks and print them to the page
     for pick in sorted_point_picks:

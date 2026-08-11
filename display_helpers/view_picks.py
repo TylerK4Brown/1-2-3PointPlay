@@ -19,13 +19,15 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
     with col2:
         if spread_pick == "EVEN":
             expander_string = (
-                f"{point_value} POINT PLAY: {away_team} @ {home_team}\n"
+                f"{point_value} POINT PLAY\n"
+                f"{away_team} @ {home_team}\n"
                 f"YOUR PICK: EVEN\n"
                 f"{spread_emoji}"
             )
         else:
             expander_string = (
-                f"{point_value} POINT PLAY: {away_team} @ {home_team}\n"
+                f"{point_value} POINT PLAY\n"
+                f"{away_team} @ {home_team}\n"
                 f"YOUR PICK: {spread_pick}\n"
                 f"{spread_emoji}"
             )
@@ -42,15 +44,15 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
             
             # display the spread information below the team logos
             if spread_pick == "EVEN":
-                st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
+                st.markdown(f"### **SPREAD**: EVEN", text_alignment='center')
             else:
-                st.markdown(f"## **SPREAD**: {game_spread}", text_alignment='center')
+                st.markdown(f"### **SPREAD**: {game_spread}", text_alignment='center')
             
-            st.markdown(f"## YOUR PICK: {spread_pick}", text_alignment='center')
+            st.markdown(f"### YOUR PICK: {spread_pick}", text_alignment='center')
             if spread_emoji == "⏳":
-                st.markdown(f"## **COVERING SPREAD**: {spread_emoji} (Game not started)", text_alignment='center')
+                st.markdown(f"### **COVERING SPREAD**: {spread_emoji} (Game not started)", text_alignment='center')
             else:
-                st.markdown(f"## **COVERING SPREAD**: {spread_emoji}", text_alignment='center')
+                st.markdown(f"### **COVERING SPREAD**: {spread_emoji}", text_alignment='center')
 
             if start_time is not None:
                 st.markdown(f"### :red[**GAME START TIME**: {datetime

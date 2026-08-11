@@ -87,7 +87,7 @@ for row in rows:
         datetime_sample = "2026-10-31T00:15:01Z"
         # print(datetime.strptime(datetime_sample, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo('UTC')).astimezone(ZoneInfo('America/New_York')).strftime('%A, %B %d at %I:%M %p'))
         datetime_now = datetime.now().isoformat()
-        if start_time > datetime_sample:
+        if start_time > datetime_now:
             covering_spread = "not started"
             games_to_consider -= 1
             score_home_team = 0

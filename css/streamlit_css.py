@@ -10,12 +10,12 @@ def load_css_gamedisplay():
         }
                 
         [data-testid="stExpander"] details {
-            padding-bottom: 20px;
+            padding-bottom: 5px;
         }
 
         [data-testid="stExpander"] summary [data-testid="stMarkdownContainer"] p {
             white-space: pre-line;
-            line-height: 1.5;
+            padding: 0 40px 0 0;
             text-align: center;
         }
         

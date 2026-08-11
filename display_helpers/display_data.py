@@ -79,7 +79,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
-        st.markdown(f"### :red[{start_time}]", text_alignment='center')
+        st.markdown(f"### :red[       {start_time}]", text_alignment='center')
         
     # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
     # If a duplicate entry exists, break the loop and do not display it to the page
@@ -95,12 +95,18 @@ def generate_expander(data_obj, button_id, start_times_list):
             st.markdown(f"### :red[{start_time}]", text_alignment='center')
 
     # Start generating the expanders for each game in the current week
-    col1, col2, col3 = st.columns([1, 5, 1])
+    col1, col2, col3 = st.columns([1, 7, 1])
     with col2:
         if is_spread_even:
-            expander_string = f"{away_team} @ {home_team} → → → → Spread: EVEN"
+            expander_string = (
+                f"{away_team} @ {home_team}\n"
+                f"Spread: EVEN"
+            )
         else:
-            expander_string = f"{away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}"
+            expander_string = (
+                f"{away_team} @ {home_team}\n"
+                f"Spread: {team_favored_abbreviation} {point_spread_favored}"
+            )
         with st.expander(expander_string, expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 3, 1])

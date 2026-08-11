@@ -18,9 +18,17 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
     
     with col2:
         if spread_pick == "EVEN":
-            expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: EVEN → → → → Covering Spread: {spread_emoji}"
+            expander_string = (
+                f"{point_value} POINT PLAY: {away_team} @ {home_team}\n"
+                f"YOUR PICK: EVEN\n"
+                f"{spread_emoji}"
+            )
         else:
-            expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: {spread_pick} → → → → {spread_emoji}"
+            expander_string = (
+                f"{point_value} POINT PLAY: {away_team} @ {home_team}\n"
+                f"YOUR PICK: {spread_pick}\n"
+                f"{spread_emoji}"
+            )
         with st.expander(expander_string, expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 3, 1])

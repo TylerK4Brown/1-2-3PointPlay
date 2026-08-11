@@ -60,6 +60,8 @@ def load_css_buttons_homepage():
             height: 85px;
             background-color: #2d60cf;
             color: #ffffff;
+            border: 0.1rem solid #ffffff;
+            border-radius: 30px;
         }
                        
         [data-testid="stButton"] button:hover {

@@ -84,8 +84,6 @@ for row in rows:
 
         # If a game has not started yet, set covering_spread to "not started"
         # This effectively skips all spread and score calculations, since no information to perform those calculations on is available yet
-        datetime_sample = "2026-10-31T00:15:01Z"
-        # print(datetime.strptime(datetime_sample, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo('UTC')).astimezone(ZoneInfo('America/New_York')).strftime('%A, %B %d at %I:%M %p'))
         datetime_now = datetime.now().isoformat()
         if start_time > datetime_now:
             covering_spread = "not started"
@@ -110,8 +108,8 @@ for row in rows:
                 score_home_team = pick["home_team_score"]
                 score_away_team = pick["away_team_score"]
 
-            # score_home_team = random.randint(0, 50)
-            # score_away_team = random.randint(0, 50)
+            score_home_team = random.randint(0, 50)
+            score_away_team = random.randint(0, 50)
             covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
             if covering_spread == True:
                 current_week_total += int(point_value)

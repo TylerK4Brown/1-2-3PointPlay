@@ -1,3 +1,7 @@
+## make_your_picks.py
+## Page that displays the games for the week and allows the user to make their picks
+## Retrieves Odds API game data and hands rendering duties to display helper modules
+
 # Picks page for the app
 # Makes an API call to The Odds API to get the games for the week, and displays them in Streamlit expander elements
 import streamlit as st

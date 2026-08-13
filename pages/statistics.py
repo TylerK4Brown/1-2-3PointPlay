@@ -1,3 +1,8 @@
+## statistics.py
+## Computes and displays aggregate pick performance statistics across users and weeks
+## Includes one helper function for all-time spread coverage summaries
+## Eventually, this page will also include buttons to view per-player statistics and trend breakdowns
+
 import streamlit as st
 from database_operations.database import get_picks_by_week, get_week_number
 

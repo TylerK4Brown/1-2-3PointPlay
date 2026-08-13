@@ -1,3 +1,8 @@
+## landing_page.py
+## Houses buttons for all of the main functionality of our app
+## First three buttons listed allows the user to select who they are, and stores it in session state
+## Also provides access to viewing picks from this week/pick history, the leaderboard, and overall statistics
+
 # Landing page with three selector buttons
 # The name selected will be stored in session state and used to personalize the picks page
 

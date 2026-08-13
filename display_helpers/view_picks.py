@@ -1,3 +1,7 @@
+## view_picks.py
+## Uses Streamlit expanders to display the user's picks for a specific week, or historical picks
+## Removes the need for duplicate code in the view_player_picks.py and view_pick_history.py pages
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit as st

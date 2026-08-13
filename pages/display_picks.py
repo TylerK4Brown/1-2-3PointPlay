@@ -1,3 +1,7 @@
+## display_picks.py
+## Filters out any incomplete picks and displays the user's completed picks in a somewhat clean format
+## Formats information for each pick before a database entry is created or updaed
+
 # Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
 from time import sleep
 from zoneinfo import ZoneInfo

@@ -1,4 +1,6 @@
-# Page configuration file for the app
+## home.py
+## Configures the Streamlit app shell and registers all navigation pages
+## Serves as the application entrypoint
 
 import streamlit as st
 

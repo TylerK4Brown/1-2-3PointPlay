@@ -1,3 +1,8 @@
+## display_data.py
+## Takes information from the API call and displays it to the user using Streamlit expanders
+## When the user clicks on an expander, it will reveal a spread selection and point value selection
+## Callback function handles changes to selections and updates the session state accordingly
+
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from dictionaries.games_per_week import NFL_GAMES_PER_WEEK
@@ -24,6 +29,7 @@ def display_data_nfl (data):
     
     # reset session state for game information if it already exists
     # clicking on buttons rerenders the entire page, which would cause this list to grow indefinitely
+    # since we append to this list each time a button is clicked
     if "game_information" in st.session_state:
         st.session_state.game_information = []
 

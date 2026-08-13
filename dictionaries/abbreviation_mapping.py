@@ -1,6 +1,6 @@
 ## abbreviation_mapping.py
 ## Creates a constant dictionary that maps a team's full name to its abbreviation and vice versa
-## Allows for quick conversion between the two formats, and makes certain displays in the app cleaner!
+## Allows for quick conversion between the two formats, and makes certain displays in the app cleaner
 
 # ABBREVIATION_MAPPING constant
 ABBREVIATION_MAPPING = {

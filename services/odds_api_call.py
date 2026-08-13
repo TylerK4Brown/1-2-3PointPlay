@@ -1,3 +1,7 @@
+## odds_api_call.py
+## Handles API requests to retrieve weekly game odds and live score information
+## Applies date-window filtering and stores responses in session state for page rendering
+
 # Either makes an API call to the Odds API or uses the data already stored in session state to display the upcoming MLB games and their point spreads
 
 import requests

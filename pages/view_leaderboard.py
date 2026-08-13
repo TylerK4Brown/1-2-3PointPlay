@@ -1,3 +1,7 @@
+## view_leaderboard.py
+## Displays cumulative player standings using point and win/loss data fetched from the database
+## Formats leaderboard output for quick comparison across all participants
+
 import streamlit as st
 from database_operations.database import get_user_points, get_win_loss_record
 from display_helpers.number_formatting import format_points

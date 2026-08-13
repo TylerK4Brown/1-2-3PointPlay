@@ -1,3 +1,8 @@
+## view_player_picks.py
+## Loads each player's submitted picks and refreshes live game score/coverage results
+## Handles calculation of the points earned for each week + the W/L record
+## Updates the database with relevant information for each player after calculations are completed
+
 # View picks page
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user

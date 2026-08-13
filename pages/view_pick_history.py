@@ -1,3 +1,8 @@
+## view_pick_history.py
+## Shows historical picks for a selected player across a chosen week range
+## Uses slider and session state controls to view archived weekly outcomes
+## Weekly outcomes come solely from database storage of these weeks
+
 import streamlit as st
 from database_operations.database import get_picks_by_week, get_week_number, get_point_total_for_week, get_win_loss_by_week
 from display_helpers.view_picks import display_player_picks

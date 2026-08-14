@@ -89,8 +89,9 @@ for row in rows:
 
         # If a game has not started yet, set covering_spread to "not started"
         # This effectively skips all spread and score calculations, since no information to perform those calculations on is available yet
-        datetime_now = datetime.now().isoformat()
-        if start_time > datetime_now:
+        datetime_now = datetime.now(ZoneInfo("UTC"))
+        game_start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC"))
+        if game_start_time > datetime_now:
             covering_spread = "not started"
             games_to_consider -= 1
             score_home_team = 0
@@ -104,8 +105,13 @@ for row in rows:
                         score_home_team = 0
                         score_away_team = 0
                     else:
-                        score_home_team = int(score["scores"][0]["score"])
-                        score_away_team = int(score["scores"][1]["score"])
+                        # Less hard-coded way to find home and away team scores
+                        # API returns team names different each time, so this instead does string matching to find the right name
+                        for score in score["scores"]:
+                            if score["name"] == home_team:
+                                score_home_team = int(score["score"])
+                            elif score["name"] == away_team:
+                                score_away_team = int(score["score"])
 
             # If these scores are still empty, it means the API call did not return scores for this game
             # Use the scores stored in the database if this is the case

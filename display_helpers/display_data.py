@@ -54,6 +54,8 @@ def generate_expander(data_obj, button_id, start_times_list):
     # also call the abbreviation mapping function for later use in the expander display
     home_team = data_obj["home_team"]
     away_team = data_obj["away_team"]
+    home_team_abbreviation = ABBREVIATION_MAPPING[home_team]
+    away_team_abbreviation = ABBREVIATION_MAPPING[away_team]
     start_time = data_obj["commence_time"]
     point_spread = data_obj["bookmakers"][0]["markets"][0]["outcomes"]
     game_id = data_obj['id']
@@ -85,7 +87,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
-        st.markdown(f"### :red[{start_time}]", text_alignment='center')
+        st.markdown(f"### :blue[{start_time}]", text_alignment='center')
         
     # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
     # If a duplicate entry exists, break the loop and do not display it to the page
@@ -98,7 +100,7 @@ def generate_expander(data_obj, button_id, start_times_list):
         else:
             st.divider(width='stretch')
             start_times_list.append(start_time)
-            st.markdown(f"### :red[{start_time}]", text_alignment='center')
+            st.markdown(f"### :blue[{start_time}]", text_alignment='center')
 
     # Start generating the expanders for each game in the current week
     col1, col2, col3 = st.columns([1, 7, 1])

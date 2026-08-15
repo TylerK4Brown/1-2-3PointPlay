@@ -1,4 +1,6 @@
-# Page configuration file for the app
+## home.py
+## Configures the Streamlit app shell and registers all navigation pages
+## Serves as the application entrypoint
 
 import streamlit as st
 
@@ -18,14 +20,20 @@ pages = {
     "Display Your Picks": [
         st.Page("pages/display_picks.py", title="Display Your Picks"),
     ],
-    "Finalize Your Picks": [
-        st.Page("pages/warning_before_submission.py", title="Finalize Your Picks"),
-    ],
     "View Player Picks": [
         st.Page("pages/view_player_picks.py", title="View Player Picks"),
     ],
     "View Leaderboard": [
         st.Page("pages/view_leaderboard.py", title="View Leaderboard"),
+    ],
+    "View Statistics": [
+        st.Page("pages/statistics.py", title="View Statistics"),
+    ],
+    "View Individual Player Statistics": [
+        st.Page("pages/individual_statistics.py", title="View Individual Player Statistics"),
+    ],
+    "View Pick History": [
+        st.Page("pages/view_pick_history.py", title="View Pick History"),
     ],
 }
 

@@ -1,6 +1,7 @@
-# Makes sure that on refresh, the user is redirected to the landing page to select a name
-# On refresh, point_picks and name are no longer in the session state
-# If one or the other is not present, redirect the user to the landing page to select a name and initialize the session states
+## default_behavior.py
+## Contains shared guard logic that validates required Streamlit session state values
+## Redirects users to the landing page when required selection or pick state is missing
+
 import streamlit as st
 
 def check_session_states():

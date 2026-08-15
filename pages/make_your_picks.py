@@ -1,8 +1,13 @@
+## make_your_picks.py
+## Page that displays the games for the week and allows the user to make their picks
+## Retrieves Odds API game data and hands rendering duties to display helper modules
+
 # Picks page for the app
 # Makes an API call to The Odds API to get the games for the week, and displays them in Streamlit expander elements
 import streamlit as st
-from API_info.odds_api_call import make_api_call
+from services.odds_api_call import make_api_call
 from default_behavior import check_session_states
+from display_helpers.display_data import display_data_nfl
 
 # Makes sure all proper state variables are present before starting
 if check_session_states():
@@ -11,17 +16,23 @@ if check_session_states():
     if "disabled" not in st.session_state:
         st.session_state.disabled = True
     
-    # Make API call, which also displays the games for the week
-    make_api_call()
+    if "game_data" not in st.session_state:
+        st.session_state.game_data = None
+        make_api_call()
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        # add spacing between expander and button
-        if "name" in st.session_state and "point_picks" in st.session_state:
-            st.markdown("")
-            st.markdown("")
-            if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
-                st.switch_page("pages/display_picks.py")
+    # If the API returns a dictionary, it's an error message, which means the preseason games have concluded
+    if isinstance(st.session_state.game_data, dict):
+        st.markdown("# The preseason games have concluded! Thank you for participating :smile:", text_alignment="center")
+    else:
+        display_data_nfl(st.session_state.game_data)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            # add spacing between expander and button
+            if "name" in st.session_state and "point_picks" in st.session_state:
+                st.markdown("")
+                st.markdown("")
+                if st.button("View Your Picks", width=700, key="view_picks", type="primary"):
+                    st.switch_page("pages/display_picks.py")
 
     # centered return to landing page button
     col1, col2, col3 = st.columns([1, 1, 1])

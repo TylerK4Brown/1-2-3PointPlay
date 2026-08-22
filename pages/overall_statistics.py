@@ -8,6 +8,7 @@ from css.streamlit_css import load_css_gamedisplay
 from database_operations.database import get_picks_by_week, get_week_number
 
 load_css_gamedisplay()
+most_frequent_team_picked = {}
 # Get totals for picks covering the spread for all users for a given week or weeks
 def get_pick_statistics(week_number):
     # if week number isn't a list, convert to a list so it can be iterated
@@ -36,6 +37,11 @@ def get_pick_statistics(week_number):
                         two_point_picks_covering += 1
                     elif picks["point_value"] == "3":
                         three_point_picks_covering += 1
+                
+                team_picked = picks["spread_pick"].split(" ")[0]
+                if team_picked not in most_frequent_team_picked:
+                    most_frequent_team_picked[team_picked] = 0
+                most_frequent_team_picked[team_picked] += 1
 
     # return information in a dictionary to be used in the statistics page
     return {
@@ -88,6 +94,15 @@ st.markdown(f"# 1 point picks correct: {one_point_picks_covering} / {total_possi
 st.markdown(f"# 2 point picks correct: {two_point_picks_covering} / {total_possible_point_plays} ({((two_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
 st.markdown(f"# 3 point picks correct: {three_point_picks_covering} / {total_possible_point_plays} ({((three_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
 st.divider(width='stretch')
+
+st.markdown("## Top 3 Most Frequently Picked Teams", text_alignment="center")
+# Sort teams by the number of times they were picked
+# Uses a secondary sort to break ties alphabetically by team name
+sorted_most_frequent_teams = sorted(most_frequent_team_picked.items(), key=lambda team: (-team[1], team[0]))
+for index, (team, count) in enumerate(sorted_most_frequent_teams):
+    if index >= 3:
+        break
+    st.markdown(f"{team}: {count} times", text_alignment="center")
 
 newcol1, newcol2, newcol3 = st.columns([1, 1, 1])
 with newcol2:

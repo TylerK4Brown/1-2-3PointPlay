@@ -26,8 +26,8 @@ pages = {
     "View Leaderboard": [
         st.Page("pages/view_leaderboard.py", title="View Leaderboard"),
     ],
-    "View Statistics": [
-        st.Page("pages/statistics.py", title="View Statistics"),
+    "View Overall Statistics": [
+        st.Page("pages/overall_statistics.py", title="View Overall Statistics"),
     ],
     "View Individual Player Statistics": [
         st.Page("pages/individual_statistics.py", title="View Individual Player Statistics"),

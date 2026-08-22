@@ -4,8 +4,10 @@
 ## Eventually, this page will also include buttons to view per-player statistics and trend breakdowns
 
 import streamlit as st
+from css.streamlit_css import load_css_gamedisplay
 from database_operations.database import get_picks_by_week, get_week_number
 
+load_css_gamedisplay()
 # Get totals for picks covering the spread for all users for a given week or weeks
 def get_pick_statistics(week_number):
     # if week number isn't a list, convert to a list so it can be iterated

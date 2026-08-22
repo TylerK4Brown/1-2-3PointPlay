@@ -110,8 +110,11 @@ with leaderboardcol2:
         st.switch_page("pages/view_leaderboard.py")
 
 st.divider(width='stretch')
-st.markdown("## View overall statistics", text_alignment="center")
-statscol1, statscol2, statscol3 = st.columns([1, 1, 1])
+st.markdown("## Statistics viewing options", text_alignment="center")
+statscol1, statscol2, statscol3, statscol4 = st.columns([1, 2, 2, 1])
 with statscol2:
-    if st.button("View Statistics", width='stretch', key="view_statistics"):
-        st.switch_page("pages/statistics.py")
+    if st.button("View Individual Statistics", width='stretch', key="view_individual_statistics"):
+        st.switch_page("pages/individual_statistics.py")
+with statscol3:
+    if st.button("View Overall Statistics", width='stretch', key="view_overall_statistics"):
+        st.switch_page("pages/overall_statistics.py")

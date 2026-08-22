@@ -58,6 +58,7 @@ st.divider(width='stretch')
 
 week_number = get_week_number()
 week_number -= 1
+week_being_considered = week_number
 
 # If at least 1 week has not passed, display no stats
 if week_number < 1:
@@ -73,10 +74,6 @@ if week_number < 1:
 # if more than 1 week has passed, create array of multiple weeks to display statistics for all weeks that have passed
 if week_number > 1:
     week_number = [i for i in range(1, week_number + 1)]
-
-week_being_considered = week_number
-if isinstance(week_number, list):
-    week_being_considered = week_number[-1]
 
 # Begin the display of statistics for all weeks that have passed
 total_possible_picks = week_being_considered * 9

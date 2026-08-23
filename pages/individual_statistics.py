@@ -47,7 +47,7 @@ else:
             week_number = [i for i in range(1, week_number + 1)]
         # Begin the display of statistics for all weeks that have passed
         # Calls this display helper function to gather pick statistics for the selected player across the specified weeks
-        pick_statistics = get_pick_statistics(week_number, st.session_state.player_stats_selected)
+        pick_statistics = get_pick_statistics(week_number, "individual")
         
         total_possible_picks = week_being_considered * 3
         total_possible_point_plays = week_being_considered
@@ -56,15 +56,15 @@ else:
         two_point_picks_covering = pick_statistics["two_point_picks_covering"]
         three_point_picks_covering = pick_statistics["three_point_picks_covering"]
         most_frequent_teams_picked = pick_statistics["most_frequent_teams_picked"] 
-        st.markdown(f"# Total picks correct: {total_picks_covering} / {total_possible_picks} ({((total_picks_covering / total_possible_picks) * 100):.1f}%)", text_alignment="center")
+        st.markdown(f"# Total picks correct: :blue[{total_picks_covering} / {total_possible_picks} ({((total_picks_covering / total_possible_picks) * 100):.1f}%)]", text_alignment="center")
         st.divider(width='stretch')
 
-        st.markdown(f"# 1 point picks correct: {one_point_picks_covering} / {total_possible_point_plays} ({((one_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
-        st.markdown(f"# 2 point picks correct: {two_point_picks_covering} / {total_possible_point_plays} ({((two_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
-        st.markdown(f"# 3 point picks correct: {three_point_picks_covering} / {total_possible_point_plays} ({((three_point_picks_covering / total_possible_point_plays) * 100):.1f}%)", text_alignment="center")
+        st.markdown(f"# 1 point picks correct: :blue[{one_point_picks_covering} / {total_possible_point_plays} ({((one_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
+        st.markdown(f"# 2 point picks correct: :blue[{two_point_picks_covering} / {total_possible_point_plays} ({((two_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
+        st.markdown(f"# 3 point picks correct: :blue[{three_point_picks_covering} / {total_possible_point_plays} ({((three_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
         st.divider(width='stretch')
 
-        st.markdown("## Top 3 Most Frequently Picked Teams", text_alignment="center")
+        st.markdown("## :blue[Top 3 Most Frequently Picked Teams]", text_alignment="center")
         # Sort teams by the number of times they were picked in descending order (-team[1])
         # Uses a secondary sort to break ties alphabetically by team name (team[0])
         sorted_most_frequent_teams = sorted(most_frequent_teams_picked.items(), key=lambda team: (-team[1], team[0]))

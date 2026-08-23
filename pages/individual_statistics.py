@@ -36,7 +36,7 @@ with col3:
 if st.session_state.player_stats_selected is None:
     st.markdown("## Please select a player to view their individual statistics.", text_alignment="center")
 else:
-    st.markdown(f"## Viewing individual statistics for {st.session_state.player_stats_selected}", text_alignment="center")
+    st.markdown(f"## Viewing statistics for {st.session_state.player_stats_selected}", text_alignment="center")
     st.divider(width='stretch')
     if week_number < 1:
         st.markdown("## No statistics available yet. Please check back after the first week of the season.", text_alignment="center")

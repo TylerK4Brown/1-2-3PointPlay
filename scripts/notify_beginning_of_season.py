@@ -1,3 +1,7 @@
+## notify_beginning_of_season.py
+## Sends the season-start announcement email to participants using Gmail SMTP
+## Builds an HTML message body and authenticates with environment-based credentials
+
 import smtplib
 from email.utils import formataddr
 from email.mime.text import MIMEText

@@ -1,3 +1,7 @@
+## view_picks.py
+## Uses Streamlit expanders to display the user's picks for a specific week, or historical picks
+## Removes the need for duplicate code in the view_player_picks.py and view_pick_history.py pages
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit as st
@@ -18,9 +22,19 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
     
     with col2:
         if spread_pick == "EVEN":
-            expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: EVEN → → → → Covering Spread: {spread_emoji}"
+            expander_string = (
+                f"{point_value} POINT PLAY\n"
+                f"{away_team} @ {home_team}\n"
+                f"YOUR PICK: EVEN\n"
+                f"{spread_emoji}"
+            )
         else:
-            expander_string = f"{point_value} POINT PLAY: {away_team} @ {home_team} → → → → YOUR PICK: {spread_pick} → → → → {spread_emoji}"
+            expander_string = (
+                f"{point_value} POINT PLAY\n"
+                f"{away_team} @ {home_team}\n"
+                f"YOUR PICK: {spread_pick}\n"
+                f"{spread_emoji}"
+            )
         with st.expander(expander_string, expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 3, 1])
@@ -34,18 +48,18 @@ def display_player_picks(home_team, away_team, game_spread, point_value, spread_
             
             # display the spread information below the team logos
             if spread_pick == "EVEN":
-                st.markdown(f"## **SPREAD**: EVEN", text_alignment='center')
+                st.markdown(f"### **SPREAD**: EVEN", text_alignment='center')
             else:
-                st.markdown(f"## **SPREAD**: {game_spread}", text_alignment='center')
+                st.markdown(f"### **SPREAD**: {game_spread}", text_alignment='center')
             
-            st.markdown(f"## YOUR PICK: {spread_pick}", text_alignment='center')
+            st.markdown(f"### YOUR PICK: {spread_pick}", text_alignment='center')
             if spread_emoji == "⏳":
-                st.markdown(f"## **COVERING SPREAD**: {spread_emoji} (Game not started)", text_alignment='center')
+                st.markdown(f"### **COVERING SPREAD**: {spread_emoji} (Game not started)", text_alignment='center')
             else:
-                st.markdown(f"## **COVERING SPREAD**: {spread_emoji}", text_alignment='center')
+                st.markdown(f"### **COVERING SPREAD**: {spread_emoji}", text_alignment='center')
 
             if start_time is not None:
-                st.markdown(f"### :red[**GAME START TIME**: {datetime
+                st.markdown(f"### :blue[**GAME START TIME**: {datetime
                                                             .strptime(start_time, '%Y-%m-%dT%H:%M:%SZ')
                                                             .replace(tzinfo=ZoneInfo('UTC'))
                                                             .astimezone(ZoneInfo('America/New_York'))

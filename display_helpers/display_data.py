@@ -1,3 +1,8 @@
+## display_data.py
+## Takes information from the API call and displays it to the user using Streamlit expanders
+## When the user clicks on an expander, it will reveal a spread selection and point value selection
+## Callback function handles changes to selections and updates the session state accordingly
+
 import streamlit as st
 from css.streamlit_css import load_css_gamedisplay
 from dictionaries.games_per_week import NFL_GAMES_PER_WEEK
@@ -24,6 +29,7 @@ def display_data_nfl (data):
     
     # reset session state for game information if it already exists
     # clicking on buttons rerenders the entire page, which would cause this list to grow indefinitely
+    # since we append to this list each time a button is clicked
     if "game_information" in st.session_state:
         st.session_state.game_information = []
 
@@ -48,6 +54,8 @@ def generate_expander(data_obj, button_id, start_times_list):
     # also call the abbreviation mapping function for later use in the expander display
     home_team = data_obj["home_team"]
     away_team = data_obj["away_team"]
+    home_team_abbreviation = ABBREVIATION_MAPPING[home_team]
+    away_team_abbreviation = ABBREVIATION_MAPPING[away_team]
     start_time = data_obj["commence_time"]
     point_spread = data_obj["bookmakers"][0]["markets"][0]["outcomes"]
     game_id = data_obj['id']
@@ -79,7 +87,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     if len(start_times_list) == 0:
         st.divider(width='stretch')
         start_times_list.append(start_time)
-        st.markdown(f"### :red[{start_time}]", text_alignment='center')
+        st.markdown(f"### :blue[{start_time}]", text_alignment='center')
         
     # If the start_times_list is not empty, iterate through the list to see if a duplicate entry exists. 
     # If a duplicate entry exists, break the loop and do not display it to the page
@@ -92,15 +100,21 @@ def generate_expander(data_obj, button_id, start_times_list):
         else:
             st.divider(width='stretch')
             start_times_list.append(start_time)
-            st.markdown(f"### :red[{start_time}]", text_alignment='center')
+            st.markdown(f"### :blue[{start_time}]", text_alignment='center')
 
     # Start generating the expanders for each game in the current week
-    col1, col2, col3 = st.columns([1, 5, 1])
+    col1, col2, col3 = st.columns([1, 7, 1])
     with col2:
         if is_spread_even:
-            expander_string = f"{away_team} @ {home_team} → → → → Spread: EVEN"
+            expander_string = (
+                f"{away_team} @ {home_team}\n"
+                f"Spread: EVEN"
+            )
         else:
-            expander_string = f"{away_team} @ {home_team} → → → → Spread: {team_favored_abbreviation} {point_spread_favored}"
+            expander_string = (
+                f"{away_team} @ {home_team}\n"
+                f"Spread: {team_favored_abbreviation} {point_spread_favored}"
+            )
         with st.expander(expander_string, expanded=False):
             # create columns within the expander to display team logs
             col1, col2, col3 = st.columns([1, 3, 1])
@@ -173,7 +187,7 @@ def handle_change(changed_key, game_info):
 
     # PART 2: Check if a game has already started
     # If the game has started, reset the button state to None and display a message to the user
-    if datetime.fromisoformat(start_time.replace("Z", "+00:00")) < datetime.now(ZoneInfo("UTC")):
+    if start_time < datetime.now().isoformat():
         st.toast(f"PICK DENIED: Cannot make changes to a game that has already started.", icon="⚠️", duration=5)
         # reset the button state to None - deselects the button on the page
         st.session_state[changed_key] = None
@@ -284,9 +298,9 @@ def handle_change(changed_key, game_info):
                 original_spread
             )
     
-    # print for debugging purposes
-    print("\n\n -------NEW ENTRY-------")
-    print(json.dumps(st.session_state.point_picks, indent=2))
+    # # print for debugging purposes
+    # print("\n\n -------NEW ENTRY-------")
+    # print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
 def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id, start_time, original_spread):

@@ -1,3 +1,8 @@
+## view_player_picks.py
+## Loads each player's submitted picks and refreshes live game score/coverage results
+## Handles calculation of the points earned for each week + the W/L record
+## Updates the database with relevant information for each player after calculations are completed
+
 # View picks page
 # Calls the database to get the users picks
 # Calls the Odds API to get live score updates for the picks by each user
@@ -84,10 +89,9 @@ for row in rows:
 
         # If a game has not started yet, set covering_spread to "not started"
         # This effectively skips all spread and score calculations, since no information to perform those calculations on is available yet
-        datetime_sample = "2026-10-31T00:15:01Z"
-        # print(datetime.strptime(datetime_sample, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=ZoneInfo('UTC')).astimezone(ZoneInfo('America/New_York')).strftime('%A, %B %d at %I:%M %p'))
-        datetime_now = datetime.now().isoformat()
-        if start_time > datetime_sample:
+        datetime_now = datetime.now(ZoneInfo("UTC"))
+        game_start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC"))
+        if game_start_time > datetime_now:
             covering_spread = "not started"
             games_to_consider -= 1
             score_home_team = 0
@@ -101,8 +105,13 @@ for row in rows:
                         score_home_team = 0
                         score_away_team = 0
                     else:
-                        score_home_team = int(score["scores"][0]["score"])
-                        score_away_team = int(score["scores"][1]["score"])
+                        # Less hard-coded way to find home and away team scores
+                        # API returns team names different each time, so this instead does string matching to find the right name
+                        for score in score["scores"]:
+                            if score["name"] == home_team:
+                                score_home_team = int(score["score"])
+                            elif score["name"] == away_team:
+                                score_away_team = int(score["score"])
 
             # If these scores are still empty, it means the API call did not return scores for this game
             # Use the scores stored in the database if this is the case
@@ -110,8 +119,6 @@ for row in rows:
                 score_home_team = pick["home_team_score"]
                 score_away_team = pick["away_team_score"]
 
-            # score_home_team = random.randint(0, 50)
-            # score_away_team = random.randint(0, 50)
             covering_spread = calculate_spread_cover(is_pick_home, spread_pick, score_home_team, score_away_team)
             if covering_spread == True:
                 current_week_total += int(point_value)

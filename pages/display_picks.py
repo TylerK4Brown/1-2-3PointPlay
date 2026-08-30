@@ -1,3 +1,7 @@
+## display_picks.py
+## Filters out any incomplete picks and displays the user's completed picks in a somewhat clean format
+## Formats information for each pick before a database entry is created or updated
+
 # Display user's picks on a new page when they click on the "View Your Picks" button on the picks page.
 from time import sleep
 from zoneinfo import ZoneInfo
@@ -27,7 +31,7 @@ if check_session_states():
     if len(point_picks) < 3:
         st.warning("WARNING: You have not completed all of your picks yet. If this is intentional, please proceed. Otherwise, complete all your picks before finalizing.", icon="‼️")
     
-    print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
+    # print("UPDATED PICKS LISTING: ", json.dumps(sorted_point_picks, indent=2))
 
     # Loop over all picks and print them to the page
     for pick in sorted_point_picks:

@@ -11,13 +11,13 @@ from css.streamlit_css import load_css_gamedisplay
 
 # Callback function for the slider to save the selected week range in session state
 # Helps with persistence of the slider's value when a button is clicked to view a different player's pick history
-def save_week_slider_range():
-    st.session_state.week_slider_saved = st.session_state.week_slider
+def save_radio_selection():
+    st.session_state.radio_selection = st.session_state.week_range_option
 
 load_css_gamedisplay()
 if "player_history_selected" not in st.session_state:
     st.session_state.player_history_selected = None
-    
+
 st.markdown("# Pick History", text_alignment="center")
 st.divider(width='stretch')
 
@@ -25,8 +25,13 @@ st.divider(width='stretch')
 week_number = get_week_number()
 week_number -= 1
 
-if "week_slider_saved" not in st.session_state:
-    st.session_state.week_slider_saved = (1, week_number)
+if "start_week" not in st.session_state:
+    st.session_state.start_week = 1
+if "end_week" not in st.session_state:
+    st.session_state.end_week = week_number
+
+if "radio_selection" not in st.session_state:
+    st.session_state.radio_selection = "View All Weeks"
 
 # Buttons to view different player's pick histories
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -45,24 +50,27 @@ with col3:
 
 # A slider to view a range of weeks for the pick history
 # Only appears of at least 2 weeks have passed in the season
-slidercol1, slidercol2, slidercol3 = st.columns([1, 1, 1])
-with slidercol2:
+buttoncol1, buttoncol2, buttoncol3 = st.columns([1, 1, 1])
+with buttoncol2:
     if week_number >= 2:
-        # Slider operates off of the last saved value in session state
-        # If there isn't a value, it defaults to the max range of weeks that have passed
-        # Otherwise, it uses the saved value to ensure persistence of the slider's range when displaying player pick history
-        if "week_slider" not in st.session_state:
-            st.session_state.week_slider = st.session_state.week_slider_saved
-
-        st.slider(
-            "Select Week Range",
-            min_value=1,
-            max_value=week_number,
-            value=st.session_state.week_slider_saved,
-            key="week_slider",
-            step=1,
-            on_change=save_week_slider_range,
-        )
+       st.radio("", 
+                ["View All Weeks", f"\nView Most Recent Week Completed (Week {week_number})", "Select Custom Range"], 
+                key="week_range_option",
+                on_change=save_radio_selection,
+                )
+       
+       if st.session_state.radio_selection == "Select Custom Range":
+           value = st.selectbox(
+               "Start Week", 
+               list(range(1, st.session_state.end_week)) if "end_week" in st.session_state else list(range(1, week_number + 1)), 
+               key="start_week"           
+           )
+           
+           st.selectbox(
+               "End Week", 
+                list(range(st.session_state.start_week, week_number + 1)) if "start_week" in st.session_state else list(range(1, week_number + 1)), 
+                key="end_week"
+            )
 
 # Text to display which player's pick history is being viewed, or a message to select a player if none has been selected yet
 if st.session_state.player_history_selected is None:

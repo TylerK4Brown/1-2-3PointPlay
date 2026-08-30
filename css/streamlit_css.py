@@ -37,7 +37,8 @@ def load_css_gamedisplay():
         }
         
         [data-testid="stCaptionContainer"] p {
-            font-size: 20px;
+            font-size: 32px;
+            font-weight: bold;
         }
                        
         [data-testid="stToast"] div {

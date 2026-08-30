@@ -20,9 +20,8 @@ if check_session_states():
         st.session_state.game_data = None
         make_api_call()
 
-    # If the API returns a dictionary, it's an error message, which means the preseason games have concluded
     if isinstance(st.session_state.game_data, dict):
-        st.markdown("# The preseason games have concluded! Thank you for participating :smile:", text_alignment="center")
+        st.markdown("# All games have concluded! Thank you for participating :smile:", text_alignment="center")
     else:
         display_data_nfl(st.session_state.game_data)
         col1, col2, col3 = st.columns([1, 1, 1])

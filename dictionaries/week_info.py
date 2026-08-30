@@ -1,6 +1,5 @@
 ## week_info.py
 ## Creates a constant dictionary that maps each NFL week to the time window for that week
-## Will look different in version/NFL due to there being more games, but this works well for the preseason
 
 NFL_2026_WEEK_TIME_WINDOWS = {
 	1: {

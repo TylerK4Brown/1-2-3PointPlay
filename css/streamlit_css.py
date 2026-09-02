@@ -62,6 +62,10 @@ def load_css_gamedisplay():
             border: 0.01rem solid #3b3b3b;
             border-radius: 5px;
         }
+
+        [data-testid="stSelectbox"] div {
+            background-color: transparent;
+        }
     </style>
 
     ''', unsafe_allow_html=True)

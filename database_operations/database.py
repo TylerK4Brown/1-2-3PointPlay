@@ -5,7 +5,7 @@
 from st_supabase_connection import SupabaseConnection
 import streamlit as st
 
-DB_NAME = "user_picks_preseason_1"
+DB_NAME = "user_picks_regular_season_1"
 
 # ======== CREATE OPERATIONS ==========
 # Create a new user entry in the database if the name does not exist yet

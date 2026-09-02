@@ -49,7 +49,8 @@ with buttoncol2:
                 ["View All Weeks", f"View Most Recent Week Completed (Week {week_number})", "Select Custom Range"], 
                 key="week_range_option",
             )
-    
+
+    # If the user has selected a viewing option, set the start and end weeks in session state accordingly
     if "week_range_option" in st.session_state:
         if st.session_state.week_range_option == "View All Weeks":
             st.session_state.start_week = 1
@@ -59,6 +60,17 @@ with buttoncol2:
             st.session_state.start_week = week_number
             st.session_state.end_week = week_number
 
+        if st.session_state.week_range_option == "Select Custom Range":
+            st.selectbox(
+                "Select Start Week",
+                list(range(1, week_number + 1)),
+                key="start_week",
+            )
+            st.selectbox(
+                "Select End Week",
+                list(range(1, week_number + 1)),
+                key="end_week",
+            )
 
 # Text to display which player's pick history is being viewed, or a message to select a player if none has been selected yet
 if st.session_state.player_history_selected is None:
@@ -72,6 +84,9 @@ if st.session_state.player_history_selected is not None:
     # If no weeks have passed, display a message to check back after the first week of the season
     if week_number < 1:
         st.markdown("## No pick history available yet. Please check back after the first week of the season.", text_alignment="center")
+    # Easiest way to check for invalid week ranges for the time being. will revisit this later?
+    elif st.session_state.start_week > st.session_state.end_week:
+        st.warning("Invalid week range selected. Please select a valid range.")
     else:
         # if more than 1 week has passed, create array of multiple weeks to display pick history for all weeks that have passed
         # grabs the range from the slider if the slider has been created

@@ -56,7 +56,6 @@ for row in rows:
     current_week_total = 0
     correct_picks = 0
     push_picks = 0
-    games_to_consider = 3
     iteration_index = 0
     name = row["name"]
     st.markdown(f"## {name}", text_alignment="center")
@@ -69,6 +68,10 @@ for row in rows:
     # Sort picks by point value, ascending order
     sorted_picks = sorted(row["current_picks"]["picks"], key=lambda pick: pick["point_value"])
     game_id_list = [pick["game_id"] for pick in sorted_picks]
+
+    # Get the number of games to consider for this user
+    # Ensures that W/L record if games have not started yet/the user has not made all their picks yet
+    games_to_consider = len(game_id_list)
     # Make an API call with all three game IDs for the current user's picks
     pick_scores = make_scores_api_call(game_id_list)
     

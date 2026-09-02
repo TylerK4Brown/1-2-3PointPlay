@@ -17,6 +17,12 @@ import streamlit as st
 # data-testid="stBaseButton-segmented_control" p: makes the text in the buttons larger
 # data-testid="stButton" button: makes regular streamlit buttons larger
 # data-testid="stMarkdownContainer" hr: adjusts the thickness and radius of the horizontal dividers in the app
+# data-testid="stSelectbox" div: makes the selectbox background transparent
+# data-testid="stRadio" div.st-au.st-av.st-aw.st-ax.st-ay.st-az.st-b0.st-ae.st-b1.st-b2.st-b3.st-b4.st-b5.st-b6.st-b7.st-b8.st-b9.st-ba.st-bb.st-bc
+# ^^^^ a div that contains the radio button CSS information, makes the radio buttons larger
+# data-testid="stRadio" div.st-au.st-bx.st-aw.st-ax.st-ay.st-az.st-b0.st-ae.st-b1.st-b2.st-b3.st-b4.st-b5.st-b6.st-b7.st-b8.st-b9.st-ba.st-bb.st-bc
+# ^^^^ the radio button when it is deselected, ever so slighty different than the above div, makes the radio buttons larger
+# data-testid="stRadio" div.st-emotion-cache-66bzww.e1r33pru0: adjusts the padding of the radio buttons to center the text vertically with the button
 def load_css_gamedisplay():
     return st.markdown('''
     <style>
@@ -66,6 +72,21 @@ def load_css_gamedisplay():
         [data-testid="stSelectbox"] div {
             background-color: transparent;
         }
+
+        [data-testid="stRadio"] div.st-au.st-av.st-aw.st-ax.st-ay.st-az.st-b0.st-ae.st-b1.st-b2.st-b3.st-b4.st-b5.st-b6.st-b7.st-b8.st-b9.st-ba.st-bb.st-bc {
+            width: 42px;
+            height: 42px;
+        }
+
+        [data-testid="stRadio"] div.st-au.st-bx.st-aw.st-ax.st-ay.st-az.st-b0.st-ae.st-b1.st-b2.st-b3.st-b4.st-b5.st-b6.st-b7.st-b8.st-b9.st-ba.st-bb.st-bc {
+            width: 42px;
+            height: 42px;
+        }
+
+        [data-testid="stRadio"] div.st-emotion-cache-66bzww.e1r33pru0 {
+            padding-top: 14px;
+        }
+
     </style>
 
     ''', unsafe_allow_html=True)

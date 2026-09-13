@@ -20,9 +20,16 @@ def display_data_nfl (data):
     # If not, this probably means that an older game is no longer returned by the API (i.e, a game played on Wednesday this week will be removed from the API call on Sunday morning)
     # To avoid a mismatch between the button IDs and the game information, increment the button ID
     # This allows for the button IDs to match the game information in session state and in the database
+    # Also, log the offset so that the proper game is grabbed from session state in the callback
+    # ^^ st.session_state.offset
     if len(data) < NFL_GAMES_PER_WEEK[week_number]:
         increment_button_id = NFL_GAMES_PER_WEEK[week_number] - len(data)
         button_id += increment_button_id
+        if "offset" not in st.session_state:
+            st.session_state.offset = increment_button_id
+        else:
+            st.session_state.offset = increment_button_id
+            
     # create the game_information list in session state if it doesn't already exist
     if "game_information" not in st.session_state:
         st.session_state.game_information = []
@@ -181,7 +188,7 @@ def handle_change(changed_key, game_info):
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
     value_of_pick = st.session_state[changed_key]
-    game = game_info[button_id - 1]
+    game = game_info[button_id - 1 - st.session_state.offset]
     start_time = game["start_time"]
     original_spread = game["spread"]
 
@@ -298,9 +305,9 @@ def handle_change(changed_key, game_info):
                 original_spread
             )
     
-    # # print for debugging purposes
-    # print("\n\n -------NEW ENTRY-------")
-    # print(json.dumps(st.session_state.point_picks, indent=2))
+    # print for debugging purposes
+    print("\n\n -------NEW ENTRY-------")
+    print(json.dumps(st.session_state.point_picks, indent=2))
 
 # Creats a new dictionary entry in session state for each pick made by the user
 def add_new_pick_to_session_state(home_team_name, away_team_name, point_value, spread_pick, is_pick_home, game_id, button_id, start_time, original_spread):

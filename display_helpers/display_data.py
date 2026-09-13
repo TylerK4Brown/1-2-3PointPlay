@@ -188,6 +188,8 @@ def handle_change(changed_key, game_info):
     key_type = changed_key.split("_")[1]
     button_id = int(changed_key.split("_")[0])
     value_of_pick = st.session_state[changed_key]
+    if "offset" not in st.session_state:
+        st.session_state.offset = 0
     game = game_info[button_id - 1 - st.session_state.offset]
     start_time = game["start_time"]
     original_spread = game["spread"]

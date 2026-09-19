@@ -241,7 +241,7 @@ def handle_change(changed_key, game_info):
     
     # -- UPDATE SESSION STATE BASED ON THE INFORMATION GATHERED ABOVE --
     # PART 1: If there are no picks in the session state, add a new entry
-    if not st.session_state.point_picks:
+    if st.session_state.point_picks == []:
         add_new_pick_to_session_state(
             home_team_name, 
             away_team_name,
@@ -264,14 +264,17 @@ def handle_change(changed_key, game_info):
             same_id = False
             # if the game ID already exists in our list, update the same_id flag
             if existing_game_id == game_id:
+                # print(f"Updating existing pick for game_id: {existing_game_id} with key_type: {key_type} and value_of_pick: {value_of_pick}")
                 same_id = True
                 # check if the key type is points or spread and update the appropriate value in the session state
                 if key_type == "points":
                     existing_pick['point_value'] = value_of_pick
+                    break
                 elif key_type == "spread":
                     existing_pick['spread_pick'] = value_of_pick
                     # update is_pick_home for easier spread coverage calculation in view_player_picks.py
                     existing_pick['is_pick_home'] = is_pick_home
+                    break
     
            # PART 3: Point conflict check (skips if the game ID is the same or if the value of the pick is None)
            # If the user selects a point value that has already been selected for a different game:
@@ -294,6 +297,8 @@ def handle_change(changed_key, game_info):
                     st.session_state[recrafted_key] = None
                     
         # if there is no duplicate, append it to the running list of picks
+        # print(f"NEW ENTRY for game_id: {game_id} with button_id: {button_id} HOME_TEAM: {home_team_name} AWAY_TEAM: {away_team_name}")
+        # print(f"same_id: {same_id}")
         if not same_id:
             add_new_pick_to_session_state(
                 home_team_name, 

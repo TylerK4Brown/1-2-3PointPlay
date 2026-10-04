@@ -99,7 +99,7 @@ with pickscol2:
     if st.button("View Picks From This Week", width='stretch', key="view_player_picks"):
         st.switch_page("pages/view_player_picks.py")
 with pickscol3:
-    if st.button("View Picks History", width='stretch', key="view_pick_history"):
+    if st.button("View Pick History", width='stretch', key="view_pick_history"):
         st.switch_page("pages/view_pick_history.py")
 
 st.divider(width='stretch')

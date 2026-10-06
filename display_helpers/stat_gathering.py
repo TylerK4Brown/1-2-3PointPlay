@@ -23,7 +23,7 @@ def get_pick_statistics(week_number, called_from):
         # the number of picks covering the spread.
         for row in rows:
             for picks in row[f"week_{week}"]["picks"]:
-                if picks["covering_spread"]:
+                if picks["covering_spread"] == True:
                     total_picks_covering += 1
 
                     if picks["point_value"] == "1":

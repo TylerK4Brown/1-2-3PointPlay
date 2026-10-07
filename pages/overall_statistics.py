@@ -65,7 +65,8 @@ sorted_most_frequent_teams = sorted(most_frequent_teams_picked.items(), key=lamb
 for index, (team, count) in enumerate(sorted_most_frequent_teams):
     if index >= 3:
         break
-    st.markdown(f"#### {team}: {count} times", text_alignment="center")
+    text = f"{team}: {count} times" if count > 1 else f"{team}: {count} time"
+    st.markdown(f"#### {text}", text_alignment="center")
 
 newcol1, newcol2, newcol3 = st.columns([1, 1, 1])
 with newcol2:

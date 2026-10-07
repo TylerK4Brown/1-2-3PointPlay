@@ -25,12 +25,12 @@ def get_pick_statistics(week_number, called_from):
         # the number of picks covering the spread.
         for row in rows:
             for picks in row[f"week_{week}"]["picks"]:
-                spread = picks["spread_pick"].split(" ")[1]
+                spread = float(picks["spread_pick"].split(" ")[1])
 
-                if picks["covering_spread"] == False:
+                if picks["covering_spread"] == False or picks["covering_spread"] == "push":
                     if spread > 0:
                         total_underdog_picks +=1
-                    elif spread > 0:
+                    elif spread < 0:
                         total_favorite_picks +=1
 
                 elif picks["covering_spread"] == True:

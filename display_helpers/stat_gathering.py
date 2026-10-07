@@ -11,8 +11,8 @@ def get_pick_statistics(week_number, called_from):
     one_point_picks_covering = 0
     two_point_picks_covering = 0
     three_point_picks_covering = 0
-    underdog_picks_covering = 0
-    favorite_picks_covering = 0
+    underdog_picks_covering, total_underdog_picks = 0, 0
+    favorite_picks_covering, total_favorite_picks = 0, 0
 
     for week in week_number:
         if called_from == "overall":
@@ -25,14 +25,22 @@ def get_pick_statistics(week_number, called_from):
         # the number of picks covering the spread.
         for row in rows:
             for picks in row[f"week_{week}"]["picks"]:
+                spread = picks["spread_pick"].split(" ")[1]
 
-                if picks["covering_spread"] == True:
+                if picks["covering_spread"] == False:
+                    if spread > 0:
+                        total_underdog_picks +=1
+                    elif spread > 0:
+                        total_favorite_picks +=1
+
+                elif picks["covering_spread"] == True:
                     total_picks_covering += 1
-                    spread = picks["spread_pick"].split(" ")[1]
                     if spread > 0:
                         underdog_picks_covering += 1
+                        total_underdog_picks += 1
                     elif spread < 0:
-                        favorite_picks_covrering += 1
+                        favorite_picks_covering += 1
+                        total_favorite_picks += 1
                 
                     if picks["point_value"] == "1":
                         one_point_picks_covering += 1
@@ -54,5 +62,7 @@ def get_pick_statistics(week_number, called_from):
         "three_point_picks_covering": three_point_picks_covering,
         "underdog_picks_covering": underdog_picks_covering,
         "favorite_picks_covering": favorite_picks_covering,
+        "total_underdog_picks": total_underdog_picks,
+        "total_favorite_picks": total_favorite_picks,
         "most_frequent_teams_picked": most_frequent_teams_picked
     }

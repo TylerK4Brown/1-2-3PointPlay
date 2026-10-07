@@ -11,6 +11,8 @@ def get_pick_statistics(week_number, called_from):
     one_point_picks_covering = 0
     two_point_picks_covering = 0
     three_point_picks_covering = 0
+    underdog_picks_covering = 0
+    favorite_picks_covering = 0
 
     for week in week_number:
         if called_from == "overall":
@@ -23,9 +25,15 @@ def get_pick_statistics(week_number, called_from):
         # the number of picks covering the spread.
         for row in rows:
             for picks in row[f"week_{week}"]["picks"]:
+
                 if picks["covering_spread"] == True:
                     total_picks_covering += 1
-
+                    spread = picks["spread_pick"].split(" ")[1]
+                    if spread > 0:
+                        underdog_picks_covering += 1
+                    elif spread < 0:
+                        favorite_picks_covrering += 1
+                
                     if picks["point_value"] == "1":
                         one_point_picks_covering += 1
                     elif picks["point_value"] == "2":
@@ -44,5 +52,7 @@ def get_pick_statistics(week_number, called_from):
         "one_point_picks_covering": one_point_picks_covering,
         "two_point_picks_covering": two_point_picks_covering,
         "three_point_picks_covering": three_point_picks_covering,
-        "most_frequent_teams_picked": most_frequent_teams_picked,
+        "underdog_picks_covering": underdog_picks_covering,
+        "favorite_picks_covering": favorite_picks_covering,
+        "most_frequent_teams_picked": most_frequent_teams_picked
     }

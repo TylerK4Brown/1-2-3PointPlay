@@ -38,6 +38,10 @@ total_picks_covering = pick_statistics["total_picks_covering"]
 one_point_picks_covering = pick_statistics["one_point_picks_covering"]
 two_point_picks_covering = pick_statistics["two_point_picks_covering"]
 three_point_picks_covering = pick_statistics["three_point_picks_covering"]
+underdog_picks_covering = pick_statistics["underdog_picks_covering"]
+favorite_picks_covering = pick_statistics["favorite_picks_covering"]
+total_underdog_picks = pick_statistics["total_underdog_picks"]
+total_favorite_picks = pick_statistics["total_favorite_picks"]
 most_frequent_teams_picked = pick_statistics["most_frequent_teams_picked"]
 
 st.markdown(f"# Total picks correct: :blue[{total_picks_covering} / {total_possible_picks} ({((total_picks_covering / total_possible_picks) * 100):.1f}%)]", text_alignment="center")
@@ -46,6 +50,12 @@ st.divider(width='stretch')
 st.markdown(f"# 1 point picks correct: :blue[{one_point_picks_covering} / {total_possible_point_plays} ({((one_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
 st.markdown(f"# 2 point picks correct: :blue[{two_point_picks_covering} / {total_possible_point_plays} ({((two_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
 st.markdown(f"# 3 point picks correct: :blue[{three_point_picks_covering} / {total_possible_point_plays} ({((three_point_picks_covering / total_possible_point_plays) * 100):.1f}%)]", text_alignment="center")
+st.divider(width='stretch')
+
+st.markdown(f"#### We've picked the underdog :blue[{total_underdog_picks}] times, and the favorite :blue[{total_favorite_picks}] times.", text_alignment="center")
+st.markdown(f"#### Underdog picks correct: :blue[{underdog_picks_covering} / {total_underdog_picks} ({((underdog_picks_covering / total_underdog_picks) * 100):.1f}%)]", text_alignment="center")
+st.markdown(f"#### Favorite picks correct: :blue[{favorite_picks_covering} / {total_favorite_picks} ({((favorite_picks_covering / total_favorite_picks) * 100):.1f}%)]", text_alignment="center")
+
 st.divider(width='stretch')
 
 st.markdown("## :blue[Top 3 Most Frequently Picked Teams]", text_alignment="center")

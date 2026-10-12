@@ -44,6 +44,11 @@ load_css_gamedisplay()
 rows = sorted(rows, key=lambda user: user["name"])
 
 st.title("This week's picks!", text_alignment="center")
+# Refresh button for updating the displayed picks
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    if st.button("Refresh Page", width=700):
+        st.rerun()
 st.divider(width='stretch')
 
 # iterate through each users picks
@@ -70,7 +75,7 @@ for row in rows:
     game_id_list = [pick["game_id"] for pick in sorted_picks]
 
     # Get the number of games to consider for this user
-    # Ensures that W/L record if games have not started yet/the user has not made all their picks yet
+    # Ensures that W/L record is correct if games have not started yet/the user has not made all their picks yet
     games_to_consider = len(game_id_list)
     # Make an API call with all three game IDs for the current user's picks
     pick_scores = make_scores_api_call(game_id_list)

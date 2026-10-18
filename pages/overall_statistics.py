@@ -31,7 +31,7 @@ if week_number > 1:
     week_number = [i for i in range(1, week_number + 1)]
 
 # Begin the display of statistics for all weeks that have passed
-total_possible_picks = week_being_considered * 9
+total_possible_picks = week_being_considered * 9 if week_being_considered != 19 else (week_being_considered - 1) * 9
 total_possible_point_plays = week_being_considered * 3
 pick_statistics = get_pick_statistics(week_number, "overall")
 total_picks_covering = pick_statistics["total_picks_covering"]

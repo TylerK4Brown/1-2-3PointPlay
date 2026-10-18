@@ -45,7 +45,10 @@ def display_data_nfl (data):
     # checks if the user has already made picks in this session - updates state accordingly
     buttons_already_selected()
 
-    st.markdown("### LISTING OF UPCOMING NFL GAMES AND THEIR POINT SPREADS", text_alignment="center")
+    if week_number == 19:
+        st.markdown("### LISTING OF UPCOMING WILD CARD GAMES AND THEIR POINT SPREADS", text_alignment="center")
+    else:
+        st.markdown("### LISTING OF UPCOMING NFL GAMES AND THEIR POINT SPREADS", text_alignment="center")
     start_times_list = []
     for data_obj in data:
         # skip an iteration if no bookmaker is listed for the game
@@ -68,6 +71,7 @@ def generate_expander(data_obj, button_id, start_times_list):
     game_id = data_obj['id']
     team_favored, team_favored_abbreviation, point_spread_favored, team_underdog, team_underdog_abbreviation, point_spread_underdog = None, None, None, None, None, None
     is_spread_even = False
+    week_number = st.session_state.week_number
 
     # iterate through the point_spread list to find the favored and underdog teams and their respective point spreads
     for spread in point_spread:
@@ -164,7 +168,7 @@ def generate_expander(data_obj, button_id, start_times_list):
 
                 st.segmented_control (
                     label="points", 
-                    options=["1", "2", "3"], 
+                    options=["1", "2", "3"] if week_number != 19 else ["1", "2", "3", "4", "5", "6"], 
                     key=f"{button_id}_points", 
                     width="stretch", 
                     label_visibility="collapsed",

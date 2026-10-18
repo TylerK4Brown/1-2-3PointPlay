@@ -49,7 +49,7 @@ else:
         # Calls this display helper function to gather pick statistics for the selected player across the specified weeks
         pick_statistics = get_pick_statistics(week_number, "individual")
         
-        total_possible_picks = week_being_considered * 3
+        total_possible_picks = week_being_considered * 3 if week_being_considered != 19 else (week_being_considered - 1) * 3
         total_possible_point_plays = week_being_considered
         total_picks_covering = pick_statistics["total_picks_covering"]
         one_point_picks_covering = pick_statistics["one_point_picks_covering"]

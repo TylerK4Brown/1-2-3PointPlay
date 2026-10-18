@@ -15,6 +15,8 @@ def get_pick_statistics(week_number, called_from):
     favorite_picks_covering, total_favorite_picks = 0, 0
 
     for week in week_number:
+        if week == 19:
+            continue
         if called_from == "overall":
             rows = get_picks_by_week(week, None)
         else:

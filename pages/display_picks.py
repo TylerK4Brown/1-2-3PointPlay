@@ -57,7 +57,10 @@ if check_session_states():
             # Only store completed picks (point_value AND spread values must not be null)
             are_picks_finalized = False
 
-            if len(point_picks) >= 3:
+            if len(point_picks) >= 3 and st.session_state.week_number != 19:
+                are_picks_finalized = True
+                
+            if st.session_state.week_number == 19 and len(point_picks) >= 6:
                 are_picks_finalized = True
             
             for pick in point_picks:
